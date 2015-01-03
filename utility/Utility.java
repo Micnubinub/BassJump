@@ -175,7 +175,7 @@ public class Utility {
         return view;
     }
 
-    private static Player.PlayerShape getShapeType(String tag) {
+    public static Player.PlayerShape getShapeType(String tag) {
         Player.PlayerShape shape = Player.PlayerShape.RECT;
         if (tag.contains(SHAPE_CIRCLE))
             shape = Player.PlayerShape.CIRCLE;

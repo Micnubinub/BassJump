@@ -18,8 +18,24 @@ public class StoreManager {
             final int coins = Utility.getCoins(context);
             if (coins < item.price)
                 this.onFailedToBuyItem(item);
-            else
+            else if (item.bought)
+                this.onEquipItem(item);
+            else {
                 Utility.saveCoins(context, coins - item.price);
+                switch (item.type) {
+                    case COLOR:
+                        Utility.addBoughtColors(context, item.tag);
+                        break;
+                    case SONG:
+                        Utility.addBoughtSongs(context, item.tag);
+                        break;
+                    case SHAPE:
+                        Utility.addBoughtShapes(context, item.tag);
+                        break;
+                }
+                item.bought = true;
+                ListViewLib.setNumCoins(coins - item.price);
+            }
         }
 
         @Override
@@ -52,7 +68,8 @@ public class StoreManager {
             toast("store closed");
         }
     };
-    final ListViewLib listViewLib;
+
+    private static ListViewLib listViewLib;
 
     public StoreManager(Context context) {
         listViewLib = new ListViewLib(context);

@@ -25,12 +25,13 @@ import tbs.jumpsnew.managers.BitmapLoader;
 import tbs.jumpsnew.objects.AnimCircle;
 import tbs.jumpsnew.objects.Player;
 import tbs.jumpsnew.ui.Button;
+import tbs.jumpsnew.utility.AdManager;
 import tbs.jumpsnew.utility.BeatDetectorByFrequency;
 import tbs.jumpsnew.utility.GameObject;
 import tbs.jumpsnew.utility.Utility;
 
 public class Game {
-
+    //Todo Red and blue default color, Square default shape
     public static final Paint paintText = new Paint();
     public static final Paint paintVisualizer = new Paint();
     public static final Rect result = new Rect();
@@ -82,7 +83,7 @@ public class Game {
     public static float prcnt;
     // COLORS:
     public static int color; // CHANGE TO INT
-    public static int[] colors = new int[]{0x32e532, 0x327ae5, 0xe532cd, 0xe57e32, 0xd54040};
+    public static int[] colors = new int[]{0xff32e532, 0xff327ae5, 0xffe532cd, 0xffe57e32, 0xffd54040};
     // STORE
     public static Typeface font;
     // INTRO
@@ -93,6 +94,7 @@ public class Game {
     public static int loadWidth;
     // MODE
     public static GameMode mode;
+    public static AdManager adManager;
     public Typeface tf;
 
     public static void init(Context cont) {
@@ -105,7 +107,7 @@ public class Game {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(GameValues.STROKE_WIDTH);
         paintText.setColor(Color.WHITE);
-        paintVisualizer.setColor(0xe5e4a0);
+        paintVisualizer.setColor(0xffe5e4a0);
         paintVisualizer.setAlpha(255);
         paintVisualizer.setStrokeWidth(GameValues.STROKE_WIDTH / 6);
 
@@ -114,7 +116,6 @@ public class Game {
         for (int i = 0; i < 4; ++i) {
             circles.add(new AnimCircle());
         }
-
 
         // MUSIC
         isPlaying = true;
@@ -130,6 +131,7 @@ public class Game {
         loadWidth = 0;
         introText = "The Big Shots";
         introShowing = true;
+        adManager = new AdManager(context);
     }
 
     public static void setup() {
@@ -158,6 +160,12 @@ public class Game {
 
         rotator = new Matrix();
         player = new Player();
+
+        String shape = Utility.getPrefs(context).getString(Utility.EQUIPPED_SHAPE);
+        if (shape == null || shape.length() < 2)
+            shape = Utility.SHAPE_RECTANGLE;
+        Player.setPlayerShape(Utility.getShapeType(shape));
+
         level = new Level();
         setupGame();
         setupInterface();
@@ -213,7 +221,7 @@ public class Game {
         // DRAW EVERYTHING IN ORDER:
         //paint.setColor(0x000000); // DEFAULT
 
-        paint.setColor(0xe5e4a0);
+        paint.setColor(0xffe5e4a0);
         paint.setAlpha(25);
         canvas.drawCircle(player.getXCenter(), player.getYCenter(),
                 HIGH_F_HEIGHT * 1.15f, paint);
@@ -224,7 +232,7 @@ public class Game {
 
         // PLATFORMS:
         for (int i = 0; i < level.platformsRight.size(); ++i) {
-            paint.setColor(0x5b5b5b);
+            paint.setColor(0xff5b5b5b);
             paint.setAlpha(255);
             boolean drawTop = true;
             boolean drawBottom = true;
@@ -252,7 +260,7 @@ public class Game {
             }
         }
         for (int i = 0; i < level.platformsLeft.size(); ++i) {
-            paint.setColor(0x5b5b5b);
+            paint.setColor(0xff5b5b5b);
             paint.setAlpha(255);
             boolean drawTop = true;
             boolean drawBottom = true;
@@ -295,7 +303,7 @@ public class Game {
             }
             if (player.paintTrail.get(i).isRight() != player.goingRight
                     && alphaM > 0) {
-                paint.setColor(0xe5e475);
+                paint.setColor(0xffe5e475);
                 paint.setAlpha(alphaM);
                 canvas.drawRoundRect(
                         new RectF(player.paintTrail.get(i).xPos,
@@ -346,7 +354,7 @@ public class Game {
         // CIRCLES
         for (int i = 0; i < circles.size(); ++i) {
             if (circles.get(i).active) {
-                paint.setColor(0xe5e4a0);
+                paint.setColor(0xffe5e4a0);
                 paint.setAlpha(circles.get(i).a);
                 canvas.drawCircle(circles.get(i).xPos, circles.get(i).yPos,
                         circles.get(i).scale, paint);
@@ -378,7 +386,7 @@ public class Game {
                         modeBtn.yPos, paint);
 
             // MODE TEXT:
-            paintText.setColor(0xe5e4a0);
+            paintText.setColor(0xffe5e4a0);
             paintText.setAlpha(255);
             paintText.setTextSize(Screen.width / 24);
             paintText.setTextAlign(Align.RIGHT);
@@ -394,7 +402,7 @@ public class Game {
                                 - (GameValues.BUTTON_PADDING / 4), paintText);
 
             // TEXT
-            paintText.setColor(0xe5e4a0);
+            paintText.setColor(0xffe5e4a0);
             paintText.setTextAlign(Align.RIGHT);
             paintText.setTextSize(Screen.width / 4.85f);
             paintText.getTextBounds("BASS", 0, "JUMP".length(), result);
@@ -411,7 +419,7 @@ public class Game {
                     paintText);
 
             // SONG NAME:
-            paintText.setColor(0xe5e4a0);
+            paintText.setColor(0xffe5e4a0);
             paintText.setAlpha(255);
             paintText.setTextSize(Screen.width / 24);
             paintText.setTextAlign(Align.RIGHT);
@@ -427,7 +435,7 @@ public class Game {
 
             // SCORE & STATS:
             String txt = ("Played: " + player.gamesPlayed);
-            paintText.setColor(0xe5e4a0);
+            paintText.setColor(0xffe5e4a0);
             paintText.setTextAlign(Align.LEFT);
             paintText.setTextSize(Screen.width / 19.25f);
             paintText.getTextBounds(txt, 0, txt.length(), result);
@@ -449,7 +457,7 @@ public class Game {
                                 - result.height(), paintText);
         } else if (state == GameState.Playing) {
             // SCORE
-            paintText.setColor(0xe5e4a0);
+            paintText.setColor(0xffe5e4a0);
             paintText.setTextSize(Screen.width / 4.1f);
             paintText.setTextAlign(Align.CENTER);
             paintText.getTextBounds(String.valueOf(player.score), 0, String
@@ -475,7 +483,7 @@ public class Game {
                 if (player.score > player.highScoreR)
                     txt = ("NEW BEST!");
             }
-            paintText.setColor(0xe5e4a0);
+            paintText.setColor(0xffe5e4a0);
             paintText.setAlpha(255);
             canvas.drawText(txt, Screen.getCenterX(), scoreDisplay.yPos
                     + (result.height()), paintText);
@@ -484,9 +492,9 @@ public class Game {
         // INTRO
         if (introShowing) {
             paint.setStyle(Paint.Style.FILL);
-            paint.setColor(0x3e3e3e);
+            paint.setColor(0xff3e3e3e);
             canvas.drawRect(0, 0, Screen.width, Screen.height, paint);
-            paintText.setColor(0xe5e4a0);
+            paintText.setColor(0xffe5e4a0);
             paintText.setTextSize(Screen.width / 9);
             paintText.setTextAlign(Align.CENTER);
             canvas.drawText("The Big Shots", Screen.getCenterX(),
@@ -495,7 +503,7 @@ public class Game {
             paintText.setTextAlign(Align.CENTER);
             canvas.drawText("Plays best with Headphones", Screen.getCenterX(),
                     Screen.height - GameValues.BUTTON_PADDING, paintText);
-            paint.setColor(0xe532cd);
+            paint.setColor(0xffe532cd);
             canvas.drawRect(Screen.getCenterX()
                             - (GameValues.LOADING_BAR_WIDTH / 2), Screen.height
                             - GameValues.LOADING_BAR_WIDTH / 2f,
@@ -717,12 +725,23 @@ public class Game {
     }
 
     public static void playSong(File file) {
+        if (mpSong != null) {
+            if (mpSong.isLooping())
+                mpSong.stop();
+            mpSong.release();
+        }
+
         mpSong = MediaPlayer.create(MainActivity.context, Uri.fromFile(file));
         setUpSong();
     }
 
     public static void playSong(int file) {
         file = R.raw.song1;
+        if (mpSong != null) {
+            if (mpSong.isLooping())
+                mpSong.stop();
+            mpSong.release();
+        }
         mpSong = MediaPlayer.create(MainActivity.context, file);
         setUpSong();
     }
@@ -730,6 +749,22 @@ public class Game {
     private static void setUpSong() {
         mpSong.setLooping(true);
         mpSong.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        if (!isPlaying) {
+            try {
+                mpSong.release();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        final String[] songDetails = Utility.getSongTitle(Utility.getEquippedSong(context)).split(Utility.SEP);
+
+        if (songDetails == null || (songDetails[0] + songDetails[1]).length() < 2)
+            songName = "SmaXa - Fall Back";
+        else
+            songName = songDetails[1] + " - " + songDetails[0];
+
         try {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
@@ -743,7 +778,10 @@ public class Game {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         mpSong.start();
         beatDetector.link(mpSong);
     }
+
+
 }

@@ -13,7 +13,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -42,7 +41,7 @@ public class ListViewLib {
     private static View view;
     private static Context context;
     private final ListView listView;
-    //Todo make advertise our apps,tweak speedfactor
+    //Todo make advertise our apps half done
     private Dialog dialog;
     //    private int nameTextColor, priceTextColor, itemTextColor, buyTextColor,
 //            descriptionTextColor, coinTextColor, titleTextColor;
@@ -50,6 +49,7 @@ public class ListViewLib {
 //    private Drawable storeItemBackground;
 //    private Typeface storeItemFont;
     private Drawable buyButtonBackground;
+
 
     public ListViewLib(Context context) {
         this.context = context;
@@ -74,25 +74,16 @@ public class ListViewLib {
 
     private static void buyItem(int position) {
         final StoreItem item = storeItems.get(position);
-        Toast.makeText(context, item.name, Toast.LENGTH_LONG).show();
-        if (item.bought) {
-            if (storeListener != null)
-                storeListener.onEquipItem(item);
-        } else if (item.price <= numCoins) {
-            if (storeListener != null)
-                storeListener.onBuyItem(item);
-
-            item.bought = true;
-            setNumCoins(numCoins - item.price);
-        } else {
-            if (storeListener != null)
-                storeListener.onFailedToBuyItem(item);
-        }
+        storeListener.onBuyItem(item);
     }
 
     public static void setNumCoins(int numCoins) {
-        coinText.setText(String.valueOf(numCoins));
-        ListViewLib.numCoins = numCoins;
+        try {
+            coinText.setText(String.valueOf(numCoins));
+            ListViewLib.numCoins = numCoins;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 //    public void setItemNameTextSize(int itemNameTextSize) {
@@ -114,7 +105,7 @@ public class ListViewLib {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        getListView();
+        prepareListView();
         dialog.show();
         if (storeListener != null)
             storeListener.onStoreOpened();
@@ -131,7 +122,11 @@ public class ListViewLib {
         }
     }
 
-    private void getListView() {
+    public ListView getListView() {
+        return listView;
+    }
+
+    private void prepareListView() {
         adapter = new Adapter();
         listView.setAdapter(adapter);
     }

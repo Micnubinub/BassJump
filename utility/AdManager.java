@@ -11,9 +11,9 @@ import com.google.android.gms.ads.InterstitialAd;
 import tbs.jumpsnew.R;
 
 public class AdManager {
-    private final AdView bannerAd;
-    private final InterstitialAd fullscreenAd;
-    private final InterstitialAd videoAd;
+    private static AdView bannerAd;
+    private static InterstitialAd fullscreenAd;
+    private static InterstitialAd videoAd;
 
     public AdManager(Context context) {
         bannerAd = new AdView(context);

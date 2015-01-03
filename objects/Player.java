@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
+import com.google.android.gms.ads.InterstitialAd;
+
 import java.util.ArrayList;
 
 import tbs.jumpsnew.Game;
@@ -18,15 +20,25 @@ import tbs.jumpsnew.utility.Utility;
 
 public class Player extends GameObject {
     //Todo setPlayer playerShape
+    //Todo set defaults half done
+    //Todo polish player drawing *rotate player, when not a quarter half done
+    //Todo add a tab for getting coins in store >> video ads, fullscreenAds, IAP if possible
+    //Todo loading screen for the store + convert loading to ASync
+    //Todo fix store shapes, *kinda* easy fix
+    //Todo fix rectangle drawing *easy fix
+    //Todo maybe make things more expensive, seems a little easy atm
+
     private static final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static final int color = 0xffe5e475;
     //Color
     private static final int scoreBackground = 0xff404040;
     public static int paintIndex;
     public static Player.PlayerShape playerShape;
-    //Todo
-    private static int cx, cy, l, angleOffSet, initRotation, rotationStep;
+
     private static int[] points;
+    //Michael's quick fix
+    private static int cx, cy, l, angleOffSet, initRotation, rotationStep;
+    private static double playerJumpDistance, playerJumpPercentage;
     // PARTICLES
     public final ArrayList<Particle> splashParticles1;
     public final ArrayList<Particle> splashParticles2;
@@ -57,6 +69,7 @@ public class Player extends GameObject {
             splashParticles2.add(new Particle());
         }
         l = (GameValues.PLAYER_SCALE / 2) - GameValues.PAINT_THICKNESS;
+        playerJumpDistance = Screen.width - (GameValues.PLATFORM_WIDTH * 2);
     }
 
     public static void setPlayerShape(PlayerShape playerShape) {
@@ -102,8 +115,6 @@ public class Player extends GameObject {
         paint.setColor(scoreBackground);
         canvas.drawRoundRect(new RectF(12, 12, w - 12, w - 12), 12, 12, paint);
         // canvas.drawRoundRect(new RectF(GameValues.PAINT_THICKNESS, GameValues.PAINT_THICKNESS, w - GameValues.PAINT_THICKNESS, w - GameValues.PAINT_THICKNESS), 12, 12, paint);
-
-
     }
 
     public static void drawTriangle(Canvas canvas, int w, int h) {
@@ -113,7 +124,6 @@ public class Player extends GameObject {
         for (int i = 0; i < points.length; i += 2) {
             canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
         }
-
     }
 
     public static void drawCircle(Canvas canvas, int w, int h) {
@@ -266,6 +276,29 @@ public class Player extends GameObject {
                         Game.setupGame();
                     }
                 }
+
+                //Convert score to coins and show ad
+                Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + score / 5);
+
+                if (gamesPlayed % 10 == 0 && gamesPlayed > 0) {
+                    MainActivity.getView().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            final InterstitialAd ad = Game.adManager.getFullscreenAd();
+                            if (ad.isLoaded()) ad.show();
+                        }
+                    });
+
+                } else if (gamesPlayed % 7 == 0 && gamesPlayed > 0) {
+                    MainActivity.getView().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Game.adManager.loadFullscreenAd();
+                        }
+                    });
+
+                }
+
                 break;
             case JUMPING:
                 if (goingRight) { // RIGHT
@@ -289,6 +322,8 @@ public class Player extends GameObject {
                 }
                 break;
         }
+
+        playerJumpPercentage = (xPos - GameValues.PLATFORM_WIDTH) / playerJumpDistance;
 
     }
 

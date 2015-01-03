@@ -29,6 +29,10 @@ public class MainActivity extends BaseGameActivity {
         }
     }
 
+    public static SurfaceView getView() {
+        return view;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +91,6 @@ public class MainActivity extends BaseGameActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
         if (Game.isPlaying) {
             Game.mpSong.pause();
         }
@@ -96,7 +99,6 @@ public class MainActivity extends BaseGameActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         if (Game.isPlaying) {
             Game.mpSong.start();
         }
