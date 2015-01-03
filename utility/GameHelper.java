@@ -46,86 +46,86 @@ import java.util.ArrayList;
 public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-    // Client request flags
-    public final static int CLIENT_NONE = 0x00;
-    // What clients were requested? (bit flags)
-    int mRequestedClients = CLIENT_NONE;
     public final static int CLIENT_GAMES = 0x01;
-    public final static int CLIENT_PLUS = 0x02;
     public final static int CLIENT_APPSTATE = 0x04;
+    static final String TAG = "GameHelper";
+    // Client request flags
+    private final static int CLIENT_NONE = 0x00;
+    // What clients were requested? (bit flags)
+    private int mRequestedClients = CLIENT_NONE;
+    private final static int CLIENT_PLUS = 0x02;
     public final static int CLIENT_ALL = CLIENT_GAMES | CLIENT_PLUS
             | CLIENT_APPSTATE;
-    static final String TAG = "GameHelper";
     // Request code we use when invoking other Activities to complete the
     // sign-in flow.
-    final static int RC_RESOLVE = 9001;
+    private final static int RC_RESOLVE = 9001;
     // Request code when invoking Activities whose result we don't care about.
-    final static int RC_UNUSED = 9002;
+    private final static int RC_UNUSED = 9002;
     // Should we start the flow to sign the user in automatically on startup? If
     // so, up to
     // how many times in the life of the application?
-    static final int DEFAULT_MAX_SIGN_IN_ATTEMPTS = 3;
-    final int mMaxAutoSignInAttempts = DEFAULT_MAX_SIGN_IN_ATTEMPTS;
+    private static final int DEFAULT_MAX_SIGN_IN_ATTEMPTS = 3;
+    private final int mMaxAutoSignInAttempts = DEFAULT_MAX_SIGN_IN_ATTEMPTS;
     // Api options to use when adding each API, null for none
-    final GamesOptions mGamesApiOptions = GamesOptions.builder().build();
-    final PlusOptions mPlusApiOptions = null;
+    private final GamesOptions mGamesApiOptions = GamesOptions.builder().build();
+    private final PlusOptions mPlusApiOptions = null;
     // --Commented out by Inspection (27/10/14 11:00 PM):NoOptions mAppStateApiOptions = null;
     // Should we show error dialog boxes?
-    final boolean mShowErrorDialogs = true;
-    final Handler mHandler;
+    private final boolean mShowErrorDialogs = true;
+    private final Handler mHandler;
     private final String GAMEHELPER_SHARED_PREFS = "GAMEHELPER_SHARED_PREFS";
     private final String KEY_SIGN_IN_CANCELLATIONS = "KEY_SIGN_IN_CANCELLATIONS";
     // Are we expecting the result of a resolution flow?
-    boolean mExpectingResolution = false;
+    private boolean mExpectingResolution = false;
     // was the sign-in flow cancelled when we tried it?
     // if true, we know not to try again automatically.
-    boolean mSignInCancelled = false;
+    private boolean mSignInCancelled = false;
     /**
      * The Activity we are bound to. We need to keep a reference to the Activity
      * because some games methods require an Activity (a Context won't do). We
      * are careful not to leak these references: we release them on onStop().
      */
-    Activity mActivity = null;
+    private Activity mActivity = null;
     // app context
-    Context mAppContext = null;
+    private Context mAppContext = null;
     // the Google API client builder we will use to create GoogleApiClient
-    GoogleApiClient.Builder mGoogleApiClientBuilder = null;
+    private GoogleApiClient.Builder mGoogleApiClientBuilder = null;
     // Google API client object we manage.
-    GoogleApiClient mGoogleApiClient = null;
+    private GoogleApiClient mGoogleApiClient = null;
     // Whether to automatically try to sign in on onStart(). We only set this
     // to true when the sign-in process fails or the user explicitly signs out.
     // We set it back to false when the user initiates the sign in process.
-    boolean mConnectOnStart = true;
+    private boolean mConnectOnStart = true;
     /*
      * Whether user has specifically requested that the sign-in process begin.
      * If mUserInitiatedSignIn is false, we're in the automatic sign-in attempt
      * that we try once the Activity is started -- if true, then the user has
      * already clicked a "Sign-In" button or something similar
      */
-    boolean mUserInitiatedSignIn = false;
+    private boolean mUserInitiatedSignIn = false;
     // The connection result we got from our last attempt to sign-in.
-    ConnectionResult mConnectionResult = null;
+    private ConnectionResult mConnectionResult = null;
     // The error that happened during sign-in.
-    SignInFailureReason mSignInFailureReason = null;
+    private SignInFailureReason mSignInFailureReason = null;
     // Print debug logs?
-    boolean mDebugLog = false;
+    private boolean mDebugLog = false;
     /*
      * If we got an invitation when we connected to the games client, it's here.
      * Otherwise, it's null.
      */
-    Invitation mInvitation;
+    private Invitation mInvitation;
     /*
      * If we got turn-based match when we connected to the games client, it's
      * here. Otherwise, it's null.
      */
-    TurnBasedMatch mTurnBasedMatch;
+    private TurnBasedMatch mTurnBasedMatch;
     /*
      * If we have incoming requests when we connected to the games client, they
      * are here. Otherwise, it's null.
      */
-    ArrayList<GameRequest> mRequests;
+    private ArrayList<GameRequest> mRequests;
     // Listener
-    GameHelperListener mListener = null;
+    private GameHelperListener mListener = null;
     // configuration done?
     private boolean mSetupDone = false;
     // are we currently connecting?
@@ -165,8 +165,8 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
     /**
      * Shows an error dialog that's appropriate for the failure reason.
      */
-    public static void showFailureDialog(Activity activity, int actResp,
-                                         int errorCode) {
+    private static void showFailureDialog(Activity activity, int actResp,
+                                          int errorCode) {
         if (activity == null) {
             Log.e("GameHelper", "*** No Activity. Can't show failure dialog!");
             return;
@@ -240,12 +240,12 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
 //    }
 // --Commented out by Inspection STOP (27/10/14 11:00 PM)
 
-    static Dialog makeSimpleDialog(Activity activity, String text) {
+    private static Dialog makeSimpleDialog(Activity activity, String text) {
         return (new AlertDialog.Builder(activity)).setMessage(text)
                 .setNeutralButton(android.R.string.ok, null).create();
     }
 
-    static Dialog
+    private static Dialog
     makeSimpleDialog(Activity activity, String title, String text) {
         return (new AlertDialog.Builder(activity)).setMessage(text)
                 .setTitle(title).setNeutralButton(android.R.string.ok, null)
@@ -285,7 +285,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
      * nonstandard setup (e.g. adding extra scopes for other APIs) on the
      * GoogleApiClient.Builder before calling @link{#setup}.
      */
-    public GoogleApiClient.Builder createApiClientBuilder() {
+    GoogleApiClient.Builder createApiClientBuilder() {
         if (mSetupDone) {
             String error = "GameHelper: you called GameHelper.createApiClientBuilder() after "
                     + "calling setup. You can only get a client builder BEFORE performing setup.";
@@ -915,7 +915,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         }
     }
 
-    public void disconnect() {
+    void disconnect() {
         if (mGoogleApiClient.isConnected()) {
             debugLog("Disconnecting client.");
             mGoogleApiClient.disconnect();
@@ -960,7 +960,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         notifyListener(false);
     }
 
-    public void showFailureDialog() {
+    void showFailureDialog() {
         if (mSignInFailureReason != null) {
             final int errorCode = mSignInFailureReason.getServiceErrorCode();
             final int actResp = mSignInFailureReason.getActivityResultCode();

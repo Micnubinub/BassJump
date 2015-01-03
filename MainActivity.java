@@ -89,8 +89,8 @@ public class MainActivity extends BaseGameActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         if (Game.isPlaying) {
             Game.mpSong.pause();
         }

@@ -55,7 +55,7 @@ public class SecurePreferences {
         }
     }
 
-    protected void initCiphers(String secureKey)
+    void initCiphers(String secureKey)
             throws UnsupportedEncodingException, NoSuchAlgorithmException,
             InvalidKeyException, InvalidAlgorithmParameterException {
         IvParameterSpec ivSpec = getIv();
@@ -66,20 +66,20 @@ public class SecurePreferences {
         keyWriter.init(Cipher.ENCRYPT_MODE, secretKey);
     }
 
-    protected IvParameterSpec getIv() {
+    IvParameterSpec getIv() {
         byte[] iv = new byte[writer.getBlockSize()];
         System.arraycopy("fldsjfodasjifudslfjdsaofshaufihadsf".getBytes(), 0,
                 iv, 0, writer.getBlockSize());
         return new IvParameterSpec(iv);
     }
 
-    protected SecretKeySpec getSecretKey(String key)
+    SecretKeySpec getSecretKey(String key)
             throws UnsupportedEncodingException, NoSuchAlgorithmException {
         byte[] keyBytes = createKeyBytes(key);
         return new SecretKeySpec(keyBytes, TRANSFORMATION);
     }
 
-    protected byte[] createKeyBytes(String key)
+    byte[] createKeyBytes(String key)
             throws UnsupportedEncodingException, NoSuchAlgorithmException {
         final MessageDigest md = MessageDigest.getInstance(SECRET_KEY_HASH_TRANSFORMATION);
         md.reset();
@@ -126,7 +126,7 @@ public class SecurePreferences {
         preferences.edit().putString(key, encrypt(value, writer)).commit();
     }
 
-    protected String encrypt(String value, Cipher writer)
+    String encrypt(String value, Cipher writer)
             throws SecurePreferencesException {
         byte[] secureValue;
         try {
@@ -138,7 +138,7 @@ public class SecurePreferences {
                 Base64.NO_WRAP);
     }
 
-    protected String decrypt(String securedEncodedValue) {
+    String decrypt(String securedEncodedValue) {
         final byte[] value = convert(reader, Base64.decode(securedEncodedValue, Base64.NO_WRAP));
         try {
             return new String(value, CHARSET);

@@ -146,7 +146,7 @@ public class Utility {
         return items;
     }
 
-    public static final View getColor(Context context, String tag) {
+    public static View getColor(Context context, String tag) {
         View view = new ColorView(context, getColor(tag));
         view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
         return view;
@@ -169,7 +169,7 @@ public class Utility {
         return i;
     }
 
-    public static final View getShape(Context context, String tag) {
+    public static View getShape(Context context, String tag) {
         final View view = new ShapeView(context, getShapeType(tag));
         view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
         return view;

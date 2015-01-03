@@ -32,7 +32,7 @@ public class Level {
         Utility.log("Level Initialized");
         platformIndexR = 0;
         platformIndexL = 0;
-        platformsLeft = new ArrayList<Platform>(platformAmount);
+        platformsLeft = new ArrayList<>(platformAmount);
         for (int i = 0; i < platformAmount; ++i) {
             Platform platform = new Platform();
             platform.height = GameValues.PLATFORM_HEIGHT;
@@ -41,7 +41,7 @@ public class Level {
             platform.yPos = (i * GameValues.PLATFORM_HEIGHT);
             platformsLeft.add(platform);
         }
-        platformsRight = new ArrayList<Platform>(platformAmount);
+        platformsRight = new ArrayList<>(platformAmount);
         for (int i = 0; i < platformAmount; ++i) {
             Platform platform = new Platform();
             platform.height = GameValues.PLATFORM_HEIGHT;
@@ -50,7 +50,7 @@ public class Level {
             platform.yPos = (i * GameValues.PLATFORM_HEIGHT);
             platformsRight.add(platform);
         }
-        speedParticles = new ArrayList<SpeedParticle>();
+        speedParticles = new ArrayList<>();
         for (int i = 0; i < 4; ++i) {
             SpeedParticle sp = new SpeedParticle();
             sp.xPos = (i * (Screen.width / 5));

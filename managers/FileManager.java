@@ -10,9 +10,9 @@ import java.util.ArrayList;
  */
 
 public class FileManager {
-    private static String currentDirectory = Environment.getExternalStorageDirectory().getPath();
-    private static boolean isInFileManagerMode = false;
-    private static ArrayList<File> currentTree;
+    //    private static String currentDirectory = Environment.getExternalStorageDirectory().getPath();
+//    private static boolean isInFileManagerMode = false;
+//    private static ArrayList<File> currentTree;
     private static ArrayList<File> music;
     private static ArrayList<File> directories;
 
@@ -224,12 +224,12 @@ public class FileManager {
         if (directories != null)
             directories.clear();
         else
-            directories = new ArrayList<File>();
+            directories = new ArrayList<>();
 
         if (music != null)
             music.clear();
         else
-            music = new ArrayList<File>();
+            music = new ArrayList<>();
 
         final File file = Environment.getExternalStorageDirectory();
         for (File file1 : file.listFiles()) {

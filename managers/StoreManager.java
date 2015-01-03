@@ -12,7 +12,7 @@ public class StoreManager {
 
     public static AdManager adManager;
     private static Context context;
-    private static ListViewLib.StoreListener storeListener = new ListViewLib.StoreListener() {
+    private static final ListViewLib.StoreListener storeListener = new ListViewLib.StoreListener() {
         @Override
         public void onBuyItem(StoreItem item) {
             final int coins = Utility.getCoins(context);

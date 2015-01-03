@@ -31,11 +31,13 @@ import tbs.jumpsnew.utility.GameObject;
 import tbs.jumpsnew.utility.Utility;
 
 public class Game {
+    public static final int[] colors = new int[]{0xff32e532, 0xff327ae5, 0xffe532cd, 0xffe57e32, 0xffd54040};
     //Todo Red and blue default color, Square default shape
-    public static final Paint paintText = new Paint();
-    public static final Paint paintVisualizer = new Paint();
-    public static final Rect result = new Rect();
-    public static final RectF paintTrailRect = new RectF();
+    private static final Paint paintText = new Paint();
+    //todo necessary to have 2?
+    private static final Paint paintVisualizer = new Paint();
+    private static final Rect result = new Rect();
+    private static final RectF paintTrailRect = new RectF();
     // PAINTER:
     private static final Paint paint = new Paint();
     // CONTEXT
@@ -43,20 +45,12 @@ public class Game {
     // LEVEL AND PLAYER:
     public static Player player; // PLAYER CONTAINS PLAYER INFO
     public static Level level; // LEVEL CONTAINS LEVEL OBJECTS
-    // MOVING TEXTS:
-    public static ArrayList<MovingText> animatedTexts; // ANIMATED TEXT LIST
-    public static int animatedTextIndex; // WHICH TEXT TO USE
     public static int textSize;
-    public static Matrix rotator;
-    public static BitmapLoader bitmaps;
     // MUSIC
     public static int alphaM;
-    public static boolean alphaMInc;
     public static boolean isPlaying;
     // STATE:
     public static GameState state;
-    // INTERFACE:
-    public static GameObject scoreDisplay;
     public static Button leaderBtn;
     public static Button rateBtn;
     public static Button modeBtn;
@@ -65,37 +59,44 @@ public class Game {
     public static Button storeBtn;
     public static Button soundBtn;
     public static Button achievBtn;
-    // GLOBAL PARTICLES:
-    public static ArrayList<AnimCircle> circles;
-    public static int circleIndex;
-    // ANIMATION
-    public static int menuTextAlpha;
     // SOUND && VISUALIZER:
     public static MediaPlayer mpSong;
-    public static BeatDetectorByFrequency beatDetector;
-    public static String songName;
-    // FREQUENCY:
-    public static int LOW_FREQUENCY = 0;
-    public static int LOW_F_HEIGHT = 0;
-    public static int MID_FREQUENCY = 0;
-    public static int MID_F_HEIGHT = 0;
-    public static int HIGH_FREQUENCY = 0;
-    public static int HIGH_F_HEIGHT = 0;
-    public static float prcnt;
     // COLORS:
     public static int color; // CHANGE TO INT
-    public static int[] colors = new int[]{0xff32e532, 0xff327ae5, 0xffe532cd, 0xffe57e32, 0xffd54040};
     // STORE
     public static Typeface font;
-    // INTRO
-    public static int introDelay;
-    public static String introText;
     public static boolean introShowing;
-    public static int loadProg;
-    public static int loadWidth;
     // MODE
     public static GameMode mode;
     public static AdManager adManager;
+    // MOVING TEXTS:
+    private static ArrayList<MovingText> animatedTexts; // ANIMATED TEXT LIST
+    private static int animatedTextIndex; // WHICH TEXT TO USE
+    private static Matrix rotator;
+    private static BitmapLoader bitmaps;
+    private static boolean alphaMInc;
+    // INTERFACE:
+    private static GameObject scoreDisplay;
+    // GLOBAL PARTICLES:
+    private static ArrayList<AnimCircle> circles;
+    private static int circleIndex;
+    // ANIMATION
+    private static int menuTextAlpha;
+    private static BeatDetectorByFrequency beatDetector;
+    private static String songName;
+    // FREQUENCY:
+    private static int LOW_FREQUENCY = 0;
+    private static int LOW_F_HEIGHT = 0;
+    private static int MID_FREQUENCY = 0;
+    private static int MID_F_HEIGHT = 0;
+    private static int HIGH_FREQUENCY = 0;
+    private static int HIGH_F_HEIGHT = 0;
+    private static float prcnt;
+    // INTRO
+    private static int introDelay;
+    private static String introText;
+    private static int loadProg;
+    private static int loadWidth;
     public Typeface tf;
 
     public static void init(Context cont) {
@@ -112,7 +113,7 @@ public class Game {
         paintVisualizer.setAlpha(255);
         paintVisualizer.setStrokeWidth(GameValues.STROKE_WIDTH / 6);
 
-        circles = new ArrayList<AnimCircle>();
+        circles = new ArrayList<>();
         circleIndex = 0;
         for (int i = 0; i < 4; ++i) {
             circles.add(new AnimCircle());
@@ -541,7 +542,7 @@ public class Game {
         player.setup();
 
         // TEXT
-        animatedTexts = new ArrayList<MovingText>();
+        animatedTexts = new ArrayList<>();
         for (int i = 0; i < 10; ++i) {
             animatedTexts.add(new MovingText());
         }
@@ -550,9 +551,9 @@ public class Game {
         checkAchievements();
     }
 
-    public static void drawRectangle(Canvas canvas, int x, int y, int w, int h,
-                                     boolean drawLeft, boolean drawRight, boolean drawTop,
-                                     boolean drawBottom) {
+    private static void drawRectangle(Canvas canvas, int x, int y, int w, int h,
+                                      boolean drawLeft, boolean drawRight, boolean drawTop,
+                                      boolean drawBottom) {
         if (drawLeft)
             canvas.drawLine(x, y, x, y + h, paint);
 
@@ -567,7 +568,7 @@ public class Game {
 
     }
 
-    public static void checkAchievements() {
+    private static void checkAchievements() {
         // SCORE RELATED:
         if (MainActivity.getApiClient().isConnected()) {
             if (player.highScoreA >= 10)
@@ -607,7 +608,7 @@ public class Game {
         }
     }
 
-    public static void setupInterface() {
+    private static void setupInterface() {
         // BUTTONS && IMAGES:
         scoreDisplay = new GameObject();
         scoreDisplay.xPos = Screen.getCenterX();
@@ -655,7 +656,7 @@ public class Game {
 
         // MOVING TEXT:
         animatedTextIndex = 0;
-        animatedTexts = new ArrayList<MovingText>();
+        animatedTexts = new ArrayList<>();
         for (int i = 0; i < 10; ++i) {
             animatedTexts.add(new MovingText());
         }
@@ -678,7 +679,7 @@ public class Game {
         updateHighFreq();
     }
 
-    public static void updateHighFreq() {
+    private static void updateHighFreq() {
         prcnt = HIGH_FREQUENCY * 100 / GameValues.FREQ_MAX;
         if (prcnt < 0)
             prcnt = 0;
@@ -693,7 +694,7 @@ public class Game {
         updatelowFreq();
     }
 
-    public static void updatelowFreq() {
+    private static void updatelowFreq() {
         prcnt = LOW_FREQUENCY * 100 / GameValues.FREQ_MAX;
         if (prcnt < 0)
             prcnt = 0;
@@ -708,7 +709,7 @@ public class Game {
         updateMidFreq();
     }
 
-    public static void updateMidFreq() {
+    private static void updateMidFreq() {
         prcnt = MID_FREQUENCY * 100 / GameValues.FREQ_MAX;
         if (prcnt < 0)
             prcnt = 0;
@@ -716,7 +717,7 @@ public class Game {
     }
 
     // FAKE LOADER:
-    public static void loadProg(int loadProg) {
+    private static void loadProg(int loadProg) {
         float pcrn = loadProg * 100 / 150;
         if (pcrn < 0)
             pcrn = 0;
@@ -727,7 +728,7 @@ public class Game {
         playSong(new File(file));
     }
 
-    public static void playSong(File file) {
+    private static void playSong(File file) {
         if (mpSong != null) {
             if (mpSong.isLooping())
                 mpSong.stop();

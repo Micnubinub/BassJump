@@ -25,6 +25,10 @@ public class Player extends GameObject {
     //Todo add a tab for getting coins in store >> video ads, fullscreenAds, IAP if possible
     //Todo loading screen for the store + convert loading to ASync
     //Todo fix store shapes, *kinda* easy fix
+    //Todo fix played games not incrementing sometimes
+    //Todo Fix the  buy button after purchase
+    //Todo fix the store being out of view at the top
+
     //Todo fix rectangle drawing *easy fix
     //Todo maybe make things more expensive, seems a little easy atm
 
@@ -60,11 +64,11 @@ public class Player extends GameObject {
 
     public Player() {
         Utility.log("Player Initialized");
-        splashParticles1 = new ArrayList<Particle>();
+        splashParticles1 = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
             splashParticles1.add(new Particle());
         }
-        splashParticles2 = new ArrayList<Particle>();
+        splashParticles2 = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
             splashParticles2.add(new Particle());
         }
@@ -171,7 +175,7 @@ public class Player extends GameObject {
 
         // PAINT:
         paintIndex = 0;
-        paintTrail = new ArrayList<PaintParticle>();
+        paintTrail = new ArrayList<>();
         for (int i = 0; i < 8; ++i) {
             paintTrail.add(new PaintParticle());
         }
@@ -462,10 +466,8 @@ public class Player extends GameObject {
             return true;
 
         // Check if bottom-right point is in box
-        if (right2 >= x1 && right2 <= right1 && bottom2 >= y2
-                && bottom2 <= bottom1)
-            return true;
-        return false;
+
+        return (right2 >= x1 && right2 <= right1 && bottom2 >= y2 && bottom2 <= bottom1);
     }
 
     public void showParticles() {

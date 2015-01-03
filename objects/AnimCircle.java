@@ -9,7 +9,7 @@ public class AnimCircle extends GameObject {
     public boolean active;
     public int a; // ALPHA
     public int scaleUp;
-    public boolean special;
+    private boolean special;
 
     public void update() {
         if (active) {

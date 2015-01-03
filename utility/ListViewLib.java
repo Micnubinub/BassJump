@@ -2,7 +2,6 @@ package tbs.jumpsnew.utility;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,12 +31,12 @@ public class ListViewLib {
     private static final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
     private static ArrayList<StoreItem> storeItems;
     private static StoreListener storeListener;
-    private static int numCoins;
+    // private static int numCoins;
     // , descriptionTextSize, priceTextSize, itemNameTextSize,buyButtonTextSize;
     private static TextView title;
     private static TextView coinText;
     private static Adapter adapter;
-    private static Drawable listItemBackground;
+    // private static Drawable listItemBackground;
     private static View view;
     private static Context context;
     private final ListView listView;
@@ -48,7 +47,7 @@ public class ListViewLib {
 //    private int listViewDividerHeight, listViewPadding, listViewMargin;
 //    private Drawable storeItemBackground;
 //    private Typeface storeItemFont;
-    private Drawable buyButtonBackground;
+//    private Drawable buyButtonBackground;
 
 
     public ListViewLib(Context context) {
@@ -80,7 +79,7 @@ public class ListViewLib {
     public static void setNumCoins(int numCoins) {
         try {
             coinText.setText(String.valueOf(numCoins));
-            ListViewLib.numCoins = numCoins;
+            //    ListViewLib.numCoins = numCoins;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -273,13 +272,13 @@ public class ListViewLib {
             name.setTypeface(Game.font);
             buy.setTypeface(Game.font);
 
-            if (buyButtonBackground != null) {
-                try {
-                    buy.setBackground(buyButtonBackground);
-                } catch (Exception e) {
-                    buy.setBackgroundDrawable(buyButtonBackground);
-                }
-            }
+//            if (buyButtonBackground != null) {
+//                try {
+//                    buy.setBackground(buyButtonBackground);
+//                } catch (Exception e) {
+//                    buy.setBackgroundDrawable(buyButtonBackground);
+//                }
+//            }
         }
 
         public View getView() {
