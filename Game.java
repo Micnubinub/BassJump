@@ -35,6 +35,7 @@ public class Game {
     public static final Paint paintText = new Paint();
     public static final Paint paintVisualizer = new Paint();
     public static final Rect result = new Rect();
+    public static final RectF paintTrailRect = new RectF();
     // PAINTER:
     private static final Paint paint = new Paint();
     // CONTEXT
@@ -291,13 +292,14 @@ public class Game {
             paint.setColor(color);
             paint.setAlpha(255);
             if (player.paintTrail.get(i).active) {
+                paintTrailRect.set(player.paintTrail.get(i).xPos,
+                        player.paintTrail.get(i).yPos,
+                        player.paintTrail.get(i).xPos
+                                + GameValues.PAINT_THICKNESS,
+                        player.paintTrail.get(i).yPos
+                                + player.paintTrail.get(i).height);
                 canvas.drawRoundRect(
-                        new RectF(player.paintTrail.get(i).xPos,
-                                player.paintTrail.get(i).yPos,
-                                player.paintTrail.get(i).xPos
-                                        + GameValues.PAINT_THICKNESS,
-                                player.paintTrail.get(i).yPos
-                                        + player.paintTrail.get(i).height), 8,
+                        paintTrailRect, 8,
                         8, paint);
 
             }
@@ -305,13 +307,14 @@ public class Game {
                     && alphaM > 0) {
                 paint.setColor(0xffe5e475);
                 paint.setAlpha(alphaM);
+                paintTrailRect.set(player.paintTrail.get(i).xPos,
+                        player.paintTrail.get(i).yPos,
+                        player.paintTrail.get(i).xPos
+                                + GameValues.PAINT_THICKNESS,
+                        player.paintTrail.get(i).yPos
+                                + player.paintTrail.get(i).height);
                 canvas.drawRoundRect(
-                        new RectF(player.paintTrail.get(i).xPos,
-                                player.paintTrail.get(i).yPos,
-                                player.paintTrail.get(i).xPos
-                                        + GameValues.PAINT_THICKNESS,
-                                player.paintTrail.get(i).yPos
-                                        + player.paintTrail.get(i).height), 8,
+                        paintTrailRect, 8,
                         8, paint);
             }
         }
