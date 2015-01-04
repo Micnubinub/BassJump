@@ -2,7 +2,6 @@ package tbs.jumpsnew.objects;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -18,12 +17,13 @@ import tbs.jumpsnew.utility.Utility;
 
 public class Player extends GameObject {
     private static final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    //Color
+    // Color
     public static int paintIndex;
-    public static Player.PlayerShape playerShape;
+    public static PlayerShape playerShape;
+    // Todo fix with scaling
     public static int paintTrailOffset;
     private static int[] points;
-    //Michael's quick fix
+    // Michael's quick fix
     private static int cx, cy, l, angleOffSet, initRotation, rotationStep;
     private static double playerJumpDistance, playerJumpPercentage;
     // PARTICLES
@@ -40,6 +40,7 @@ public class Player extends GameObject {
     public int highScoreA; // ARCADE
     public int highScoreR; // RECRUIT
     public int gamesPlayed; // GAMES PLAYED
+    public int tmpCoins; // COINS WHEN PLAYING ONLY
     // SPECIAL ACHIEVEMENTS
     public int gamesHund; // Games over 100;
     // PAINT TRAIL
@@ -56,14 +57,8 @@ public class Player extends GameObject {
             splashParticles2.add(new Particle());
         }
         l = (GameValues.PLAYER_SCALE / 2) - GameValues.PAINT_THICKNESS;
-        playerJumpDistance = Screen.width - (GameValues.PLATFORM_WIDTH * 2) - GameValues.PLAYER_SCALE;
-    }
-
-    public static void drawCircle(Canvas canvas) {
-        paint.setColor(Game.color);
-        canvas.drawCircle(cx, cy, (Math.min(GameValues.PLAYER_SCALE, GameValues.PLAYER_SCALE) / 2) - GameValues.PAINT_THICKNESS, paint);
-        paint.setARGB(255, 40, 40, 40);
-        canvas.drawCircle(cx, cy, (Math.min(GameValues.PLAYER_SCALE, GameValues.PLAYER_SCALE) / 2) - (GameValues.PAINT_THICKNESS * 2), paint);
+        playerJumpDistance = Screen.width - (GameValues.PLATFORM_WIDTH * 2)
+                - GameValues.PLAYER_SCALE;
     }
 
     public static void setPlayerShape(PlayerShape playerShape) {
@@ -83,6 +78,10 @@ public class Player extends GameObject {
                 initHexagon();
                 break;
         }
+
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setStrokeWidth((GameValues.PAINT_THICKNESS + 16));
+        paint.setStrokeCap(Paint.Cap.ROUND);
     }
 
     private static void initRectAngle() {
@@ -116,19 +115,27 @@ public class Player extends GameObject {
     public static void setShapeRotation(double rotation) {
         if (points == null || points.length <= 5)
             return;
-        Log.e("setRotation", String.format(": %f", rotation));
         rotation += angleOffSet;
         for (int i = 0; i < points.length; i += 2) {
-            points[i] = cx + (int) (l * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
-            points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
+            points[i] = cx
+                    + (int) (l * Math.cos(Math.toRadians(initRotation
+                    + (rotationStep * i / 2) + rotation)));
+            points[i + 1] = cy
+                    + (int) (l * Math.sin(Math.toRadians(initRotation
+                    + (rotationStep * i / 2) + rotation)));
         }
+    }
+
+    public static void drawCircle(Canvas canvas) {
+        canvas.drawCircle(cx, cy, l, paint);
+        paint.setARGB(255, 40, 40, 40);
+        // Todo +16 cause of roundRectRadius
+        canvas.drawCircle(cx, cy, l - (GameValues.PAINT_THICKNESS + 16), paint);
     }
 
     @Override
     public void setup() {
         super.setup();
-
-
         // MOVEMENT
         moving = false; // Initiated by Controller to make true
         canMove = true;
@@ -152,13 +159,12 @@ public class Player extends GameObject {
         activatePaint(true);
 
         Utility.equipShape(Game.context, Utility.getEquippedShape(Game.context));
+        tmpCoins = Utility.getCoins(Game.context);
     }
 
     public void update() {
-        //set cx, cy
         getXCenter();
         getYCenter();
-        // Utility.log(String.valueOf(state));
 
         // STARTING ANIMATION
         if (yPos > GameValues.PLAYER_POSITION) {
@@ -193,7 +199,7 @@ public class Player extends GameObject {
                     if (speed < 1)
                         speed = 1;
                     paintTrail.get(paintIndex).height += speed;
-                    paintTrail.get(paintIndex).yPos = yPos;
+                    paintTrail.get(paintIndex).yPos = (yPos + (GameValues.PLAYER_SCALE / 4));
                 }
 
                 break;
@@ -201,63 +207,16 @@ public class Player extends GameObject {
                 if (goingRight) {
                     xPos -= GameValues.PLAYER_JUMP_SPEED;
                     if (xPos + scale < -GameValues.DEATH_GAP) {
-                        if (Game.mode == GameMode.Arcade) {
-                            if (highScoreA < score) {
-                                MainActivity.preferences.put("hScore",
-                                        String.valueOf(score));
-                                highScoreA = score;
-                            }
-                        } else {
-                            if (highScoreR < score) {
-                                MainActivity.preferences.put("hScoreR",
-                                        String.valueOf(score));
-                                highScoreR = score;
-                            }
-                        }
-
-                        // PLAYED AND DEATHS
-                        if (MainActivity.preferences.getString("gPlayed") != null) {
-                            gamesPlayed = Integer.parseInt(MainActivity.preferences
-                                    .getString("gPlayed")) + 1;
-                        } else {
-                            gamesPlayed = 0;
-                        }
-                        MainActivity.preferences.put("gPlayed",
-                                String.valueOf(gamesPlayed));
-
-                        if (score > 100 && Game.mode == GameMode.Arcade) {
-                            gamesHund += 1;
-                            if (gamesHund >= 10) {
-                                MainActivity
-                                        .unlockAchievement("CgkIvYbi1pMMEAIQDg");
-                            }
-                        } else if (Game.mode == GameMode.Arcade) {
-                            gamesHund = 0;
-                        }
+                        deathActual();
                         Game.setupGame();
                     }
                 } else {
                     xPos += GameValues.PLAYER_JUMP_SPEED;
                     if (xPos > Screen.width + GameValues.DEATH_GAP) {
-                        if (Game.mode == GameMode.Arcade) {
-                            if (highScoreA < score) {
-                                MainActivity.preferences.put("hScore",
-                                        String.valueOf(score));
-                                highScoreA = score;
-                            }
-                        } else {
-                            if (highScoreR < score) {
-                                MainActivity.preferences.put("hScoreR",
-                                        String.valueOf(score));
-                                highScoreR = score;
-                            }
-                        }
+                        deathActual();
                         Game.setupGame();
                     }
                 }
-
-                //Convert score to coins and show ad
-
 
                 break;
             case JUMPING:
@@ -282,14 +241,49 @@ public class Player extends GameObject {
                 }
                 break;
         }
-
-        playerJumpPercentage = (xPos - GameValues.PLATFORM_WIDTH) / playerJumpDistance;
-
-
+        playerJumpPercentage = (xPos - GameValues.PLATFORM_WIDTH)
+                / playerJumpDistance;
     }
 
     public void startDying() {
         state = PlayerState.DYING;
+    }
+
+    public void deathActual() {
+
+        // SCORE
+        if (Game.mode == GameMode.Arcade) {
+            if (highScoreA < score) {
+                MainActivity.preferences.put("hScore", String.valueOf(score));
+                highScoreA = score;
+            }
+        } else {
+            if (highScoreR < score) {
+                MainActivity.preferences.put("hScoreR", String.valueOf(score));
+                highScoreR = score;
+            }
+        }
+
+        // PLAYED AND DEATHS
+        if (MainActivity.preferences.getString("gPlayed") != null) {
+            gamesPlayed = Integer.parseInt(MainActivity.preferences
+                    .getString("gPlayed")) + 1;
+        } else {
+            gamesPlayed = 0;
+        }
+        MainActivity.preferences.put("gPlayed", String.valueOf(gamesPlayed));
+
+        if (score > 100 && Game.mode == GameMode.Arcade) {
+            gamesHund += 1;
+            if (gamesHund >= 10) {
+                MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQDg");
+            }
+        } else if (Game.mode == GameMode.Arcade) {
+            gamesHund = 0;
+        }
+
+        // SAVE COINS
+        Utility.saveCoins(Game.context, tmpCoins);
     }
 
     public boolean isAlive(boolean j) {
@@ -376,13 +370,13 @@ public class Player extends GameObject {
             paintTrail.get(moveIndex).xPos = GameValues.PLATFORM_WIDTH
                     - GameValues.PAINT_THICKNESS;
         }
-
         paintIndex = moveIndex;
     }
 
     public void land(boolean right) {
         Game.lowBeat(310);
         Game.alphaM = 255; // BLITZ
+        tmpCoins += 1;
         score += 1;
         // if (score % 5 == 0)
         Game.color = Game.colors[Utility.randInt(0, Game.colors.length - 1)];
@@ -423,9 +417,7 @@ public class Player extends GameObject {
         // Check if top-left point is in box chexk && y2 >= y2
         if (x2 >= x1 && x2 <= right1 && y2 <= bottom1)
             return true;
-
         // Check if bottom-right point is in box
-
         return (right2 >= x1 && right2 <= right1 && bottom2 >= y2 && bottom2 <= bottom1);
     }
 
@@ -436,69 +428,30 @@ public class Player extends GameObject {
             }
         } else {
             for (int i = 0; i < splashParticles2.size(); i++) {
-                splashParticles2.get(i).setup(xPos + scale, getYCenter(), false);
+                splashParticles2.get(i)
+                        .setup(xPos + scale, getYCenter(), false);
             }
         }
     }
 
-    public void drawRectangle(Canvas canvas) {
-        paint.setStrokeWidth(GameValues.PAINT_THICKNESS);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setColor(Game.color);
+    public void drawPolygon(Canvas canvas) {
         for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
-        }
-    }
-
-    public void drawTriangle(Canvas canvas) {
-        paint.setStrokeWidth(GameValues.PAINT_THICKNESS);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setColor(Game.color);
-        for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
-        }
-    }
-
-    public void drawPentagon(Canvas canvas) {
-        paint.setColor(Game.color);
-        paint.setStrokeWidth(GameValues.PAINT_THICKNESS);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-
-        for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
+            canvas.drawLine(points[i], points[i + 1], points[(i + 2)
+                    % points.length], points[(i + 3) % points.length], paint);
         }
     }
 
     public void draw(Canvas canvas) {
         setShapeRotation(playerJumpPercentage * 180);
+        paint.setColor(Game.color);
         switch (playerShape) {
-            case RECT:
-                drawRectangle(canvas);
-                break;
             case CIRCLE:
                 drawCircle(canvas);
                 break;
-            case TRIANGLE:
-                drawTriangle(canvas);
-                break;
-            case PENTAGON:
-                drawPentagon(canvas);
-                break;
-            case HEXAGON:
-                drawHexagon(canvas);
+            default:
+                drawPolygon(canvas);
                 break;
         }
-    }
-
-    public void drawHexagon(Canvas canvas) {
-        paint.setColor(Game.color);
-        paint.setStrokeWidth(GameValues.PAINT_THICKNESS);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-
-        for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
-        }
-
     }
 
     public enum PlayerShape {

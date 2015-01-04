@@ -28,7 +28,7 @@ public class GetCoinsFragment extends Fragment {
         @Override
         public void onAdOpened() {
             super.onAdOpened();
-            Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + 3);
+            Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + 25);
             CustomDialog.setNumCoins(Utility.getCoins(Game.context));
         }
 
@@ -81,7 +81,7 @@ public class GetCoinsFragment extends Fragment {
         @Override
         public void onAdOpened() {
             super.onAdOpened();
-            Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + 5);
+            Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + 50);
             CustomDialog.setNumCoins(Utility.getCoins(Game.context));
         }
 

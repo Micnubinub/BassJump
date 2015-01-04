@@ -58,8 +58,10 @@ public class ListViewLib {
     }
 
     public void show() {
-        dialog = new CustomDialog();
-        dialog.setStyle(R.style.CustomDialog, R.style.DialogTheme);
+        if (dialog == null) {
+            dialog = new CustomDialog();
+            dialog.setStyle(R.style.CustomDialog, R.style.DialogTheme);
+        }
         dialog.show(MainActivity.getMainActivity().getSupportFragmentManager(), "tag");
 
         if (storeListener != null)

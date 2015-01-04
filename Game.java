@@ -32,7 +32,8 @@ import tbs.jumpsnew.utility.Utility;
 
 public class Game {
     private static final Paint paintText = new Paint();
-    //todo sidney necessary to have 2 Paint objects, consider making it one, and setting the values accordingly?
+    // todo sidney necessary to have 2 Paint objects, consider making it one,
+    // and setting the values accordingly?
     private static final Paint paintVisualizer = new Paint();
     private static final Rect result = new Rect();
     private static final RectF paintTrailRect = new RectF();
@@ -44,7 +45,6 @@ public class Game {
     // LEVEL AND PLAYER:
     public static Player player; // PLAYER CONTAINS PLAYER INFO
     public static Level level; // LEVEL CONTAINS LEVEL OBJECTS
-    public static int textSize;
     // MUSIC
     public static int alphaM;
     public static boolean isPlaying;
@@ -76,7 +76,6 @@ public class Game {
     private static ArrayList<AnimCircle> circles;
     private static int circleIndex;
     // ANIMATION
-    private static int menuTextAlpha;
     private static BeatDetectorByFrequency beatDetector;
     private static String songName;
     // FREQUENCY:
@@ -95,8 +94,8 @@ public class Game {
         // CONST
         context = cont;
 
-        font = Typeface.createFromAsset(
-                MainActivity.context.getAssets(), "Chunkfive.otf");
+        font = Typeface.createFromAsset(MainActivity.context.getAssets(),
+                "fonts/Chunkfive.otf");
         paintText.setTypeface(font);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(GameValues.STROKE_WIDTH);
@@ -130,7 +129,6 @@ public class Game {
 
     public static void setup() {
         Utility.log("Game Initialized");
-
         // MUSIC
         alphaM = 0;
         LOW_FREQUENCY = 0;
@@ -140,9 +138,8 @@ public class Game {
         HIGH_F_HEIGHT = 0;
         prcnt = 0;
 
-
         // MENU
-        menuTextAlpha = 255;
+        // menuTextAlpha = 255;
 
         // SPEED CALC
         GameValues.SPEED_FACTOR_ORIGINAL = ((float) Screen.height / 600);
@@ -151,7 +148,8 @@ public class Game {
 
         player = new Player();
 
-        String shape = Utility.getPrefs(context).getString(Utility.EQUIPPED_SHAPE);
+        String shape = Utility.getPrefs(context).getString(
+                Utility.EQUIPPED_SHAPE);
         if (shape == null || shape.length() < 2)
             shape = Utility.SHAPE_RECTANGLE;
         Player.setPlayerShape(Utility.getShapeType(shape));
@@ -210,8 +208,7 @@ public class Game {
 
     public static void draw(Canvas canvas) {
         // DRAW EVERYTHING IN ORDER:
-        //paint.setColor(0x000000); // DEFAULT
-
+        // paint.setColor(0x000000); // DEFAULT
         paint.setColor(0xffe5e4a0);
         paint.setAlpha(25);
         canvas.drawCircle(player.getXCenter(), player.getYCenter(),
@@ -242,7 +239,7 @@ public class Game {
                     false, true, drawTop, drawBottom);
 
             if (player.goingRight && alphaM > 0) {
-                paint.setColor(color);
+                paint.setColor(0xffe5e4a0);
                 paint.setAlpha(alphaM);
                 Game.drawRectangle(canvas, level.platformsRight.get(i).xPos,
                         level.platformsRight.get(i).yPos,
@@ -268,7 +265,7 @@ public class Game {
                     GameValues.PLATFORM_HEIGHT, true, false, drawTop,
                     drawBottom);
             if (!player.goingRight && alphaM > 0) {
-                paint.setColor(color);
+                paint.setColor(0xffe5e4a0);
                 paint.setAlpha(alphaM);
                 Game.drawRectangle(canvas, level.platformsLeft.get(i).xPos,
                         level.platformsLeft.get(i).yPos,
@@ -282,30 +279,28 @@ public class Game {
             paint.setColor(color);
             paint.setAlpha(255);
             if (player.paintTrail.get(i).active) {
-                paintTrailRect.set(player.paintTrail.get(i).xPos,
+                paintTrailRect.set(
+                        player.paintTrail.get(i).xPos,
                         player.paintTrail.get(i).yPos,
                         player.paintTrail.get(i).xPos
                                 + GameValues.PAINT_THICKNESS,
                         player.paintTrail.get(i).yPos
                                 + player.paintTrail.get(i).height);
-                canvas.drawRoundRect(
-                        paintTrailRect, 8,
-                        8, paint);
-
+                canvas.drawRoundRect(paintTrailRect, 8, 8, paint);
             }
+
             if (player.paintTrail.get(i).isRight() != player.goingRight
                     && alphaM > 0) {
                 paint.setColor(0xffe5e475);
                 paint.setAlpha(alphaM);
-                paintTrailRect.set(player.paintTrail.get(i).xPos,
+                paintTrailRect.set(
+                        player.paintTrail.get(i).xPos,
                         player.paintTrail.get(i).yPos,
                         player.paintTrail.get(i).xPos
                                 + GameValues.PAINT_THICKNESS,
                         player.paintTrail.get(i).yPos
                                 + player.paintTrail.get(i).height);
-                canvas.drawRoundRect(
-                        paintTrailRect, 8,
-                        8, paint);
+                canvas.drawRoundRect(paintTrailRect, 8, 8, paint);
             }
         }
 
@@ -318,7 +313,6 @@ public class Game {
         }
 
         // PLAYER:
-
         player.draw(canvas);
 
         // // PARTICLES && TEXTS:
@@ -426,6 +420,11 @@ public class Game {
                         - GameValues.BUTTON_PADDING, Screen.height
                         - GameValues.BUTTON_PADDING, paintText);
 
+            // COINS:
+            canvas.drawText("x" + player.tmpCoins, storeBtn.xPos
+                    - GameValues.BUTTON_PADDING, storeBtn.yPos
+                    + GameValues.BUTTON_SCALE, paintText);
+
             // SCORE & STATS:
             String txt = ("Played: " + player.gamesPlayed);
             paintText.setColor(0xffe5e4a0);
@@ -509,16 +508,20 @@ public class Game {
     }
 
     public static void setupGame() {
-
-
         // SETUP NEW GAME
-        Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + (player.score / 8));
+
+        // ADS
+        if (player.gamesPlayed + 1 % 10 == 0 && player.gamesPlayed > 0) {
+            // AD WARNING:
+            Utility.showToast("Ad Loaded!", context);
+        }
         if (player.gamesPlayed % 10 == 0 && player.gamesPlayed > 0) {
             MainActivity.getView().post(new Runnable() {
                 @Override
                 public void run() {
                     final InterstitialAd ad = Game.adManager.getFullscreenAd();
-                    if (ad.isLoaded()) ad.show();
+                    if (ad.isLoaded())
+                        ad.show();
                 }
             });
 
@@ -561,8 +564,8 @@ public class Game {
         checkAchievements();
     }
 
-    private static void drawRectangle(Canvas canvas, int x, int y, int w, int h,
-                                      boolean drawLeft, boolean drawRight, boolean drawTop,
+    private static void drawRectangle(Canvas canvas, int x, int y, int w,
+                                      int h, boolean drawLeft, boolean drawRight, boolean drawTop,
                                       boolean drawBottom) {
         if (drawLeft)
             canvas.drawLine(x, y, x, y + h, paint);
@@ -635,8 +638,10 @@ public class Game {
 
         rateBtn = new Button();
         rateBtn.scale = GameValues.BUTTON_SCALE;
-        rateBtn.xPos = (Screen.width - GameValues.BUTTON_SCALE) - GameValues.BUTTON_PADDING;
-        rateBtn.yPos = GameValues.BUTTON_SCALE + (GameValues.BUTTON_PADDING * 2);
+        rateBtn.xPos = (Screen.width - GameValues.BUTTON_SCALE)
+                - GameValues.BUTTON_PADDING;
+        rateBtn.yPos = GameValues.BUTTON_SCALE
+                + (GameValues.BUTTON_PADDING * 2);
 
         modeBtn = new Button();
         modeBtn.scale = GameValues.BUTTON_SCALE;
@@ -759,7 +764,6 @@ public class Game {
         setUpSong();
     }
 
-
     private static void setUpSong() {
         mpSong.setLooping(true);
         mpSong.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -773,12 +777,16 @@ public class Game {
         }
 
         final String equipped = Utility.getEquippedSong(context);
-        if (equipped.equals(Uri.parse("android.resource://" + context.getApplicationInfo().packageName + "/raw/song1").toString()))
+        if (equipped.equals(Uri.parse(
+                "android.resource://"
+                        + context.getApplicationInfo().packageName
+                        + "/raw/song1").toString()))
             songName = "SmaXa - Fall Back";
         else {
-            final String[] songDetails = Utility.getSongTitle(equipped).split(Utility.SEP);
-
-            if (songDetails == null || (songDetails[0] + songDetails[1]).length() < 2)
+            final String[] songDetails = Utility.getSongTitle(equipped).split(
+                    Utility.SEP);
+            if (songDetails == null
+                    || (songDetails[0] + songDetails[1]).length() < 2)
                 songName = "SmaXa - Fall Back";
             else
                 songName = songDetails[1] + " - " + songDetails[0];
@@ -795,6 +803,4 @@ public class Game {
         mpSong.start();
         beatDetector.link(mpSong);
     }
-
-
 }

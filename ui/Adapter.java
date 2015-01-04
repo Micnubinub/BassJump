@@ -101,7 +101,7 @@ public class Adapter extends BaseAdapter {
         private final TextView name;
         private final TextView price;
         private final TextView description;
-        private final android.widget.Button buy;
+        private final Button buy;
         private final FrameLayout icon;
         private int position;
 
@@ -111,7 +111,7 @@ public class Adapter extends BaseAdapter {
             name = (TextView) view.findViewById(R.id.name);
             description = (TextView) view.findViewById(R.id.description);
             price = (TextView) view.findViewById(R.id.price);
-            buy = (android.widget.Button) view.findViewById(R.id.buy_equip);
+            buy = (Button) view.findViewById(R.id.buy_equip);
             icon = (FrameLayout) view.findViewById(R.id.icon);
             coinContainer = view.findViewById(R.id.coin_icon);
 
@@ -135,7 +135,7 @@ public class Adapter extends BaseAdapter {
         }
 
         public void setBought(boolean bought) {
-            buy.setText(bought ? "Equip" : "Buy");
+            buy.setText(bought ? "Use" : "Buy");
             price.setText(bought ? "Sold" : price.getText());
             coinContainer.setVisibility(bought ? View.GONE : View.VISIBLE);
         }

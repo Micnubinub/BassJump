@@ -16,11 +16,11 @@ public class StoreManager {
         @Override
         public boolean onBuyItem(StoreItem item) {
             final int coins = Utility.getCoins(context);
-            if (coins < item.price) {
-                this.onFailedToBuyItem(item);
-                return false;
-            } else if (item.bought) {
+            if (item.bought) {
                 this.onEquipItem(item);
+                return false;
+            } else if (coins < item.price) {
+                this.onFailedToBuyItem(item);
                 return false;
             } else {
                 Utility.saveCoins(context, coins - item.price);
@@ -86,6 +86,5 @@ public class StoreManager {
     public void showStore() {
         listViewLib.show();
     }
-
 
 }
