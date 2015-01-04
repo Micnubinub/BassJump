@@ -1,7 +1,8 @@
 package tbs.jumpsnew.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,19 +14,14 @@ import tbs.jumpsnew.ui.Adapter;
 
 public class MusicFragment extends Fragment {
 
-    private static final String TITLE = "Music";
     private static ListView listView;
-
+    private static Adapter adapter;
 
     public MusicFragment() {
     }
 
     public static void setListAdapter(Adapter adapter) {
-        listView.setAdapter(adapter);
-    }
-
-    public static String getTitle() {
-        return TITLE;
+        MusicFragment.adapter = adapter;
     }
 
     @Override
@@ -37,7 +33,14 @@ public class MusicFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.list_fragment, container, false);
         listView = (ListView) view.findViewById(R.id.list);
+        if (adapter != null)
+            listView.setAdapter(adapter);
         return view;
     }
 
+    @Nullable
+    @Override
+    public View getView() {
+        return super.getView();
+    }
 }

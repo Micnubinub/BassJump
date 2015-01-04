@@ -4,8 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
-import com.google.android.gms.ads.InterstitialAd;
-
 import java.util.ArrayList;
 
 import tbs.jumpsnew.Game;
@@ -26,11 +24,7 @@ public class Player extends GameObject {
     //Todo loading screen for the store + convert loading to ASync
     //Todo fix store shapes, *kinda* easy fix
     //Todo fix played games not incrementing sometimes
-    //Todo Fix the  buy button after purchase
-    //Todo fix the store being out of view at the top
-    //Todo consider moving the pausing into ondestroy
     //Todo fix rectangle drawing *easy fix
-    //Todo maybe make things more expensive, seems a little easy atm
 
     private static final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static final int color = 0xffe5e475;
@@ -159,6 +153,7 @@ public class Player extends GameObject {
     public void setup() {
         super.setup();
 
+
         // MOVEMENT
         moving = false; // Initiated by Controller to make true
         canMove = true;
@@ -180,6 +175,8 @@ public class Player extends GameObject {
             paintTrail.add(new PaintParticle());
         }
         activatePaint(true);
+
+        Utility.equipShape(Game.context, Utility.getEquippedShape(Game.context));
     }
 
     public void update() {
@@ -282,26 +279,7 @@ public class Player extends GameObject {
                 }
 
                 //Convert score to coins and show ad
-                Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + score / 5);
 
-                if (gamesPlayed % 10 == 0 && gamesPlayed > 0) {
-                    MainActivity.getView().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            final InterstitialAd ad = Game.adManager.getFullscreenAd();
-                            if (ad.isLoaded()) ad.show();
-                        }
-                    });
-
-                } else if (gamesPlayed % 7 == 0 && gamesPlayed > 0) {
-                    MainActivity.getView().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Game.adManager.loadFullscreenAd();
-                        }
-                    });
-
-                }
 
                 break;
             case JUMPING:

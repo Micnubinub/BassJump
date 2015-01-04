@@ -21,6 +21,7 @@ import java.util.Random;
 
 import tbs.jumpsnew.Game;
 import tbs.jumpsnew.MainActivity;
+import tbs.jumpsnew.R;
 import tbs.jumpsnew.managers.FileManager;
 import tbs.jumpsnew.objects.Player;
 import tbs.jumpsnew.ui.ColorView;
@@ -52,6 +53,27 @@ public class Utility {
     public static final String SHAPE_HEXAGON = "SHAPE_HEXAGON";
 
     public static final String SONG = "SONG";
+    private static ArrayList<StoreItem> songs;
+    private static final Runnable songRefresher = new Runnable() {
+        @Override
+        public void run() {
+            songs = new ArrayList<>();
+            songs.add(new StoreItem(StoreItem.Type.SONG, Uri.parse("android.resource://" + Game.context.getApplicationInfo().packageName + "/raw/song1").toString(), "Fall Back", "SmaXa", 0, true));
+            final String boughtSongs = getBoughtSongs(Game.context);
+            final ArrayList<File> songFiles = FileManager.scanForMusic();
+            for (int i = 0; i < songFiles.size(); i++) {
+                songs.add(getSongStoreItem(boughtSongs, songFiles.get(i).getAbsolutePath()));
+            }
+        }
+    };
+
+    public static void refreshSongs() {
+        try {
+            new Thread(songRefresher).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     // Log Message
     public static void log(String message) {
@@ -66,6 +88,15 @@ public class Utility {
 
     public static float randFloat(int minX, int maxX) {
         return new Random().nextFloat() * (maxX - minX) + minX;
+    }
+
+    public static void addGameColors() {
+        //Todo continue addBlue and red to getColorStore item
+//        final ArrayList<StoreItem> colors = Utility.getColorStoreItems(Game.context);
+//        Game.colors = new int[colors.size()];
+//        for (int i = 0; i < colors.size(); i++) {
+//            Game.colors[i] = Utility.getColor(colors.get(i).tag);
+//        }
     }
 
     public static int generateRange(int num) {
@@ -108,9 +139,16 @@ public class Utility {
         return bitmap;
     }
 
-    public static void showOtherAppAdDialog(Context context) {
-//Todo
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/developer?id=The+Big+Shots")));
+    public static void showOtherAppAdDialog(final Context context) {
+        final View view = View.inflate(context, R.layout.other_apps, null);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/developer?id=The+Big+Shots")));
+            }
+        });
+//Todo continue
+
     }
 
 
@@ -153,14 +191,8 @@ public class Utility {
     }
 
     public static ArrayList<StoreItem> getSongStoreItems(Context context) {
-        final ArrayList<StoreItem> items = new ArrayList<>();
 
-        final String boughtSongs = getBoughtSongs(context);
-        final ArrayList<File> songs = FileManager.scanForMusic();
-        for (int i = 0; i < songs.size(); i++) {
-            items.add(getSongStoreItem(boughtSongs, songs.get(i).getAbsolutePath()));
-        }
-        return items;
+        return songs;
     }
 
     public static View getColor(Context context, String tag) {
@@ -232,12 +264,12 @@ public class Utility {
     public static void equipSong(Context context, String tag) {
         getPrefs(context).put(EQUIPPED_SONG, tag);
         if (tag == null || tag.length() < 1)
-            Game.playSong(9);
+            Game.playDefaultSong();
         else {
             try {
                 Game.playSong(tag);
             } catch (Exception e) {
-                Game.playSong(9);
+                Game.playDefaultSong();
             }
         }
     }
@@ -345,11 +377,11 @@ public class Utility {
     public static StoreItem getSongStoreItem(String boughtSongs, String song) {
         final String[] songDetails = getSongTitle(song).split(SEP);
 
-        if (songDetails[0] == null || songDetails[0].length() < 1 || songDetails[0].equals("null"))
-            songDetails[0] = new File(song).getName();
+        if (songDetails[1] == null || songDetails[0].length() < 1 || songDetails[0].equals("null"))
+            songDetails[1] = new File(song).getName();
 
-        if (songDetails[1] == null || songDetails[1].length() < 1 || songDetails[1].equals("null"))
-            songDetails[1] = "Unknown Artist";
+        if (songDetails[0] == null || songDetails[1].length() < 1 || songDetails[1].equals("null"))
+            songDetails[0] = "Unknown Artist";
 
         return new StoreItem(
                 StoreItem.Type.SONG, song,

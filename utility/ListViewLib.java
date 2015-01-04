@@ -1,40 +1,26 @@
 package tbs.jumpsnew.utility;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.util.TypedValue;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import java.util.ArrayList;
-
-import tbs.jumpsnew.Game;
+import tbs.jumpsnew.MainActivity;
 import tbs.jumpsnew.R;
+import tbs.jumpsnew.ui.CustomDialog;
 
 /**
  * Created by root on 29/12/14.
  */
 public class ListViewLib {
-    private static final View.OnClickListener storeClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            buyItem((int) v.getTag());
-        }
-    };
-    private static ArrayList<StoreItem> storeItems;
+
     private static StoreListener storeListener;
     // private static int numCoins;
     // , descriptionTextSize, priceTextSize, itemNameTextSize,buyButtonTextSize;
-    private static TextView title;
-    private static TextView coinText;
+
     // private static Drawable listItemBackground;
-    private static View view;
+//    private static View view;
     private static Context context;
-    private final ListView listView;
-    //Todo make advertise our apps half done
-    private Dialog dialog;
+    private CustomDialog dialog;
+
     //    private int nameTextColor, priceTextColor, itemTextColor, buyTextColor,
 //            descriptionTextColor, coinTextColor, titleTextColor;
 //    private int listViewDividerHeight, listViewPadding, listViewMargin;
@@ -45,75 +31,14 @@ public class ListViewLib {
 
     public ListViewLib(Context context) {
         this.context = context;
-        view = View.inflate(context, R.layout.store, null);
-
-        //Todo
-        /**
-         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-         pager = (ViewPager) findViewById(R.id.pager);
-         adapter = new MyPagerAdapter(getSupportFragmentManager());
-
-         pager.setAdapter(adapter);
-
-         final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
-         pager.setPageMargin(pageMargin);
-
-         tabs.setViewPager(pager);
-
-         public class MyPagerAdapter extends FragmentPagerAdapter {
-
-         private final String[] TITLES = { "Colors", "Shapes", "Music", "Get Coins"};
-
-         public MyPagerAdapter(FragmentManager fm) {
-         super(fm);
-         }
-
-         @Override public CharSequence getPageTitle(int position) {
-         return TITLES[position];
-         }
-
-         @Override public int getCount() {
-         return TITLES.length;
-         }
-
-         @Override public Fragment getItem(int position) {
-         return SuperAwesomeCardFragment.newInstance(position);
-         }
-         }
-
-         */
-
-        title = (TextView) view.findViewById(R.id.title);
-        title.setTypeface(Game.font);
-
-        coinText = (TextView) view.findViewById(R.id.coins);
-        coinText.setTypeface(Game.font);
-
-        view.findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                close();
-            }
-        });
-
-        listView = (ListView) view.findViewById(R.id.list);
-        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
 
     }
 
-    private static void buyItem(int position) {
-        final StoreItem item = storeItems.get(position);
-        storeListener.onBuyItem(item);
+
+    public static boolean buyItem(StoreItem item) {
+        return storeListener.onBuyItem(item);
     }
 
-    public static void setNumCoins(int numCoins) {
-        try {
-            coinText.setText(String.valueOf(numCoins));
-            //    ListViewLib.numCoins = numCoins;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 //    public void setItemNameTextSize(int itemNameTextSize) {
 //        this.itemNameTextSize = itemNameTextSize;
@@ -133,36 +58,15 @@ public class ListViewLib {
     }
 
     public void show() {
-        dialog = new Dialog(context, R.style.CustomDialog);
-        try {
-            dialog.setContentView(view);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //Todo prepareListViews();
-        dialog.show();
+        dialog = new CustomDialog();
+        dialog.setStyle(R.style.CustomDialog, R.style.DialogTheme);
+        dialog.show(MainActivity.getMainActivity().getSupportFragmentManager(), "tag");
+
         if (storeListener != null)
             storeListener.onStoreOpened();
 
     }
 
-    public void close() {
-        try {
-            dialog.dismiss();
-            if (storeListener != null)
-                storeListener.onStoreClosed();
-        } catch (Exception e) {
-
-        }
-    }
-
-    public ListView getListView() {
-        return listView;
-    }
-
-    public void setStoreItems(ArrayList<StoreItem> storeItems) {
-        this.storeItems = storeItems;
-    }
 
     public void setStoreListener(StoreListener storeListener) {
         this.storeListener = storeListener;
@@ -213,7 +117,7 @@ public class ListViewLib {
 //    }
 
     public interface StoreListener {
-        void onBuyItem(StoreItem item);
+        boolean onBuyItem(StoreItem item);
 
         void onEquipItem(StoreItem item);
 
@@ -223,7 +127,6 @@ public class ListViewLib {
 
         void onStoreClosed();
     }
-
 
 
 }

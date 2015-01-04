@@ -24,12 +24,20 @@ public class Adapter extends BaseAdapter {
     private static final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
     final ArrayList<StoreItem> storeItems;
     private final Context context;
-    private final View.OnClickListener storeClickListener;
+    private final View.OnClickListener storeClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = (int) v.getTag();
+            if (ListViewLib.buyItem(storeItems.get(pos))) {
+                storeItems.get(pos).bought = true;
+                notifyDataSetChanged();
+            }
+        }
+    };
 
-    public Adapter(Context context, View.OnClickListener listener, ArrayList<StoreItem> storeItems) {
+    public Adapter(Context context, ArrayList<StoreItem> storeItems) {
         this.storeItems = storeItems;
         this.context = context;
-        storeClickListener = listener;
     }
 
     @Override
@@ -53,7 +61,6 @@ public class Adapter extends BaseAdapter {
         final StoreItem item = storeItems.get(position);
         view.setName(item.name);
         view.setDescription(item.description);
-        view.setBought(item.bought);
         switch (item.type) {
             case SHAPE:
                 view.setIcon(Utility.getShape(context, item.tag));
@@ -62,6 +69,8 @@ public class Adapter extends BaseAdapter {
                 final ImageView imageView = new ImageView(context);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.song1));
+                view.setName(item.description);
+                view.setDescription(item.name);
                 view.setIcon(imageView);
                 break;
             case COLOR:
@@ -70,6 +79,7 @@ public class Adapter extends BaseAdapter {
         }
 
         view.setPrice(String.valueOf(item.price));
+        view.setBought(item.bought);
         view.setPosition(position);
         view.getView().findViewById(R.id.buy_equip).setTag(position);
         view.getView().findViewById(R.id.buy_equip).setOnClickListener(storeClickListener);
@@ -95,12 +105,13 @@ public class Adapter extends BaseAdapter {
             price = (TextView) view.findViewById(R.id.price);
             buy = (android.widget.Button) view.findViewById(R.id.buy_equip);
             icon = (FrameLayout) view.findViewById(R.id.icon);
-            coinContainer = view.findViewById(R.id.rl);
+            coinContainer = view.findViewById(R.id.coin_icon);
 
             price.setTypeface(Game.font);
             description.setTypeface(Game.font);
             name.setTypeface(Game.font);
             buy.setTypeface(Game.font);
+            name.setMaxLines(1);
 
 //            if (buyButtonBackground != null) {
 //                try {
@@ -117,6 +128,7 @@ public class Adapter extends BaseAdapter {
 
         public void setBought(boolean bought) {
             buy.setText(bought ? "Equip" : "Buy");
+            price.setText(bought ? "Sold" : price.getText());
             coinContainer.setVisibility(bought ? View.GONE : View.VISIBLE);
         }
 

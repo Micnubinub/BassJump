@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import tbs.jumpsnew.managers.StoreManager;
+import tbs.jumpsnew.utility.Utility;
 
 public class GameController {
 
@@ -17,6 +18,7 @@ public class GameController {
                     // SOUND:
                     if (Game.isPlaying) {
                         // TURN OFF
+                        Utility.showOtherAppAdDialog(Game.context);
                         Game.mpSong.pause();
                         MainActivity.preferences.put("musicOn", "off");
                     } else {

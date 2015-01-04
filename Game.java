@@ -13,6 +13,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.games.Games;
 
 import java.io.File;
@@ -31,7 +32,6 @@ import tbs.jumpsnew.utility.GameObject;
 import tbs.jumpsnew.utility.Utility;
 
 public class Game {
-    public static final int[] colors = new int[]{0xff32e532, 0xff327ae5, 0xffe532cd, 0xffe57e32, 0xffd54040};
     //Todo Red and blue default color, Square default shape
     private static final Paint paintText = new Paint();
     //todo necessary to have 2?
@@ -40,6 +40,7 @@ public class Game {
     private static final RectF paintTrailRect = new RectF();
     // PAINTER:
     private static final Paint paint = new Paint();
+    public static int[] colors = new int[]{0xff32e532, 0xff327ae5, 0xffe532cd, 0xffe57e32, 0xffd54040};
     // CONTEXT
     public static Context context;
     // LEVEL AND PLAYER:
@@ -121,9 +122,8 @@ public class Game {
 
         // MUSIC
         isPlaying = true;
-
         beatDetector = new BeatDetectorByFrequency();
-        playSong(2);
+        Utility.equipSong(context, Utility.getEquippedSong(context));
 
         // LOAD IMAGES ONCE
         bitmaps = new BitmapLoader();
@@ -134,6 +134,7 @@ public class Game {
         introText = "The Big Shots";
         introShowing = true;
         adManager = new AdManager(context);
+        Utility.addGameColors();
     }
 
     public static void setup() {
@@ -149,7 +150,6 @@ public class Game {
         HIGH_FREQUENCY = 0;
         HIGH_F_HEIGHT = 0;
         prcnt = 0;
-        songName = "SmaXa - Fall Back";
 
 
         // MENU
@@ -170,6 +170,7 @@ public class Game {
 
         level = new Level();
         setupGame();
+
         setupInterface();
     }
 
@@ -521,6 +522,25 @@ public class Game {
 
     public static void setupGame() {
         // SETUP NEW GAME
+        Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + (player.score / 8));
+        if (player.gamesPlayed % 10 == 0 && player.gamesPlayed > 0) {
+            MainActivity.getView().post(new Runnable() {
+                @Override
+                public void run() {
+                    final InterstitialAd ad = Game.adManager.getFullscreenAd();
+                    if (ad.isLoaded()) ad.show();
+                }
+            });
+
+        } else if (player.gamesPlayed % 7 == 0 && player.gamesPlayed > 0) {
+            MainActivity.getView().post(new Runnable() {
+                @Override
+                public void run() {
+                    Game.adManager.loadFullscreenAd();
+                }
+            });
+
+        }
         Utility.log("Game Setup Initialized");
         GameValues.SPEED_BONUS = 1;
 
@@ -739,16 +759,17 @@ public class Game {
         setUpSong();
     }
 
-    public static void playSong(int file) {
-        file = R.raw.song1;
+    public static void playDefaultSong() {
         if (mpSong != null) {
             if (mpSong.isLooping())
                 mpSong.stop();
             mpSong.release();
         }
-        mpSong = MediaPlayer.create(MainActivity.context, file);
+
+        mpSong = MediaPlayer.create(MainActivity.context, R.raw.song1);
         setUpSong();
     }
+
 
     private static void setUpSong() {
         mpSong.setLooping(true);
@@ -762,19 +783,18 @@ public class Game {
             return;
         }
 
-        final String[] songDetails = Utility.getSongTitle(Utility.getEquippedSong(context)).split(Utility.SEP);
-
-        if (songDetails == null || (songDetails[0] + songDetails[1]).length() < 2)
+        final String equipped = Utility.getEquippedSong(context);
+        if (equipped.equals(Uri.parse("android.resource://" + context.getApplicationInfo().packageName + "/raw/song1").toString()))
             songName = "SmaXa - Fall Back";
-        else
-            songName = songDetails[1] + " - " + songDetails[0];
+        else {
+            final String[] songDetails = Utility.getSongTitle(equipped).split(Utility.SEP);
 
-        try {
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
+            if (songDetails == null || (songDetails[0] + songDetails[1]).length() < 2)
+                songName = "SmaXa - Fall Back";
+            else
+                songName = songDetails[1] + " - " + songDetails[0];
         }
+
         try {
             mpSong.prepare();
         } catch (IllegalStateException e) {

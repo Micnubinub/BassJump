@@ -3,6 +3,7 @@ package tbs.jumpsnew.managers;
 import android.content.Context;
 import android.widget.Toast;
 
+import tbs.jumpsnew.ui.CustomDialog;
 import tbs.jumpsnew.utility.AdManager;
 import tbs.jumpsnew.utility.ListViewLib;
 import tbs.jumpsnew.utility.StoreItem;
@@ -13,13 +14,15 @@ public class StoreManager {
     private static Context context;
     private static final ListViewLib.StoreListener storeListener = new ListViewLib.StoreListener() {
         @Override
-        public void onBuyItem(StoreItem item) {
+        public boolean onBuyItem(StoreItem item) {
             final int coins = Utility.getCoins(context);
-            if (coins < item.price)
+            if (coins < item.price) {
                 this.onFailedToBuyItem(item);
-            else if (item.bought)
+                return false;
+            } else if (item.bought) {
                 this.onEquipItem(item);
-            else {
+                return false;
+            } else {
                 Utility.saveCoins(context, coins - item.price);
                 switch (item.type) {
                     case COLOR:
@@ -33,8 +36,9 @@ public class StoreManager {
                         break;
                 }
                 item.bought = true;
-                ListViewLib.setNumCoins(coins - item.price);
+                CustomDialog.setNumCoins(coins - item.price);
             }
+            return true;
         }
 
         @Override
@@ -56,7 +60,6 @@ public class StoreManager {
 
         @Override
         public void onStoreOpened() {
-            //toast("store opened");
             adManager = new AdManager(context);
             adManager.loadFullscreenAd();
             adManager.loadVideoAd();
@@ -64,7 +67,7 @@ public class StoreManager {
 
         @Override
         public void onStoreClosed() {
-            toast("store closed");
+            Utility.refreshSongs();
         }
     };
 
@@ -72,7 +75,6 @@ public class StoreManager {
 
     public StoreManager(Context context) {
         listViewLib = new ListViewLib(context);
-        listViewLib.setStoreItems(Utility.getStoreItems(context));
         listViewLib.setStoreListener(storeListener);
         this.context = context;
     }

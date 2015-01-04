@@ -22,11 +22,16 @@ public class MainActivity extends BaseGameActivity {
     public static SecurePreferences preferences;
     public static String LEADERBOARD_ID = "CgkIvYbi1pMMEAIQBg";
     public static AdManager adManager;
+    public static MainActivity mainActivity;
 
     public static void unlockAchievement(String id) {
         if (getApiClient().isConnected()) {
             Games.Achievements.unlock(getApiClient(), id);
         }
+    }
+
+    public static MainActivity getMainActivity() {
+        return mainActivity;
     }
 
     public static SurfaceView getView() {
@@ -41,6 +46,8 @@ public class MainActivity extends BaseGameActivity {
         view = new GameView(this);
 
         setContentView(view);
+
+        mainActivity = this;
 
         // ACHIEVEMENT:
         unlockAchievement("CgkIvYbi1pMMEAIQDA");
@@ -85,6 +92,7 @@ public class MainActivity extends BaseGameActivity {
         } else {
             Game.mode = GameMode.Arcade;
         }
+        Utility.refreshSongs();
         // Utility.log(Screen.height + " H");
     }
 

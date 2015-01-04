@@ -40,6 +40,7 @@ public class ShapeView extends View {
     }
 
     public static void drawRectangle(Canvas canvas, int w, int h) {
+        //Todo
         paint.setColor(color);
         paint.setAlpha(255);
         canvas.drawRoundRect(new RectF(0, 0, w, w), 12, 12, paint);
@@ -51,6 +52,7 @@ public class ShapeView extends View {
     }
 
     public static void drawTriangle(Canvas canvas, int w, int h) {
+        //Todo
         paint.setStrokeWidth(12);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setColor(color);
