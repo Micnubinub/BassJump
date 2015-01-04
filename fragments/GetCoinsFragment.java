@@ -5,41 +5,36 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import tbs.jumpsnew.R;
+import tbs.jumpsnew.ui.Adapter;
 
 
 public class GetCoinsFragment extends Fragment {
-
-    private static final String TITLE = "Colors";
-
+    private static final String TITLE = "Get Coins";
+    private static ListView listView;
 
     public GetCoinsFragment() {
+    }
+
+    public static void setListAdapter(Adapter adapter) {
+        listView.setAdapter(adapter);
+    }
+
+    public static String getTitle() {
+        return TITLE;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//tODO
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_item, container, false);
-
-        // Set the adapter
-        mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
-
-        // Set OnItemClickListener so we can be notified on item clicks
-        mListView.setOnItemClickListener(this);
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.list_fragment, container, false);
+        listView = (ListView) view.findViewById(R.id.list);
         return view;
     }
-
-
 }

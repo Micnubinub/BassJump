@@ -128,8 +128,7 @@ public class Utility {
         return coins;
     }
 
-
-    public static ArrayList<StoreItem> getStoreItems(Context context) {
+    public static ArrayList<StoreItem> getColorStoreItems(Context context) {
         final ArrayList<StoreItem> items = new ArrayList<>();
 
         final String boughtColors = getBoughtColors(context);
@@ -138,11 +137,23 @@ public class Utility {
             items.add(getColorStoreItem(boughtColors, color));
         }
 
+        return items;
+    }
+
+    public static ArrayList<StoreItem> getShapeStoreItems(Context context) {
+        final ArrayList<StoreItem> items = new ArrayList<>();
+
         final String boughtShapes = getBoughtShapes(context);
         final String[] shapes = new String[]{SHAPE_RECTANGLE, SHAPE_TRIANGLE, SHAPE_CIRCLE, SHAPE_PENTAGON, SHAPE_HEXAGON};
         for (String shape : shapes) {
             items.add(getShapeStoreItem(boughtShapes, shape));
         }
+
+        return items;
+    }
+
+    public static ArrayList<StoreItem> getSongStoreItems(Context context) {
+        final ArrayList<StoreItem> items = new ArrayList<>();
 
         final String boughtSongs = getBoughtSongs(context);
         final ArrayList<File> songs = FileManager.scanForMusic();

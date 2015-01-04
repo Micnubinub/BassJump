@@ -9,7 +9,6 @@ import tbs.jumpsnew.utility.StoreItem;
 import tbs.jumpsnew.utility.Utility;
 
 public class StoreManager {
-
     public static AdManager adManager;
     private static Context context;
     private static final ListViewLib.StoreListener storeListener = new ListViewLib.StoreListener() {
