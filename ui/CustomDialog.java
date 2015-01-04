@@ -41,7 +41,6 @@ public class CustomDialog extends DialogFragment {
     public static void setNumCoins(int numCoins) {
         try {
             coinText.setText(String.valueOf(numCoins));
-            //    ListViewLib.numCoins = numCoins;
         } catch (Exception e) {
             e.printStackTrace();
         }

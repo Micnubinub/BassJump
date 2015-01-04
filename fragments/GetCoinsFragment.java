@@ -12,11 +12,11 @@ import com.google.android.gms.ads.AdListener;
 import tbs.jumpsnew.Game;
 import tbs.jumpsnew.R;
 import tbs.jumpsnew.managers.StoreManager;
+import tbs.jumpsnew.ui.CustomDialog;
 import tbs.jumpsnew.utility.AdManager;
 import tbs.jumpsnew.utility.Utility;
 
 public class GetCoinsFragment extends Fragment {
-    private static final String TITLE = "Get Coins";
     private static final AdManager adManager = StoreManager.adManager;
     private static final AdListener fullScreenListener = new AdListener() {
         @Override
@@ -28,7 +28,8 @@ public class GetCoinsFragment extends Fragment {
         @Override
         public void onAdOpened() {
             super.onAdOpened();
-
+            Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + 3);
+            CustomDialog.setNumCoins(Utility.getCoins(Game.context));
         }
 
         @Override
@@ -52,11 +53,17 @@ public class GetCoinsFragment extends Fragment {
             switch (v.getId()) {
                 case R.id.video_ad:
                     vidClicked = true;
-                    adManager.loadVideoAd();
+                    if (adManager.getVideoAd().isLoaded())
+                        adManager.getVideoAd().show();
+                    else
+                        adManager.loadVideoAd();
                     break;
                 case R.id.fullscreen_ad:
                     fullClicked = true;
-                    adManager.loadFullscreenAd();
+                    if (adManager.getFullscreenAd().isLoaded())
+                        adManager.getFullscreenAd().show();
+                    else
+                        adManager.loadFullscreenAd();
                     break;
                 case R.id.iap:
                     toast("Coming soon");
@@ -74,8 +81,8 @@ public class GetCoinsFragment extends Fragment {
         @Override
         public void onAdOpened() {
             super.onAdOpened();
-            //Todo might have to move this into loaded
-            Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + 8);
+            Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + 5);
+            CustomDialog.setNumCoins(Utility.getCoins(Game.context));
         }
 
         @Override
@@ -94,6 +101,7 @@ public class GetCoinsFragment extends Fragment {
     };
 
     public GetCoinsFragment() {
+
     }
 
     private static void toast(String msg) {
@@ -109,7 +117,6 @@ public class GetCoinsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //Todo
         final View view = inflater.inflate(R.layout.get_coins, container, false);
         view.findViewById(R.id.iap).setOnClickListener(listener);
         view.findViewById(R.id.video_ad).setOnClickListener(listener);

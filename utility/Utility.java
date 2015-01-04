@@ -92,11 +92,19 @@ public class Utility {
 
     public static void addGameColors() {
         //Todo continue addBlue and red to getColorStore item
-//        final ArrayList<StoreItem> colors = Utility.getColorStoreItems(Game.context);
-//        Game.colors = new int[colors.size()];
-//        for (int i = 0; i < colors.size(); i++) {
-//            Game.colors[i] = Utility.getColor(colors.get(i).tag);
-//        }
+        final ArrayList<StoreItem> colors = Utility.getColorStoreItems(Game.context);
+        final ArrayList<StoreItem> tmp = new ArrayList<>();
+
+        for (int i = 0; i < colors.size(); i++) {
+            if (colors.get(i).bought)
+                tmp.add(colors.get(i));
+        }
+
+        Game.colors = new int[tmp.size()];
+        for (int i = 0; i < tmp.size(); i++) {
+            Game.colors[i] = Utility.getColor(tmp.get(i).tag);
+        }
+
     }
 
     public static int generateRange(int num) {
@@ -170,7 +178,7 @@ public class Utility {
         final ArrayList<StoreItem> items = new ArrayList<>();
 
         final String boughtColors = getBoughtColors(context);
-        final String[] colors = new String[]{COLOR_BLUE, COLOR_GREEN, COLOR_ORANGE, COLOR_RED, COLOR_WHITE, COLOR_YELLOW, COLOR_PURPLE};
+        final String[] colors = new String[]{COLOR_BLUE, COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_WHITE, COLOR_GREEN, COLOR_PURPLE};
         for (String color : colors) {
             items.add(getColorStoreItem(boughtColors, color));
         }
@@ -202,6 +210,7 @@ public class Utility {
     }
 
     private static int getColor(String tag) {
+        //Todo sidney tweak colors
         int i = 0xffffffff;
         if (tag.contains(COLOR_BLUE))
             i = 0xff5677fc;
@@ -234,14 +243,7 @@ public class Utility {
             shape = Player.PlayerShape.TRIANGLE;
         else if (tag.contains(SHAPE_RECTANGLE))
             shape = Player.PlayerShape.HEXAGON;
-
         return shape;
-    }
-
-    public static String getEquippedColor(Context context) {
-        String out = getPrefs(context).getString(EQUIPPED_COLOR);
-        out = out == null ? "" : out;
-        return out;
     }
 
     public static String getEquippedShape(Context context) {
@@ -281,15 +283,34 @@ public class Utility {
     }
 
     public static String getBoughtSongs(Context context) {
-        String out = getPrefs(context).getString(BOUGHT_SONGS);
+        StringBuilder builder = new StringBuilder();
+        builder.append(SHAPE_RECTANGLE);
+
+        String out = getPrefs(context).getString(BOUGHT_SHAPES);
         out = out == null ? "" : out;
-        return out;
+
+        if (out.length() < 2)
+            return builder.toString();
+
+        builder.append(SEP);
+        builder.append(out);
+        return builder.toString();
     }
 
     public static String getBoughtColors(Context context) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(COLOR_BLUE);
+        builder.append(SEP);
+        builder.append(COLOR_RED);
+
         String out = getPrefs(context).getString(BOUGHT_COLORS);
         out = out == null ? "" : out;
-        return out;
+
+        if (out.length() < 2)
+            return builder.toString();
+        builder.append(SEP);
+        builder.append(out);
+        return builder.toString();
     }
 
     public static void addBoughtShapes(Context context, String tag) {
@@ -317,6 +338,7 @@ public class Utility {
             builder.append(SEP);
         builder.append(tag);
         getPrefs(context).put(BOUGHT_COLORS, builder.toString());
+        addGameColors();
     }
 
 
@@ -342,13 +364,13 @@ public class Utility {
     private static int getShapePrice(String tag) {
         int price = 0;
         if (tag.contains(SHAPE_TRIANGLE))
-            price = 35;
+            price = 45;
         else if (tag.contains(SHAPE_CIRCLE))
-            price = 48;
+            price = 65;
         else if (tag.contains(SHAPE_PENTAGON))
-            price = 56;
+            price = 85;
         else if (tag.contains(SHAPE_HEXAGON))
-            price = 72;
+            price = 100;
 
         return price;
     }

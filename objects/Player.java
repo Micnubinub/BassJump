@@ -17,14 +17,7 @@ import tbs.jumpsnew.utility.GameObject;
 import tbs.jumpsnew.utility.Utility;
 
 public class Player extends GameObject {
-    //Todo setPlayer playerShape
-    //Todo set defaults half done
     //Todo polish player drawing *rotate player, when not a quarter half done
-    //Todo add a tab for getting coins in store >> video ads, fullscreenAds, IAP if possible
-    //Todo loading screen for the store + convert loading to ASync
-    //Todo fix store shapes, *kinda* easy fix
-    //Todo fix played games not incrementing sometimes
-    //Todo fix rectangle drawing *easy fix
 
     private static final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static final int color = 0xffe5e475;
@@ -107,6 +100,7 @@ public class Player extends GameObject {
     }
 
     public static void drawRectangle(Canvas canvas, int w, int h) {
+        //Todo
         paint.setColor(color);
         paint.setAlpha(255);
         canvas.drawRoundRect(new RectF(0, 0, w, w), 12, 12, paint);
@@ -116,6 +110,7 @@ public class Player extends GameObject {
     }
 
     public static void drawTriangle(Canvas canvas, int w, int h) {
+        //Todo
         paint.setStrokeWidth(12);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setColor(color);
@@ -125,6 +120,7 @@ public class Player extends GameObject {
     }
 
     public static void drawCircle(Canvas canvas, int w, int h) {
+        //Todo
         paint.setColor(color);
         canvas.drawCircle(w / 2, h / 2, Math.min(w, h) / 2, paint);
         paint.setColor(scoreBackground);
@@ -132,6 +128,7 @@ public class Player extends GameObject {
     }
 
     public static void drawPentagon(Canvas canvas, int w, int h) {
+        //Todo
         paint.setColor(color);
         paint.setStrokeWidth(12);
         paint.setStrokeCap(Paint.Cap.ROUND);
@@ -141,6 +138,7 @@ public class Player extends GameObject {
     }
 
     public static void drawHexagon(Canvas canvas, int w, int h) {
+        //Todo
         paint.setColor(color);
         paint.setStrokeWidth(12);
         paint.setStrokeCap(Paint.Cap.ROUND);

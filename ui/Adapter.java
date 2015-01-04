@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -83,6 +84,13 @@ public class Adapter extends BaseAdapter {
         view.setPosition(position);
         view.getView().findViewById(R.id.buy_equip).setTag(position);
         view.getView().findViewById(R.id.buy_equip).setOnClickListener(storeClickListener);
+        if (item.type == StoreItem.Type.COLOR) {
+            if (item.bought) {
+                ((Button) (view.getView().findViewById(R.id.buy_equip))).setText("Added");
+                ((view.getView().findViewById(R.id.buy_equip))).setOnClickListener(null);
+            }
+
+        }
         view.getView().setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT, ListViewLib.dpToPixels(96)));
         return view.getView();
     }
