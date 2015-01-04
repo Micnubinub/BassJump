@@ -1,7 +1,6 @@
 package tbs.jumpsnew.utility;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,7 +20,6 @@ import java.util.Random;
 
 import tbs.jumpsnew.Game;
 import tbs.jumpsnew.MainActivity;
-import tbs.jumpsnew.R;
 import tbs.jumpsnew.managers.FileManager;
 import tbs.jumpsnew.objects.Player;
 import tbs.jumpsnew.ui.ColorView;
@@ -91,7 +89,6 @@ public class Utility {
     }
 
     public static void addGameColors() {
-        //Todo continue addBlue and red to getColorStore item
         final ArrayList<StoreItem> colors = Utility.getColorStoreItems(Game.context);
         final ArrayList<StoreItem> tmp = new ArrayList<>();
 
@@ -145,18 +142,6 @@ public class Utility {
         } catch (IOException e) {
         }
         return bitmap;
-    }
-
-    public static void showOtherAppAdDialog(final Context context) {
-        final View view = View.inflate(context, R.layout.other_apps, null);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/developer?id=The+Big+Shots")));
-            }
-        });
-//Todo continue
-
     }
 
 
@@ -213,15 +198,15 @@ public class Utility {
         //Todo sidney tweak colors
         int i = 0xffffffff;
         if (tag.contains(COLOR_BLUE))
-            i = 0xff5677fc;
+            i = 0xff327ae5;
         else if (tag.contains(COLOR_GREEN))
-            i = 0xff259b24;
+            i = 0xff32e532;
         else if (tag.contains(COLOR_ORANGE))
-            i = 0xfffb8200;
+            i = 0xffe57e32;
         else if (tag.contains(COLOR_PURPLE))
-            i = 0xff9c27b0;
+            i = 0xffe532cd;
         else if (tag.contains(COLOR_RED))
-            i = 0xffe51c23;
+            i = 0xffd54040;
         else if (tag.contains(COLOR_YELLOW))
             i = 0xffffeb3b;
         return i;

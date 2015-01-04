@@ -32,15 +32,14 @@ import tbs.jumpsnew.utility.GameObject;
 import tbs.jumpsnew.utility.Utility;
 
 public class Game {
-    //Todo Red and blue default color, Square default shape
     private static final Paint paintText = new Paint();
-    //todo necessary to have 2?
+    //todo sidney necessary to have 2 Paint objects, consider making it one, and setting the values accordingly?
     private static final Paint paintVisualizer = new Paint();
     private static final Rect result = new Rect();
     private static final RectF paintTrailRect = new RectF();
     // PAINTER:
     private static final Paint paint = new Paint();
-    public static int[] colors = new int[]{0xff32e532, 0xff327ae5, 0xffe532cd, 0xffe57e32, 0xffd54040};
+    public static int[] colors = new int[]{0xffbb00};
     // CONTEXT
     public static Context context;
     // LEVEL AND PLAYER:
@@ -135,6 +134,7 @@ public class Game {
         introShowing = true;
         adManager = new AdManager(context);
         Utility.addGameColors();
+
     }
 
     public static void setup() {
@@ -521,6 +521,8 @@ public class Game {
     }
 
     public static void setupGame() {
+
+
         // SETUP NEW GAME
         Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + (player.score / 8));
         if (player.gamesPlayed % 10 == 0 && player.gamesPlayed > 0) {

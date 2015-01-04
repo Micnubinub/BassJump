@@ -3,15 +3,19 @@ package tbs.jumpsnew;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.SurfaceView;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.games.Games;
 
+import tbs.jumpsnew.ui.OtherAppsAd;
 import tbs.jumpsnew.utility.AdManager;
 import tbs.jumpsnew.utility.BaseGameActivity;
 import tbs.jumpsnew.utility.SecurePreferences;
 import tbs.jumpsnew.utility.Utility;
 
 public class MainActivity extends BaseGameActivity {
+
 
     // TAG & ACTIVITY:
     public static final String TAG = "Mini_RPG";
@@ -23,6 +27,9 @@ public class MainActivity extends BaseGameActivity {
     public static String LEADERBOARD_ID = "CgkIvYbi1pMMEAIQBg";
     public static AdManager adManager;
     public static MainActivity mainActivity;
+
+    //Other apps ad
+    public static OtherAppsAd otherAppsAd;
 
     public static void unlockAchievement(String id) {
         if (getApiClient().isConnected()) {
@@ -41,11 +48,11 @@ public class MainActivity extends BaseGameActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.game);
         Utility.log("MainActivity Initialized");
         adManager = new AdManager(this);
         view = new GameView(this);
-
-        setContentView(view);
+        view.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
 
         mainActivity = this;
 
@@ -92,8 +99,17 @@ public class MainActivity extends BaseGameActivity {
         } else {
             Game.mode = GameMode.Arcade;
         }
+
+
+        //Set up other apps adView and add gameView
+        final RelativeLayout gameContainer = (RelativeLayout) findViewById(R.id.game);
+        gameContainer.addView(view);
+        otherAppsAd = new OtherAppsAd(this, gameContainer);
+        //Todo sidney
+        MainActivity.otherAppsAd.show();
+
+        //Load songs in a thread
         Utility.refreshSongs();
-        // Utility.log(Screen.height + " H");
     }
 
     @Override

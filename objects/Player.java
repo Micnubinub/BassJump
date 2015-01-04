@@ -25,7 +25,7 @@ public class Player extends GameObject {
     private static final int scoreBackground = 0xff404040;
     public static int paintIndex;
     public static Player.PlayerShape playerShape;
-
+    public static int paintTrailOffset;
     private static int[] points;
     //Michael's quick fix
     private static int cx, cy, l, angleOffSet, initRotation, rotationStep;
@@ -101,7 +101,7 @@ public class Player extends GameObject {
 
     public static void drawRectangle(Canvas canvas, int w, int h) {
         //Todo
-        paint.setColor(color);
+        paint.setColor(Game.color);
         paint.setAlpha(255);
         canvas.drawRoundRect(new RectF(0, 0, w, w), 12, 12, paint);
         paint.setColor(scoreBackground);
@@ -113,7 +113,7 @@ public class Player extends GameObject {
         //Todo
         paint.setStrokeWidth(12);
         paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setColor(color);
+        paint.setColor(Game.color);
         for (int i = 0; i < points.length; i += 2) {
             canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
         }
@@ -121,7 +121,7 @@ public class Player extends GameObject {
 
     public static void drawCircle(Canvas canvas, int w, int h) {
         //Todo
-        paint.setColor(color);
+        paint.setColor(Game.color);
         canvas.drawCircle(w / 2, h / 2, Math.min(w, h) / 2, paint);
         paint.setColor(scoreBackground);
         canvas.drawCircle(w / 2, h / 2, (Math.min(w, h) / 2) - 12, paint);
@@ -129,7 +129,7 @@ public class Player extends GameObject {
 
     public static void drawPentagon(Canvas canvas, int w, int h) {
         //Todo
-        paint.setColor(color);
+        paint.setColor(Game.color);
         paint.setStrokeWidth(12);
         paint.setStrokeCap(Paint.Cap.ROUND);
         for (int i = 0; i < points.length; i += 2) {
@@ -139,7 +139,7 @@ public class Player extends GameObject {
 
     public static void drawHexagon(Canvas canvas, int w, int h) {
         //Todo
-        paint.setColor(color);
+        paint.setColor(Game.color);
         paint.setStrokeWidth(12);
         paint.setStrokeCap(Paint.Cap.ROUND);
         for (int i = 0; i < points.length; i += 2) {
