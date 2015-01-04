@@ -119,7 +119,13 @@ public class Utility {
     }
 
     public static int getCoins(Context context) {
-        return Integer.parseInt(getPrefs(context).getString(COINS));
+        int coins = 0;
+        try {
+            coins = Integer.parseInt(getPrefs(context).getString(COINS));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return coins;
     }
 
 

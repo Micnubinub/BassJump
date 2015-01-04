@@ -53,6 +53,44 @@ public class ListViewLib {
     public ListViewLib(Context context) {
         this.context = context;
         view = View.inflate(context, R.layout.store, null);
+
+        //Todo
+        /**
+         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+         pager = (ViewPager) findViewById(R.id.pager);
+         adapter = new MyPagerAdapter(getSupportFragmentManager());
+
+         pager.setAdapter(adapter);
+
+         final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
+         .getDisplayMetrics());
+         pager.setPageMargin(pageMargin);
+
+         tabs.setViewPager(pager);
+
+         public class MyPagerAdapter extends FragmentPagerAdapter {
+
+         private final String[] TITLES = { "Colors", "Shapes", "Music", "Get Coins"};
+
+         public MyPagerAdapter(FragmentManager fm) {
+         super(fm);
+         }
+
+         @Override public CharSequence getPageTitle(int position) {
+         return TITLES[position];
+         }
+
+         @Override public int getCount() {
+         return TITLES.length;
+         }
+
+         @Override public Fragment getItem(int position) {
+         return SuperAwesomeCardFragment.newInstance(position);
+         }
+         }
+
+         */
+
         title = (TextView) view.findViewById(R.id.title);
         title.setTypeface(Game.font);
 

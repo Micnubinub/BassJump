@@ -28,7 +28,7 @@ public class Player extends GameObject {
     //Todo fix played games not incrementing sometimes
     //Todo Fix the  buy button after purchase
     //Todo fix the store being out of view at the top
-
+    //Todo consider moving the pausing into ondestroy
     //Todo fix rectangle drawing *easy fix
     //Todo maybe make things more expensive, seems a little easy atm
 
