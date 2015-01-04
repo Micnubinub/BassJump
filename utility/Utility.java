@@ -262,16 +262,25 @@ public class Utility {
     }
 
     public static String getBoughtShapes(Context context) {
-        String out = getPrefs(context).getString(BOUGHT_SHAPES);
-        out = out == null ? "" : out;
-        return out;
-    }
-
-    public static String getBoughtSongs(Context context) {
         StringBuilder builder = new StringBuilder();
         builder.append(SHAPE_RECTANGLE);
 
         String out = getPrefs(context).getString(BOUGHT_SHAPES);
+        out = out == null ? "" : out;
+
+        if (out.length() < 2)
+            return builder.toString();
+
+        builder.append(SEP);
+        builder.append(out);
+        return builder.toString();
+    }
+
+    public static String getBoughtSongs(Context context) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("android.resource://" + context.getApplicationInfo().packageName + "/raw/song1");
+
+        String out = getPrefs(context).getString(BOUGHT_SONGS);
         out = out == null ? "" : out;
 
         if (out.length() < 2)

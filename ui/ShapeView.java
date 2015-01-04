@@ -3,10 +3,10 @@ package tbs.jumpsnew.ui;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
+import tbs.jumpsnew.Game;
 import tbs.jumpsnew.objects.Player;
 
 
@@ -17,108 +17,32 @@ public class ShapeView extends View {
     private static final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static final int scoreBackground = 0xff404040;
     private static final int color = 0xffe5e475;
-    private static int[] points;
+    private static int thickness = 12;
+    private int[] points;
     private Player.PlayerShape playerShape;
-    private int w, h, thickness = 12, cx, cy, l, angleOffSet, initRotation, rotationStep;
-
-
-    public ShapeView(Context context) {
-        super(context);
-        init();
-    }
+    private int w, h, cx, cy, l, angleOffSet, initRotation, rotationStep;
 
     public ShapeView(Context context, Player.PlayerShape playerShape) {
         super(context);
-        this.playerShape = playerShape;
-        init();
+
+        init(playerShape);
     }
 
     public ShapeView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        playerShape = Player.PlayerShape.HEXAGON;
-        init();
-    }
-
-    public static void drawRectangle(Canvas canvas, int w, int h) {
-        //Todo
-        paint.setColor(color);
-        paint.setAlpha(255);
-        canvas.drawRoundRect(new RectF(0, 0, w, w), 12, 12, paint);
-        paint.setColor(scoreBackground);
-        canvas.drawRoundRect(new RectF(12, 12, w - 12, w - 12), 12, 12, paint);
-        // canvas.drawRoundRect(new RectF(GameValues.PAINT_THICKNESS, GameValues.PAINT_THICKNESS, w - GameValues.PAINT_THICKNESS, w - GameValues.PAINT_THICKNESS), 12, 12, paint);
-
-
-    }
-
-    public static void drawTriangle(Canvas canvas, int w, int h) {
-        //Todo
-        paint.setStrokeWidth(12);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setColor(color);
-        for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
-        }
-
+        init(Player.PlayerShape.HEXAGON);
     }
 
     public static void drawCircle(Canvas canvas, int w, int h) {
-        //Todo
-        paint.setColor(color);
-        canvas.drawCircle(w / 2, h / 2, Math.min(w, h) / 2, paint);
+        paint.setColor(Game.color);
+        canvas.drawCircle(w / 2, h / 2, (Math.min(w, h) / 2) - thickness, paint);
         paint.setColor(scoreBackground);
-        canvas.drawCircle(w / 2, h / 2, (Math.min(w, h) / 2) - 12, paint);
-    }
-
-    public static void drawPentagon(Canvas canvas, int w, int h) {
-        //Todo
-        paint.setColor(color);
-        paint.setStrokeWidth(12);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-
-        for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
-        }
-    }
-
-    public static void drawHexagon(Canvas canvas, int w, int h) {
-        //Todo
-        paint.setColor(color);
-        paint.setStrokeWidth(12);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-
-        for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
-        }
-
-    }
-
-    public void setPlayerShape(Player.PlayerShape playerShape) {
-        this.playerShape = playerShape;
-    }
-
-    private void init() {
-        cx = w / 2;
-        cy = w / 2;
-        l = Math.min(w, h) / 2;
-        switch (playerShape) {
-            case TRIANGLE:
-                initTriangle();
-                break;
-            case PENTAGON:
-                initPentagon();
-                break;
-            case HEXAGON:
-                initHexagon();
-                break;
-        }
+        canvas.drawCircle(w / 2, h / 2, (Math.min(w, h) / 2) - (thickness * 2), paint);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        setShapeRotation(0);
 
         switch (playerShape) {
             case RECT:
@@ -144,7 +68,80 @@ public class ShapeView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         this.w = w;
         this.h = h;
-        init();
+        init(playerShape);
+    }
+
+    public void drawRectangle(Canvas canvas, int w, int h) {
+        paint.setStrokeWidth(thickness);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setColor(Game.color);
+        for (int i = 0; i < points.length; i += 2) {
+            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
+        }
+    }
+
+    public void drawTriangle(Canvas canvas, int w, int h) {
+        paint.setStrokeWidth(thickness);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setColor(Game.color);
+        for (int i = 0; i < points.length; i += 2) {
+            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
+        }
+    }
+
+    public void drawPentagon(Canvas canvas, int w, int h) {
+        paint.setColor(Game.color);
+        paint.setStrokeWidth(thickness);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+
+        for (int i = 0; i < points.length; i += 2) {
+            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
+        }
+    }
+
+    public void drawHexagon(Canvas canvas, int w, int h) {
+        paint.setColor(Game.color);
+        paint.setStrokeWidth(thickness);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+
+        for (int i = 0; i < points.length; i += 2) {
+            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
+        }
+
+    }
+
+    private void init(Player.PlayerShape playerShape) {
+        this.playerShape = playerShape;
+        cx = w / 2;
+        cy = h / 2;
+        thickness = Math.min(w, h) / 12;
+        l = (Math.min(w, h) / 2) - thickness;
+        switch (playerShape) {
+            case RECT:
+                initRectAngle();
+                setShapeRotation(-90);
+                break;
+            case TRIANGLE:
+                initTriangle();
+                setShapeRotation(-90);
+                break;
+            case PENTAGON:
+                initPentagon();
+                setShapeRotation(-90);
+                break;
+            case HEXAGON:
+                initHexagon();
+                setShapeRotation(-90);
+                break;
+        }
+    }
+
+
+    private void initRectAngle() {
+        points = new int[8];
+        initRotation = 45;
+        rotationStep = 90;
+        angleOffSet = 0;
     }
 
     private void initTriangle() {

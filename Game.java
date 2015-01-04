@@ -3,7 +3,6 @@ package tbs.jumpsnew;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
@@ -54,8 +53,6 @@ public class Game {
     public static Button leaderBtn;
     public static Button rateBtn;
     public static Button modeBtn;
-    public static Button exitButton;
-    public static Button homeButton;
     public static Button storeBtn;
     public static Button soundBtn;
     public static Button achievBtn;
@@ -72,9 +69,7 @@ public class Game {
     // MOVING TEXTS:
     private static ArrayList<MovingText> animatedTexts; // ANIMATED TEXT LIST
     private static int animatedTextIndex; // WHICH TEXT TO USE
-    private static Matrix rotator;
-    private static BitmapLoader bitmaps;
-    private static boolean alphaMInc;
+
     // INTERFACE:
     private static GameObject scoreDisplay;
     // GLOBAL PARTICLES:
@@ -88,16 +83,13 @@ public class Game {
     private static int LOW_FREQUENCY = 0;
     private static int LOW_F_HEIGHT = 0;
     private static int MID_FREQUENCY = 0;
-    private static int MID_F_HEIGHT = 0;
     private static int HIGH_FREQUENCY = 0;
     private static int HIGH_F_HEIGHT = 0;
     private static float prcnt;
     // INTRO
     private static int introDelay;
-    private static String introText;
     private static int loadProg;
     private static int loadWidth;
-    public Typeface tf;
 
     public static void init(Context cont) {
         // CONST
@@ -125,12 +117,11 @@ public class Game {
         Utility.equipSong(context, Utility.getEquippedSong(context));
 
         // LOAD IMAGES ONCE
-        bitmaps = new BitmapLoader();
+        new BitmapLoader();
 
         introDelay = 150;
         loadProg = 0;
         loadWidth = 0;
-        introText = "The Big Shots";
         introShowing = true;
         adManager = new AdManager(context);
         Utility.addGameColors();
@@ -142,11 +133,9 @@ public class Game {
 
         // MUSIC
         alphaM = 0;
-        alphaMInc = true;
         LOW_FREQUENCY = 0;
         LOW_F_HEIGHT = 0;
         MID_FREQUENCY = 0;
-        MID_F_HEIGHT = 0;
         HIGH_FREQUENCY = 0;
         HIGH_F_HEIGHT = 0;
         prcnt = 0;
@@ -160,7 +149,6 @@ public class Game {
 
         Utility.log("SPEED: " + GameValues.SPEED_FACTOR_ORIGINAL);
 
-        rotator = new Matrix();
         player = new Player();
 
         String shape = Utility.getPrefs(context).getString(Utility.EQUIPPED_SHAPE);
@@ -331,7 +319,7 @@ public class Game {
 
         // PLAYER:
 
-        player.draw(canvas, paint, player.xPos, player.yPos, GameValues.PLAYER_SCALE, GameValues.PLAYER_SCALE, 0);
+        player.draw(canvas);
 
         // // PARTICLES && TEXTS:
         paint.setColor(Color.WHITE);
@@ -735,7 +723,6 @@ public class Game {
         prcnt = MID_FREQUENCY * 100 / GameValues.FREQ_MAX;
         if (prcnt < 0)
             prcnt = 0;
-        MID_F_HEIGHT = (int) (GameValues.FREQ_MAX_HEIGHT * (prcnt / 100));
     }
 
     // FAKE LOADER:
