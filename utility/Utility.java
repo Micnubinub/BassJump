@@ -204,9 +204,9 @@ public class Utility {
         final ArrayList<StoreItem> items = new ArrayList<>();
 
         final String boughtColors = getBoughtColors(context);
-        final String[] colors = new String[]{COLOR_BLUE, COLOR_RED,
-                COLOR_ORANGE, COLOR_YELLOW, COLOR_WHITE, COLOR_GREEN,
-                COLOR_PURPLE};
+        final String[] colors = {COLOR_WHITE,
+                COLOR_RED_LIGHT,
+                COLOR_RED, COLOR_RED_DARK, COLOR_PINK_LIGHT, COLOR_PINK, COLOR_PINK_DARK, COLOR_BLUE_LIGHT, COLOR_BLUE, COLOR_BLUE_DARK, COLOR_INDIGO_LIGHT, COLOR_INDIGO, COLOR_INDIGO_DARK, COLOR_GREEN_LIGHT, COLOR_GREEN, COLOR_GREEN_DARK, COLOR_YELLOW_LIGHT, COLOR_YELLOW, COLOR_YELLOW_DARK, COLOR_ORANGE_LIGHT, COLOR_ORANGE, COLOR_ORANGE_DARK, COLOR_PURPLE_LIGHT, COLOR_PURPLE, COLOR_PURPLE_DARK};
         for (String color : colors) {
             items.add(getColorStoreItem(boughtColors, color));
         }
@@ -241,29 +241,7 @@ public class Utility {
     }
 
     private static int getColor(String tag) {
-        // Todo add these:
-        /**
-         dark_blue"  0xff311b92
-         indigo_light"  0xff5c6bc0
-         indigo"  0xff3f51b5
-         indigo_dark"  0xff303f9f
-
-         purple_light"  0xffab47bc
-         purple"  0xff9c27b0
-         purple_dark"  0xff7b1fa2
-
-         green_light"  0xff42bd41
-         green"  0xff259b24
-         green_dark"  0xff0a7e07
-         yellow_light"  0xfffff176
-         yellow"  0xffffeb3b
-         yellow_dark"  0xfffdd835
-         orange_light"  0xffffa726
-         orange"  0xfffb8c00
-         orange_dark"  0xffe65100
-         */
         int color = 0xffffffff;
-
 
         if (tag.equals(COLOR_RED_LIGHT))
             color = 0xffe84e40;
@@ -284,35 +262,35 @@ public class Utility {
         else if (tag.equals(
                 COLOR_BLUE_DARK)) color = 0xff455ede;
         else if (tag.equals(
-                COLOR_INDIGO_LIGHT)) color = "Light indigo";
+                COLOR_INDIGO_LIGHT)) color = 0xff5c6bc0;
         else if (tag.equals(
-                COLOR_INDIGO)) color = "Indigo";
+                COLOR_INDIGO)) color = 0xff3f51b5;
         else if (tag.equals(
-                COLOR_INDIGO_DARK)) color = "Dark indigo";
+                COLOR_INDIGO_DARK)) color = 0xff303f9f;
         else if (tag.equals(
-                COLOR_GREEN_LIGHT)) color = "Light green";
+                COLOR_GREEN_LIGHT)) color = 0xff42bd41;
         else if (tag.equals(
-                COLOR_GREEN)) color = "Green";
+                COLOR_GREEN)) color = 0xff259b24;
         else if (tag.equals(
-                COLOR_GREEN_DARK)) color = "Dark green";
+                COLOR_GREEN_DARK)) color = 0xff0a7e07;
         else if (tag.equals(
-                COLOR_YELLOW_LIGHT)) color = "Light yellow";
+                COLOR_YELLOW_LIGHT)) color = 0xfffff176;
         else if (tag.equals(
-                COLOR_YELLOW)) color = "Yellow";
+                COLOR_YELLOW)) color = 0xffffeb3b;
         else if (tag.equals(
-                COLOR_YELLOW_DARK)) color = "Dark yellow";
+                COLOR_YELLOW_DARK)) color = 0xfffdd835;
         else if (tag.equals(
-                COLOR_ORANGE_LIGHT)) color = "Light orange";
+                COLOR_ORANGE_LIGHT)) color = 0xffffa726;
         else if (tag.equals(
-                COLOR_ORANGE)) color = "Orange";
+                COLOR_ORANGE)) color = 0xfffb8c00;
         else if (tag.equals(
-                COLOR_ORANGE_DARK)) color = "Dark orange";
+                COLOR_ORANGE_DARK)) color = 0xffe65100;
         else if (tag.equals(
-                COLOR_PURPLE_LIGHT)) color = "Light Purple";
+                COLOR_PURPLE_LIGHT)) color = 0xffab47bc;
         else if (tag.equals(
-                COLOR_PURPLE)) color = "Purple";
+                COLOR_PURPLE)) color = 0xff9c27b0;
         else if (tag.equals(
-                COLOR_PURPLE_DARK)) color = "Dark Purple";
+                COLOR_PURPLE_DARK)) color = 0xff7b1fa2;
         return color;
     }
 
