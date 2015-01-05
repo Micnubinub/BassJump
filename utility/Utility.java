@@ -31,6 +31,7 @@ public class Utility {
     //Todo speedup ads in store
     //Todo fix unknown
     //Todo add stars
+    //Todo add material colors
     public static final String EQUIPPED_SONG = "EQUIPPED_SONG";
     public static final String EQUIPPED_SHAPE = "EQUIPPED_SHAPE";
     public static final String BOUGHT_SONGS = "BOUGHT_SONGS";
@@ -40,8 +41,29 @@ public class Utility {
     public static final int SONG_PRICE = 1000;
     public static final int COLOR_PRICE = 500;
     public static final String SEP = "//,/,//";
+
+    public static final String COLOR_RED_DARK = "COLOR_RED_DARK";
+    public static final String COLOR_PINK_DARK = "COLOR_PINK_DARK";
+    public static final String COLOR_BLUE_DARK = "COLOR_BLUE_DARK";
+    public static final String COLOR_INDIGO_DARK = "COLOR_INDIGO_DARK";
+    public static final String COLOR_GREEN_DARK = "COLOR_GREEN_DARK";
+    public static final String COLOR_YELLOW_DARK = "COLOR_YELLOW_DARK";
+    public static final String COLOR_ORANGE_DARK = "COLOR_ORANGE_DARK";
+    public static final String COLOR_PURPLE_DARK = "COLOR_PURPLE_DARK";
+
+    public static final String COLOR_RED_LIGHT = "COLOR_RED_LIGHT";
+    public static final String COLOR_PINK_LIGHT = "COLOR_PINK_LIGHT";
+    public static final String COLOR_BLUE_LIGHT = "COLOR_BLUE_LIGHT";
+    public static final String COLOR_INDIGO_LIGHT = "COLOR_INDIGO_LIGHT";
+    public static final String COLOR_GREEN_LIGHT = "COLOR_GREEN_LIGHT";
+    public static final String COLOR_YELLOW_LIGHT = "COLOR_YELLOW_LIGHT";
+    public static final String COLOR_ORANGE_LIGHT = "COLOR_ORANGE_LIGHT";
+    public static final String COLOR_PURPLE_LIGHT = "COLOR_PURPLE_LIGHT";
+
     public static final String COLOR_RED = "COLOR_RED";
+    public static final String COLOR_PINK = "COLOR_PINK";
     public static final String COLOR_BLUE = "COLOR_BLUE";
+    public static final String COLOR_INDIGO = "COLOR_INDIGO";
     public static final String COLOR_GREEN = "COLOR_GREEN";
     public static final String COLOR_YELLOW = "COLOR_YELLOW";
     public static final String COLOR_ORANGE = "COLOR_ORANGE";
@@ -221,46 +243,77 @@ public class Utility {
     private static int getColor(String tag) {
         // Todo add these:
         /**
-         * <color name="material_dark_blue">#311b92</color>
-         <color name="material_indigo_light">#5c6bc0</color>
-         <color name="material_indigo">#3f51b5</color>
-         <color name="material_indigo_dark">#303f9f</color>
-         <color name="material_red">#e51c23</color>
-         <color name="material_red_light">#e84e40</color>
-         <color name="material_red_dark">#d01716</color>
-         <color name="material_pink_light">#f06292</color>
-         <color name="material_pink">#e91e63</color>
-         <color name="material_pink_dark">#c2185b</color>
-         <color name="material_purple_light">#ab47bc</color>
-         <color name="material_purple">#9c27b0</color>
-         <color name="material_purple_dark">#7b1fa2</color>
-         <color name="material_blue_light">#738ffe</color>
-         <color name="material_blue">#5677fc</color>
-         <color name="material_blue_dark">#455ede</color>
-         <color name="material_green_light">#42bd41</color>
-         <color name="material_green">#259b24</color>
-         <color name="material_green_dark">#0a7e07</color>
-         <color name="material_yellow_light">#fff176</color>
-         <color name="material_yellow">#ffeb3b</color>
-         <color name="material_yellow_dark">#fdd835</color>
-         <color name="material_orange_light">#ffa726</color>
-         <color name="material_orange">#fb8c00</color>
-         <color name="material_orange_dark">#e65100</color>
+         dark_blue"  0xff311b92
+         indigo_light"  0xff5c6bc0
+         indigo"  0xff3f51b5
+         indigo_dark"  0xff303f9f
+
+         purple_light"  0xffab47bc
+         purple"  0xff9c27b0
+         purple_dark"  0xff7b1fa2
+
+         green_light"  0xff42bd41
+         green"  0xff259b24
+         green_dark"  0xff0a7e07
+         yellow_light"  0xfffff176
+         yellow"  0xffffeb3b
+         yellow_dark"  0xfffdd835
+         orange_light"  0xffffa726
+         orange"  0xfffb8c00
+         orange_dark"  0xffe65100
          */
-        int i = 0xffffffff;
-        if (tag.equals(COLOR_BLUE))
-            i = 0xff327ae5;
-        else if (tag.equals(COLOR_GREEN))
-            i = 0xff32e532;
-        else if (tag.equals(COLOR_ORANGE))
-            i = 0xffe57e32;
-        else if (tag.equals(COLOR_PURPLE))
-            i = 0xffe532cd;
+        int color = 0xffffffff;
+
+
+        if (tag.equals(COLOR_RED_LIGHT))
+            color = 0xffe84e40;
         else if (tag.equals(COLOR_RED))
-            i = 0xffd54040;
-        else if (tag.equals(COLOR_YELLOW))
-            i = 0xffffeb3b;
-        return i;
+            color = 0xffe51c23;
+        else if (tag.equals(
+                COLOR_RED_DARK)) color = 0xffd01716;
+        else if (tag.equals(
+                COLOR_PINK_LIGHT)) color = 0xfff06292;
+        else if (tag.equals(
+                COLOR_PINK)) color = 0xffe91e63;
+        else if (tag.equals(
+                COLOR_PINK_DARK)) color = 0xffc2185b;
+        else if (tag.equals(
+                COLOR_BLUE_LIGHT)) color = 0xff738ffe;
+        else if (tag.equals(
+                COLOR_BLUE)) color = 0xff5677fc;
+        else if (tag.equals(
+                COLOR_BLUE_DARK)) color = 0xff455ede;
+        else if (tag.equals(
+                COLOR_INDIGO_LIGHT)) color = "Light indigo";
+        else if (tag.equals(
+                COLOR_INDIGO)) color = "Indigo";
+        else if (tag.equals(
+                COLOR_INDIGO_DARK)) color = "Dark indigo";
+        else if (tag.equals(
+                COLOR_GREEN_LIGHT)) color = "Light green";
+        else if (tag.equals(
+                COLOR_GREEN)) color = "Green";
+        else if (tag.equals(
+                COLOR_GREEN_DARK)) color = "Dark green";
+        else if (tag.equals(
+                COLOR_YELLOW_LIGHT)) color = "Light yellow";
+        else if (tag.equals(
+                COLOR_YELLOW)) color = "Yellow";
+        else if (tag.equals(
+                COLOR_YELLOW_DARK)) color = "Dark yellow";
+        else if (tag.equals(
+                COLOR_ORANGE_LIGHT)) color = "Light orange";
+        else if (tag.equals(
+                COLOR_ORANGE)) color = "Orange";
+        else if (tag.equals(
+                COLOR_ORANGE_DARK)) color = "Dark orange";
+        else if (tag.equals(
+                COLOR_PURPLE_LIGHT)) color = "Light Purple";
+        else if (tag.equals(
+                COLOR_PURPLE)) color = "Purple";
+        else if (tag.equals(
+                COLOR_PURPLE_DARK)) color = "Dark Purple";
+        return color;
     }
 
     public static View getShape(Context context, String tag) {
@@ -456,19 +509,60 @@ public class Utility {
     }
 
     private static String getColorName(String tag) {
-        String color = "Blue";
-        if (tag.equals(COLOR_YELLOW))
-            color = "Yellow";
+        String color = "Weite";
+
+
+        if (tag.equals(COLOR_RED_LIGHT))
+            color = "Light red";
         else if (tag.equals(COLOR_RED))
             color = "Red";
-        else if (tag.equals(COLOR_PURPLE))
-            color = "Purple";
-        else if (tag.equals(COLOR_ORANGE))
-            color = "Orange";
-        else if (tag.equals(COLOR_GREEN))
-            color = "Green";
-        else if (tag.equals(COLOR_WHITE))
-            color = "White";
+        else if (tag.equals(
+                COLOR_RED_DARK)) color = "Dark red";
+        else if (tag.equals(
+                COLOR_PINK_LIGHT)) color = "Light pink";
+        else if (tag.equals(
+                COLOR_PINK)) color = "Pink";
+        else if (tag.equals(
+                COLOR_PINK_DARK)) color = "Dark pink";
+        else if (tag.equals(
+                COLOR_BLUE_LIGHT)) color = "Light Blue";
+        else if (tag.equals(
+                COLOR_BLUE)) color = "Blue";
+        else if (tag.equals(
+                COLOR_BLUE_DARK)) color = "Dark blue";
+        else if (tag.equals(
+                COLOR_INDIGO_LIGHT)) color = "Light indigo";
+        else if (tag.equals(
+                COLOR_INDIGO)) color = "Indigo";
+        else if (tag.equals(
+                COLOR_INDIGO_DARK)) color = "Dark indigo";
+        else if (tag.equals(
+                COLOR_GREEN_LIGHT)) color = "Light green";
+        else if (tag.equals(
+                COLOR_GREEN)) color = "Green";
+        else if (tag.equals(
+                COLOR_GREEN_DARK)) color = "Dark green";
+        else if (tag.equals(
+                COLOR_YELLOW_LIGHT)) color = "Light yellow";
+        else if (tag.equals(
+                COLOR_YELLOW)) color = "Yellow";
+        else if (tag.equals(
+                COLOR_YELLOW_DARK)) color = "Dark yellow";
+        else if (tag.equals(
+                COLOR_ORANGE_LIGHT)) color = "Light orange";
+        else if (tag.equals(
+                COLOR_ORANGE)) color = "Orange";
+        else if (tag.equals(
+                COLOR_ORANGE_DARK)) color = "Dark orange";
+        else if (tag.equals(
+                COLOR_PURPLE_LIGHT)) color = "Light Purple";
+        else if (tag.equals(
+                COLOR_PURPLE)) color = "Purple";
+        else if (tag.equals(
+                COLOR_PURPLE_DARK)) color = "Dark Purple";
+
+
+
         return color;
     }
 

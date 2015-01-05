@@ -1,7 +1,6 @@
 package tbs.jumpsnew;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -120,11 +119,6 @@ public class MainActivity extends BaseGameActivity {
         Utility.refreshSongs();
 
         Utility.saveCoins(this, 99000);
-
-        Log.e("parsedUri : ", Uri.parse(
-                "android.resource://"
-                        + context.getApplicationInfo().packageName
-                        + "/raw/song1").toString());
     }
 
     @Override

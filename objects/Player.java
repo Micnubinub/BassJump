@@ -62,6 +62,7 @@ public class Player extends GameObject {
         }
         playerJumpDistance = Screen.width - (GameValues.PLATFORM_WIDTH * 2)
                 - GameValues.PLAYER_SCALE;
+        Utility.equipShape(Game.context, Utility.getEquippedShape(Game.context));
     }
 
     public static void setPlayerShape(PlayerShape playerShape) {
@@ -463,6 +464,8 @@ public class Player extends GameObject {
     }
 
     public void drawPolygon(Canvas canvas) {
+        if (points == null || points.length <= 5)
+            return;
         for (int i = 0; i < points.length; i += 2) {
             // canvas.drawLine(points[i], points[i + 1], points[(i + 2)
             // % points.length], points[(i + 3) % points.length], paint);
@@ -475,18 +478,6 @@ public class Player extends GameObject {
         }
     }
 
-    public void drawPolygonStar(Canvas canvas) {
-        for (int i = 0; i < points.length; i += 2) {
-            // canvas.drawLine(points[i], points[i + 1], points[(i + 2)
-            // % points.length], points[(i + 3) % points.length], paint);
-            canvas.drawLine(goingRight ? points[i] - xOffset : points[i]
-                            + xOffset, points[i + 1], goingRight ? points[(i + 2)
-                            % points.length]
-                            - xOffset : points[(i + 2) % points.length] + xOffset,
-                    points[(i + 3) % points.length], paint);
-
-        }
-    }
 
     public void draw(Canvas canvas) {
         setShapeRotation(playerJumpPercentage * 180);

@@ -32,8 +32,6 @@ import tbs.jumpsnew.utility.Utility;
 
 public class Game {
     private static final Paint paintText = new Paint();
-    // todo sidney necessary to have 2 Paint objects, consider making it one,
-    // and setting the values accordingly?
     private static final Paint paintVisualizer = new Paint();
     private static final Rect result = new Rect();
     private static final RectF paintTrailRect = new RectF();

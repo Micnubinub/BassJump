@@ -98,24 +98,22 @@ public class OtherAppsAd {
     }
 
     public static void show(int delay) {
-        try {
-            layout.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        layout.addView(view);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                    view.setY(-viewHeight);
-                    animationType = AnimationType.IN;
-                    startAnimator();
+        //Todo check this
+        layout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    layout.addView(view);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
                 }
-            }, delay);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                view.setY(-viewHeight);
+                animationType = AnimationType.IN;
+                startAnimator();
+            }
+        }, delay);
+
     }
 
     private static void startAnimator() {

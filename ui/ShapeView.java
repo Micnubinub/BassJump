@@ -4,7 +4,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+
+import java.util.Arrays;
 
 import tbs.jumpsnew.Game;
 import tbs.jumpsnew.objects.Player;
@@ -62,7 +65,7 @@ public class ShapeView extends View {
 
     public void drawPolygon(Canvas canvas) {
 
-        for (int i = 0; i < points.length; i += 2) {
+        for (int i = 0; i < 4; i += 2) {
             canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
         }
 
@@ -110,7 +113,7 @@ public class ShapeView extends View {
         }
 
         paint.setColor(Game.color);
-        paint.setStrokeWidth(thickness);
+        paint.setStrokeWidth(isStarShape ? thickness / 2 : thickness);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStyle(Paint.Style.STROKE);
     }
@@ -183,11 +186,13 @@ public class ShapeView extends View {
 
         if (isStarShape) {
             for (int i = 0; i < points.length; i += 4) {
-                points[i] = cx + (int) (l * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
-                points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
+                final double angleStep = initRotation + (rotationStep * i / 2) + rotation;
 
-                points[i + 2] = cx + (int) ((l / 3) * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation + (rotationStep / 2))));
-                points[i + 3] = cy + (int) ((l / 3) * Math.sin(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation + (rotationStep / 2))));
+                points[i] = cx + (int) (l * Math.cos(Math.toRadians(angleStep)));
+                points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(angleStep)));
+
+                points[i + 2] = cx + (int) ((l / 2) * Math.cos(Math.toRadians(angleStep + (rotationStep / 2))));
+                points[i + 3] = cy + (int) ((l / 2) * Math.sin(Math.toRadians(angleStep + (rotationStep / 2))));
             }
         } else {
             for (int i = 0; i < points.length; i += 2) {
@@ -199,5 +204,6 @@ public class ShapeView extends View {
                         + (rotationStep * i / 2) + rotation)));
             }
         }
+        Log.e(String.valueOf(playerShape), Arrays.toString(points));
     }
 }
