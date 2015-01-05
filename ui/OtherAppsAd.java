@@ -51,7 +51,7 @@ public class OtherAppsAd {
                         public void run() {
                             hide();
                         }
-                    }, 4800);
+                    }, 5500);
                     break;
                 case OUT:
                     try {
@@ -66,6 +66,7 @@ public class OtherAppsAd {
             }
         }
     };
+    private static boolean showAlreadyCalled;
     private static int viewHeight;
 
     public OtherAppsAd(final Context context, RelativeLayout layout) {
@@ -98,19 +99,18 @@ public class OtherAppsAd {
     }
 
     public static void show(int delay) {
-        //Todo check this
+        if (showAlreadyCalled)
+            return;
+        showAlreadyCalled = true;
         layout.postDelayed(new Runnable() {
             @Override
             public void run() {
-                try {
+                if (layout != null) {
                     layout.addView(view);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
+                    view.setY(-viewHeight);
+                    animationType = AnimationType.IN;
+                    startAnimator();
                 }
-                view.setY(-viewHeight);
-                animationType = AnimationType.IN;
-                startAnimator();
             }
         }, delay);
 

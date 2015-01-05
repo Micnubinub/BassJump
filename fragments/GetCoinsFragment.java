@@ -10,14 +10,13 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdListener;
 
 import tbs.jumpsnew.Game;
+import tbs.jumpsnew.MainActivity;
 import tbs.jumpsnew.R;
-import tbs.jumpsnew.managers.StoreManager;
 import tbs.jumpsnew.ui.CustomDialog;
 import tbs.jumpsnew.utility.AdManager;
 import tbs.jumpsnew.utility.Utility;
 
 public class GetCoinsFragment extends Fragment {
-    private static final AdManager adManager = StoreManager.adManager;
     private static final AdListener fullScreenListener = new AdListener() {
         @Override
         public void onAdClosed() {
@@ -46,6 +45,7 @@ public class GetCoinsFragment extends Fragment {
             toast("Failed to load Ad");
         }
     };
+    public static AdManager adManager;
     private static boolean vidClicked, fullClicked;
     private static final View.OnClickListener listener = new View.OnClickListener() {
         @Override
@@ -111,8 +111,12 @@ public class GetCoinsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        adManager = new AdManager(getActivity().getApplicationContext());
         adManager.getVideoAd().setAdListener(videoListener);
         adManager.getFullscreenAd().setAdListener(fullScreenListener);
+        adManager.loadFullscreenAd();
+        adManager.loadVideoAd();
+
     }
 
     @Override
@@ -124,5 +128,11 @@ public class GetCoinsFragment extends Fragment {
         view.findViewById(R.id.video_ad).setOnClickListener(listener);
         view.findViewById(R.id.fullscreen_ad).setOnClickListener(listener);
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        MainActivity.getCoinsFragment = new GetCoinsFragment();
     }
 }

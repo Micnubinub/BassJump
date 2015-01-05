@@ -8,6 +8,7 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.games.Games;
 
+import tbs.jumpsnew.fragments.GetCoinsFragment;
 import tbs.jumpsnew.ui.OtherAppsAd;
 import tbs.jumpsnew.utility.AdManager;
 import tbs.jumpsnew.utility.BaseGameActivity;
@@ -26,6 +27,7 @@ public class MainActivity extends BaseGameActivity {
     public static String LEADERBOARD_ID = "CgkIvYbi1pMMEAIQBg";
     public static AdManager adManager;
     public static MainActivity mainActivity;
+    public static GetCoinsFragment getCoinsFragment = new GetCoinsFragment();
 
     // Other apps ad
     public static OtherAppsAd otherAppsAd;
@@ -109,8 +111,9 @@ public class MainActivity extends BaseGameActivity {
             otherAppsAd = new OtherAppsAd(this, gameContainer);
 
             String check = Utility.getPrefs(this).getString(Utility.CHECKOUT_OUR_OTHER_APPS);
-            if (!(check == null) && !(check.equals(Utility.CHECKOUT_OUR_OTHER_APPS)))
+            if ((check == null) || (!(check.equals(Utility.CHECKOUT_OUR_OTHER_APPS)))) {
                 MainActivity.otherAppsAd.show(5000);
+            }
         } catch (Exception e) {
             Log.e("Exception: ", "ERROR! DIALOG");
         }
@@ -118,7 +121,6 @@ public class MainActivity extends BaseGameActivity {
         // Load songs in a thread
         Utility.refreshSongs();
 
-        Utility.saveCoins(this, 99000);
     }
 
     @Override

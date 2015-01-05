@@ -13,12 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import tbs.jumpsnew.Game;
 import tbs.jumpsnew.MainActivity;
 import tbs.jumpsnew.R;
 import tbs.jumpsnew.fragments.ColorFragment;
-import tbs.jumpsnew.fragments.GetCoinsFragment;
 import tbs.jumpsnew.fragments.MusicFragment;
 import tbs.jumpsnew.fragments.ShapeFragment;
 import tbs.jumpsnew.utility.Utility;
@@ -97,7 +97,7 @@ public class CustomDialog extends DialogFragment {
         fragments[0] = new ColorFragment();
         fragments[1] = new ShapeFragment();
         fragments[2] = new MusicFragment();
-        fragments[3] = new GetCoinsFragment();
+        fragments[3] = MainActivity.getCoinsFragment;
 
         ColorFragment.setListAdapter(new Adapter(Game.context, Utility
                 .getColorStoreItems(Game.context)));
@@ -108,6 +108,7 @@ public class CustomDialog extends DialogFragment {
 
         tabs = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
         pager = (ViewPager) view.findViewById(R.id.view_pager);
+        pager.setOffscreenPageLimit(5);
 
         pagerAdapter = new MyPagerAdapter(getChildFragmentManager());
 
@@ -119,6 +120,8 @@ public class CustomDialog extends DialogFragment {
         pager.setPageMargin(pageMargin);
 
         tabs.setViewPager(pager);
+
+        Toast.makeText(Game.context, "Listing song in the Music or music folder", Toast.LENGTH_LONG).show();
 
     }
 

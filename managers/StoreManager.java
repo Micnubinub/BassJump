@@ -3,6 +3,7 @@ package tbs.jumpsnew.managers;
 import android.content.Context;
 import android.widget.Toast;
 
+import tbs.jumpsnew.fragments.GetCoinsFragment;
 import tbs.jumpsnew.ui.CustomDialog;
 import tbs.jumpsnew.utility.AdManager;
 import tbs.jumpsnew.utility.ListViewLib;
@@ -10,7 +11,7 @@ import tbs.jumpsnew.utility.StoreItem;
 import tbs.jumpsnew.utility.Utility;
 
 public class StoreManager {
-    public static AdManager adManager;
+    //public static AdManager adManager;
     private static Context context;
     private static final ListViewLib.StoreListener storeListener = new ListViewLib.StoreListener() {
         @Override
@@ -60,9 +61,21 @@ public class StoreManager {
 
         @Override
         public void onStoreOpened() {
-            adManager = new AdManager(context);
-            adManager.loadFullscreenAd();
-            adManager.loadVideoAd();
+            try {
+                final AdManager adManager = GetCoinsFragment.adManager;
+                if (adManager == null) {
+                    GetCoinsFragment.adManager = new AdManager(context);
+                    GetCoinsFragment.adManager.loadFullscreenAd();
+                    GetCoinsFragment.adManager.loadVideoAd();
+                } else {
+                    if (!adManager.getFullscreenAd().isLoaded())
+                        adManager.loadFullscreenAd();
+                    if (adManager.getVideoAd().isLoaded())
+                        adManager.loadVideoAd();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override

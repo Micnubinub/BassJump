@@ -27,11 +27,8 @@ import tbs.jumpsnew.ui.ColorView;
 import tbs.jumpsnew.ui.ShapeView;
 
 public class Utility {
-    //Todo speed up startup
-    //Todo speedup ads in store
-    //Todo fix unknown
     //Todo add stars
-    //Todo add material colors
+
     public static final String EQUIPPED_SONG = "EQUIPPED_SONG";
     public static final String EQUIPPED_SHAPE = "EQUIPPED_SHAPE";
     public static final String BOUGHT_SONGS = "BOUGHT_SONGS";
@@ -219,7 +216,7 @@ public class Utility {
 
         final String boughtShapes = getBoughtShapes(context);
         final String[] shapes = {SHAPE_RECTANGLE, SHAPE_TRIANGLE, SHAPE_CIRCLE, SHAPE_PENTAGON, SHAPE_HEXAGON,
-                SHAPE_RECTANGLE_STAR, SHAPE_TRIANGLE_STAR, SHAPE_PENTAGON_STAR, SHAPE_HEXAGON_STAR};
+                /**SHAPE_RECTANGLE_STAR, SHAPE_TRIANGLE_STAR, SHAPE_PENTAGON_STAR, SHAPE_HEXAGON_STAR*/};
         for (String shape : shapes) {
             items.add(getShapeStoreItem(boughtShapes, shape));
         }
@@ -313,14 +310,14 @@ public class Utility {
             shape = Player.PlayerShape.TRIANGLE;
         else if (tag.equals(SHAPE_HEXAGON))
             shape = Player.PlayerShape.HEXAGON;
-        else if (tag.equals(SHAPE_RECTANGLE_STAR))
-            shape = Player.PlayerShape.RECT_STAR;
+        /** else if (tag.equals(SHAPE_RECTANGLE_STAR))
+         shape = Player.PlayerShape.RECT_STAR;
         else if (tag.equals(SHAPE_PENTAGON_STAR))
             shape = Player.PlayerShape.PENTAGON_STAR;
         else if (tag.equals(SHAPE_TRIANGLE_STAR))
             shape = Player.PlayerShape.TRIANGLE_STAR;
         else if (tag.equals(SHAPE_HEXAGON_STAR))
-            shape = Player.PlayerShape.HEXAGON_STAR;
+         shape = Player.PlayerShape.HEXAGON_STAR; */
         return shape;
     }
 
@@ -343,7 +340,6 @@ public class Utility {
     }
 
     public static void equipSong(Context context, String tag) {
-        System.out.println("TAG!!! " + tag);
         getPrefs(context).put(EQUIPPED_SONG, tag);
         if (tag == null || tag.length() < 1)
             Game.playDefaultSong();
@@ -538,8 +534,6 @@ public class Utility {
                 COLOR_PURPLE)) color = "Purple";
         else if (tag.equals(
                 COLOR_PURPLE_DARK)) color = "Dark Purple";
-
-
 
         return color;
     }

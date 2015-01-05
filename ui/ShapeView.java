@@ -63,13 +63,7 @@ public class ShapeView extends View {
         init(playerShape);
     }
 
-    public void drawPolygon(Canvas canvas) {
 
-        for (int i = 0; i < 4; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
-        }
-
-    }
 
     private void init(Player.PlayerShape playerShape) {
         this.playerShape = playerShape;
@@ -185,25 +179,29 @@ public class ShapeView extends View {
         rotation += angleOffSet;
 
         if (isStarShape) {
+            final double firstStep = initRotation + rotation;
+            final double halfStep = (rotationStep / 2);
             for (int i = 0; i < points.length; i += 4) {
-                final double angleStep = initRotation + (rotationStep * i / 2) + rotation;
+                points[i] = cx + (int) (l * Math.cos(Math.toRadians(firstStep + (halfStep * i))));
+                points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(firstStep + (halfStep * i))));
 
-                points[i] = cx + (int) (l * Math.cos(Math.toRadians(angleStep)));
-                points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(angleStep)));
-
-                points[i + 2] = cx + (int) ((l / 2) * Math.cos(Math.toRadians(angleStep + (rotationStep / 2))));
-                points[i + 3] = cy + (int) ((l / 2) * Math.sin(Math.toRadians(angleStep + (rotationStep / 2))));
+                points[i + 2] = cx + (int) ((l / 2) * Math.cos(Math.toRadians(firstStep + (halfStep * (i + 1)))));
+                points[i + 3] = cy + (int) ((l / 2) * Math.sin(Math.toRadians(firstStep + (halfStep * (i + 1)))));
             }
         } else {
             for (int i = 0; i < points.length; i += 2) {
                 points[i] = cx
-                        + (int) (l * Math.cos(Math.toRadians(initRotation
-                        + (rotationStep * i / 2) + rotation)));
-                points[i + 1] = cy
-                        + (int) (l * Math.sin(Math.toRadians(initRotation
+                        + (int) (l * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
+                points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(initRotation
                         + (rotationStep * i / 2) + rotation)));
             }
         }
         Log.e(String.valueOf(playerShape), Arrays.toString(points));
+    }
+
+    public void drawPolygon(Canvas canvas) {
+        for (int i = 0; i < points.length; i += 2) {
+            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
+        }
     }
 }

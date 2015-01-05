@@ -745,7 +745,7 @@ public class Game {
 
     private static void playSong(File file) {
         if (mpSong != null) {
-            if (mpSong.isLooping())
+            if (mpSong.isPlaying())
                 mpSong.stop();
             mpSong.release();
         }
@@ -760,7 +760,6 @@ public class Game {
                 mpSong.stop();
             mpSong.release();
         }
-
         mpSong = MediaPlayer.create(MainActivity.context, R.raw.song1);
         setUpSong();
     }

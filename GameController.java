@@ -2,8 +2,10 @@ package tbs.jumpsnew;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.widget.Toast;
 
 import tbs.jumpsnew.managers.StoreManager;
+import tbs.jumpsnew.utility.Utility;
 
 public class GameController {
 
@@ -17,11 +19,28 @@ public class GameController {
                     // SOUND:
                     if (Game.isPlaying) {
                         // TURN OFF
-                        Game.mpSong.pause();
+                        try {
+                            Game.mpSong.pause();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         MainActivity.preferences.put("musicOn", "off");
                     } else {
                         // TURN ON
-                        Game.mpSong.start();
+                        try {
+                            Game.mpSong.reset();
+                            Game.mpSong.prepare();
+                            Game.mpSong.start();
+                        } catch (Exception r) {
+                            try {
+
+                                Utility.equipSong(Game.context, Utility.getEquippedSong(Game.context));
+                            } catch (Exception e) {
+                                Toast.makeText(Game.context, "Failed to play song", Toast.LENGTH_LONG).show();
+                                e.printStackTrace();
+                            }
+                            r.printStackTrace();
+                        }
                         MainActivity.preferences.put("musicOn", "on");
                     }
                     Game.isPlaying = !Game.isPlaying;
