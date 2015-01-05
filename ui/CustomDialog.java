@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import tbs.jumpsnew.Game;
+import tbs.jumpsnew.MainActivity;
 import tbs.jumpsnew.R;
 import tbs.jumpsnew.fragments.ColorFragment;
 import tbs.jumpsnew.fragments.GetCoinsFragment;
@@ -39,6 +40,11 @@ public class CustomDialog extends DialogFragment {
     }
 
     public static void setNumCoins(int numCoins) {
+        if (numCoins >= 10000) {
+            MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQEA");
+        } else if (numCoins >= 1000) {
+            MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQCw");
+        }
         try {
             coinText.setText(String.valueOf(numCoins));
         } catch (Exception e) {
@@ -47,7 +53,8 @@ public class CustomDialog extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.store, null);
         title = (TextView) view.findViewById(R.id.title);
         title.setTypeface(Game.font);
@@ -55,14 +62,17 @@ public class CustomDialog extends DialogFragment {
         coinText = (TextView) view.findViewById(R.id.coins);
         coinText.setTypeface(Game.font);
 
-        view.findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        view.findViewById(R.id.close).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dismiss();
+                    }
+                });
 
-        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+        view.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT,
+                ViewGroup.LayoutParams.FILL_PARENT));
         setNumCoins(Utility.getCoins(Game.context));
         return view;
     }
@@ -89,10 +99,12 @@ public class CustomDialog extends DialogFragment {
         fragments[2] = new MusicFragment();
         fragments[3] = new GetCoinsFragment();
 
-        ColorFragment.setListAdapter(new Adapter(Game.context, Utility.getColorStoreItems(Game.context)));
-        ShapeFragment.setListAdapter(new Adapter(Game.context, Utility.getShapeStoreItems(Game.context)));
-        MusicFragment.setListAdapter(new Adapter(Game.context, Utility.getSongStoreItems(Game.context)));
-
+        ColorFragment.setListAdapter(new Adapter(Game.context, Utility
+                .getColorStoreItems(Game.context)));
+        ShapeFragment.setListAdapter(new Adapter(Game.context, Utility
+                .getShapeStoreItems(Game.context)));
+        MusicFragment.setListAdapter(new Adapter(Game.context, Utility
+                .getSongStoreItems(Game.context)));
 
         tabs = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
         pager = (ViewPager) view.findViewById(R.id.view_pager);
@@ -101,17 +113,19 @@ public class CustomDialog extends DialogFragment {
 
         pager.setAdapter(pagerAdapter);
 
-        final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, Game.context.getResources().getDisplayMetrics());
+        final int pageMargin = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 4, Game.context.getResources()
+                        .getDisplayMetrics());
         pager.setPageMargin(pageMargin);
 
         tabs.setViewPager(pager);
-
 
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
 
-        private final String[] TITLES = {"Colors", "Shapes", "Music", "Get Coins"};
+        private final String[] TITLES = {"Colors", "Shapes", "Music",
+                "Get Coins"};
 
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -133,6 +147,4 @@ public class CustomDialog extends DialogFragment {
         }
     }
 
-
 }
-

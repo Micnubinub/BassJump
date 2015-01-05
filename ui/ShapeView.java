@@ -21,6 +21,7 @@ public class ShapeView extends View {
     private int[] points;
     private Player.PlayerShape playerShape;
     private int w, h, cx, cy, l, angleOffSet, initRotation, rotationStep;
+    private boolean isStarShape;
 
     public ShapeView(Context context, Player.PlayerShape playerShape) {
         super(context);
@@ -33,11 +34,8 @@ public class ShapeView extends View {
         init(Player.PlayerShape.HEXAGON);
     }
 
-    public static void drawCircle(Canvas canvas, int w, int h) {
-        paint.setColor(Game.color);
-        canvas.drawCircle(w / 2, h / 2, (Math.min(w, h) / 2) - thickness, paint);
-        paint.setColor(scoreBackground);
-        canvas.drawCircle(w / 2, h / 2, (Math.min(w, h) / 2) - (thickness * 2), paint);
+    public void drawCircle(Canvas canvas) {
+        canvas.drawCircle(cx, cy, l - (thickness / 2), paint);
     }
 
     @Override
@@ -45,20 +43,11 @@ public class ShapeView extends View {
         super.onDraw(canvas);
 
         switch (playerShape) {
-            case RECT:
-                drawRectangle(canvas, w, h);
-                break;
             case CIRCLE:
-                drawCircle(canvas, w, h);
+                drawCircle(canvas);
                 break;
-            case TRIANGLE:
-                drawTriangle(canvas, w, h);
-                break;
-            case PENTAGON:
-                drawPentagon(canvas, w, h);
-                break;
-            case HEXAGON:
-                drawHexagon(canvas, w, h);
+            default:
+                drawPolygon(canvas);
                 break;
         }
     }
@@ -71,38 +60,7 @@ public class ShapeView extends View {
         init(playerShape);
     }
 
-    public void drawRectangle(Canvas canvas, int w, int h) {
-        paint.setStrokeWidth(thickness);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setColor(Game.color);
-        for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
-        }
-    }
-
-    public void drawTriangle(Canvas canvas, int w, int h) {
-        paint.setStrokeWidth(thickness);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setColor(Game.color);
-        for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
-        }
-    }
-
-    public void drawPentagon(Canvas canvas, int w, int h) {
-        paint.setColor(Game.color);
-        paint.setStrokeWidth(thickness);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-
-        for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
-        }
-    }
-
-    public void drawHexagon(Canvas canvas, int w, int h) {
-        paint.setColor(Game.color);
-        paint.setStrokeWidth(thickness);
-        paint.setStrokeCap(Paint.Cap.ROUND);
+    public void drawPolygon(Canvas canvas) {
 
         for (int i = 0; i < points.length; i += 2) {
             canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
@@ -133,9 +91,29 @@ public class ShapeView extends View {
                 initHexagon();
                 setShapeRotation(-90);
                 break;
+            case RECT_STAR:
+                initRectAngleStar();
+                setShapeRotation(-90);
+                break;
+            case TRIANGLE_STAR:
+                initTriangleStar();
+                setShapeRotation(-90);
+                break;
+            case PENTAGON_STAR:
+                initPentagonStar();
+                setShapeRotation(-90);
+                break;
+            case HEXAGON_STAR:
+                initHexagonStar();
+                setShapeRotation(-90);
+                break;
         }
-    }
 
+        paint.setColor(Game.color);
+        paint.setStrokeWidth(thickness);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setStyle(Paint.Style.STROKE);
+    }
 
     private void initRectAngle() {
         points = new int[8];
@@ -165,11 +143,61 @@ public class ShapeView extends View {
         angleOffSet = 0;
     }
 
+    private void initRectAngleStar() {
+        isStarShape = true;
+        points = new int[16];
+        initRotation = 45;
+        rotationStep = 90;
+        angleOffSet = 0;
+    }
+
+    private void initTriangleStar() {
+        isStarShape = true;
+        points = new int[12];
+        initRotation = 90;
+        rotationStep = 120;
+        angleOffSet = 30;
+    }
+
+    private void initPentagonStar() {
+        isStarShape = true;
+        points = new int[20];
+        initRotation = 0;
+        rotationStep = 72;
+        angleOffSet = 72;
+    }
+
+    private void initHexagonStar() {
+        isStarShape = true;
+        points = new int[24];
+        initRotation = 30;
+        rotationStep = 60;
+        angleOffSet = 0;
+
+    }
+
     public void setShapeRotation(double rotation) {
-        rotation = (rotation % 180) + angleOffSet;
-        for (int i = 0; i < points.length; i += 2) {
-            points[i] = cx + (int) (l * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
-            points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
+        if (points == null || points.length <= 5)
+            return;
+        rotation += angleOffSet;
+
+        if (isStarShape) {
+            for (int i = 0; i < points.length; i += 4) {
+                points[i] = cx + (int) (l * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
+                points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
+
+                points[i + 2] = cx + (int) ((l / 3) * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation + (rotationStep / 2))));
+                points[i + 3] = cy + (int) ((l / 3) * Math.sin(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation + (rotationStep / 2))));
+            }
+        } else {
+            for (int i = 0; i < points.length; i += 2) {
+                points[i] = cx
+                        + (int) (l * Math.cos(Math.toRadians(initRotation
+                        + (rotationStep * i / 2) + rotation)));
+                points[i + 1] = cy
+                        + (int) (l * Math.sin(Math.toRadians(initRotation
+                        + (rotationStep * i / 2) + rotation)));
+            }
         }
     }
 }

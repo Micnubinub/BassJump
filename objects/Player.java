@@ -12,6 +12,7 @@ import tbs.jumpsnew.MainActivity;
 import tbs.jumpsnew.Screen;
 import tbs.jumpsnew.levels.Level;
 import tbs.jumpsnew.levels.Platform;
+import tbs.jumpsnew.ui.CustomDialog;
 import tbs.jumpsnew.utility.GameObject;
 import tbs.jumpsnew.utility.Utility;
 
@@ -26,6 +27,9 @@ public class Player extends GameObject {
     // Michael's quick fix
     private static int cx, cy, l, angleOffSet, initRotation, rotationStep;
     private static double playerJumpDistance, playerJumpPercentage;
+    // TMP till final fix
+    private static int xOffset;
+    private static boolean isStarShape;
     // PARTICLES
     public final ArrayList<Particle> splashParticles1;
     public final ArrayList<Particle> splashParticles2;
@@ -49,21 +53,21 @@ public class Player extends GameObject {
     public Player() {
         Utility.log("Player Initialized");
         splashParticles1 = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 10; i++) {
             splashParticles1.add(new Particle());
         }
         splashParticles2 = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 10; i++) {
             splashParticles2.add(new Particle());
         }
-        l = (GameValues.PLAYER_SCALE / 2) - GameValues.PAINT_THICKNESS;
         playerJumpDistance = Screen.width - (GameValues.PLATFORM_WIDTH * 2)
                 - GameValues.PLAYER_SCALE;
     }
 
     public static void setPlayerShape(PlayerShape playerShape) {
         Player.playerShape = playerShape;
-
+        l = Math.round((GameValues.PLAYER_SCALE / 2) / 0.7071f) - ((GameValues.PAINT_THICKNESS + 16) / 2);
+        xOffset = 0;
         switch (playerShape) {
             case RECT:
                 initRectAngle();
@@ -77,9 +81,11 @@ public class Player extends GameObject {
             case HEXAGON:
                 initHexagon();
                 break;
+            case CIRCLE:
+                // l = (GameValues.PLAYER_SCALE / 2) - GameValues.PAINT_THICKNESS;
+                break;
         }
-
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth((GameValues.PAINT_THICKNESS + 16));
         paint.setStrokeCap(Paint.Cap.ROUND);
     }
@@ -89,6 +95,7 @@ public class Player extends GameObject {
         initRotation = 45;
         rotationStep = 90;
         angleOffSet = 0;
+        // calcPolyL();
     }
 
     private static void initTriangle() {
@@ -96,6 +103,8 @@ public class Player extends GameObject {
         initRotation = 90;
         rotationStep = 120;
         angleOffSet = 30;
+        // calcPolyL();
+        xOffset = (int) (GameValues.PLAYER_SCALE * 0.1f);
     }
 
     private static void initPentagon() {
@@ -103,34 +112,51 @@ public class Player extends GameObject {
         initRotation = 0;
         rotationStep = 72;
         angleOffSet = 72;
+        // calcPolyL();
     }
+
+    // private static void calcPolyL() {
+    // final int n = points.length / 2;
+    // final int cosAngle = ((n - 2) * 180) / (n * 2);
+    // l = (int) ((GameValues.PLAYER_SCALE * 0.5f) /
+    // Math.cos(Math.toRadians(cosAngle)));
+    // }
 
     private static void initHexagon() {
         points = new int[12];
         initRotation = 30;
         rotationStep = 60;
         angleOffSet = 0;
+        // calcPolyL();
     }
 
     public static void setShapeRotation(double rotation) {
         if (points == null || points.length <= 5)
             return;
         rotation += angleOffSet;
-        for (int i = 0; i < points.length; i += 2) {
-            points[i] = cx
-                    + (int) (l * Math.cos(Math.toRadians(initRotation
-                    + (rotationStep * i / 2) + rotation)));
-            points[i + 1] = cy
-                    + (int) (l * Math.sin(Math.toRadians(initRotation
-                    + (rotationStep * i / 2) + rotation)));
+
+        if (isStarShape) {
+            for (int i = 0; i < points.length; i += 4) {
+                points[i] = cx + (int) (l * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
+                points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
+
+                points[i + 2] = cx + (int) ((l / 3) * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation + (rotationStep / 2))));
+                points[i + 3] = cy + (int) ((l / 3) * Math.sin(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation + (rotationStep / 2))));
+            }
+        } else {
+            for (int i = 0; i < points.length; i += 2) {
+                points[i] = cx
+                        + (int) (l * Math.cos(Math.toRadians(initRotation
+                        + (rotationStep * i / 2) + rotation)));
+                points[i + 1] = cy
+                        + (int) (l * Math.sin(Math.toRadians(initRotation
+                        + (rotationStep * i / 2) + rotation)));
+            }
         }
     }
 
     public static void drawCircle(Canvas canvas) {
-        canvas.drawCircle(cx, cy, l, paint);
-        paint.setARGB(255, 40, 40, 40);
-        // Todo +16 cause of roundRectRadius
-        canvas.drawCircle(cx, cy, l - (GameValues.PAINT_THICKNESS + 16), paint);
+        canvas.drawCircle(cx, cy, l - ((GameValues.PAINT_THICKNESS + 16) / 2), paint);
     }
 
     @Override
@@ -159,7 +185,7 @@ public class Player extends GameObject {
         activatePaint(true);
 
         Utility.equipShape(Game.context, Utility.getEquippedShape(Game.context));
-        tmpCoins = Utility.getCoins(Game.context);
+        tmpCoins = 0;
     }
 
     public void update() {
@@ -283,7 +309,9 @@ public class Player extends GameObject {
         }
 
         // SAVE COINS
-        Utility.saveCoins(Game.context, tmpCoins);
+        Utility.saveCoins(Game.context, Utility.getCoins(Game.context)
+                + tmpCoins);
+        CustomDialog.setNumCoins(Utility.getCoins(Game.context));
     }
 
     public boolean isAlive(boolean j) {
@@ -436,8 +464,27 @@ public class Player extends GameObject {
 
     public void drawPolygon(Canvas canvas) {
         for (int i = 0; i < points.length; i += 2) {
-            canvas.drawLine(points[i], points[i + 1], points[(i + 2)
-                    % points.length], points[(i + 3) % points.length], paint);
+            // canvas.drawLine(points[i], points[i + 1], points[(i + 2)
+            // % points.length], points[(i + 3) % points.length], paint);
+            canvas.drawLine(goingRight ? points[i] - xOffset : points[i]
+                            + xOffset, points[i + 1], goingRight ? points[(i + 2)
+                            % points.length]
+                            - xOffset : points[(i + 2) % points.length] + xOffset,
+                    points[(i + 3) % points.length], paint);
+
+        }
+    }
+
+    public void drawPolygonStar(Canvas canvas) {
+        for (int i = 0; i < points.length; i += 2) {
+            // canvas.drawLine(points[i], points[i + 1], points[(i + 2)
+            // % points.length], points[(i + 3) % points.length], paint);
+            canvas.drawLine(goingRight ? points[i] - xOffset : points[i]
+                            + xOffset, points[i + 1], goingRight ? points[(i + 2)
+                            % points.length]
+                            - xOffset : points[(i + 2) % points.length] + xOffset,
+                    points[(i + 3) % points.length], paint);
+
         }
     }
 
@@ -455,6 +502,6 @@ public class Player extends GameObject {
     }
 
     public enum PlayerShape {
-        RECT, CIRCLE, TRIANGLE, HEXAGON, PENTAGON
+        CIRCLE, RECT, TRIANGLE, HEXAGON, PENTAGON, RECT_STAR, TRIANGLE_STAR, HEXAGON_STAR, PENTAGON_STAR
     }
 }

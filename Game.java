@@ -94,8 +94,7 @@ public class Game {
         // CONST
         context = cont;
 
-        font = Typeface.createFromAsset(MainActivity.context.getAssets(),
-                "fonts/Chunkfive.otf");
+        font = Typeface.createFromAsset(MainActivity.context.getAssets(), "Chunkfive.otf");
         paintText.setTypeface(font);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(GameValues.STROKE_WIDTH);
@@ -328,7 +327,7 @@ public class Game {
         }
 
         paintText.setTextAlign(Align.CENTER);
-        paintText.setTextSize(Screen.width / 6);
+        paintText.setTextSize(Screen.width / 9);
         for (int i = 0; i < animatedTexts.size(); ++i) {
             if (animatedTexts.get(i).active) {
                 paintText.setAlpha(animatedTexts.get(i).alpha);
@@ -421,9 +420,9 @@ public class Game {
                         - GameValues.BUTTON_PADDING, paintText);
 
             // COINS:
-            canvas.drawText("x" + player.tmpCoins, storeBtn.xPos
-                    - GameValues.BUTTON_PADDING, storeBtn.yPos
-                    + GameValues.BUTTON_SCALE, paintText);
+            // canvas.drawText("x" + player.tmpCoins, storeBtn.xPos
+            // - GameValues.BUTTON_PADDING, storeBtn.yPos
+            // + GameValues.BUTTON_SCALE, paintText);
 
             // SCORE & STATS:
             String txt = ("Played: " + player.gamesPlayed);
@@ -509,11 +508,15 @@ public class Game {
 
     public static void setupGame() {
         // SETUP NEW GAME
-
         // ADS
-        if (player.gamesPlayed + 1 % 10 == 0 && player.gamesPlayed > 0) {
+        if ((player.gamesPlayed + 1) % 10 == 0 && player.gamesPlayed > 0) {
             // AD WARNING:
-            Utility.showToast("Ad Loaded!", context);
+            MainActivity.getView().post(new Runnable() {
+                @Override
+                public void run() {
+                    Utility.showToast("Ad Loaded!", context);
+                }
+            });
         }
         if (player.gamesPlayed % 10 == 0 && player.gamesPlayed > 0) {
             MainActivity.getView().post(new Runnable() {
@@ -777,20 +780,14 @@ public class Game {
         }
 
         final String equipped = Utility.getEquippedSong(context);
-        if (equipped.equals(Uri.parse(
-                "android.resource://"
-                        + context.getApplicationInfo().packageName
-                        + "/raw/song1").toString()))
-            songName = "SmaXa - Fall Back";
-        else {
-            final String[] songDetails = Utility.getSongTitle(equipped).split(
-                    Utility.SEP);
-            if (songDetails == null
-                    || (songDetails[0] + songDetails[1]).length() < 2)
-                songName = "SmaXa - Fall Back";
-            else
-                songName = songDetails[1] + " - " + songDetails[0];
-        }
+
+        final String[] songDetails = Utility.getSongTitle(equipped).split(
+                Utility.SEP);
+        if (songDetails == null || (songDetails[0] + songDetails[1]).length() < 2)
+            songName = "Meizong - Colossus"; // DEFAULT
+        else
+            songName = songDetails[1] + " - " + songDetails[0];
+
 
         try {
             mpSong.prepare();

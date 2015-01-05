@@ -12,8 +12,10 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.RelativeLayout;
 
+import tbs.jumpsnew.Game;
 import tbs.jumpsnew.MainActivity;
 import tbs.jumpsnew.R;
+import tbs.jumpsnew.utility.Utility;
 
 /**
  * Created by root on 5/01/15.
@@ -63,7 +65,6 @@ public class OtherAppsAd {
                     break;
             }
         }
-
     };
     private static int viewHeight;
 
@@ -76,11 +77,11 @@ public class OtherAppsAd {
                 hide();
             }
         });
-
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/developer?id=The+Big+Shots")));
+                Utility.getPrefs(Game.context).put(Utility.CHECKOUT_OUR_OTHER_APPS, Utility.CHECKOUT_OUR_OTHER_APPS);
             }
         });
         viewHeight = dpToPixels(72);
@@ -96,16 +97,25 @@ public class OtherAppsAd {
                 MainActivity.context.getResources().getDisplayMetrics());
     }
 
-    public static void show() {
+    public static void show(int delay) {
         try {
-            layout.addView(view);
+            layout.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        layout.addView(view);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    view.setY(-viewHeight);
+                    animationType = AnimationType.IN;
+                    startAnimator();
+                }
+            }, delay);
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
-        view.setY(-viewHeight);
-        animationType = AnimationType.IN;
-        startAnimator();
     }
 
     private static void startAnimator() {

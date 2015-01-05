@@ -1,9 +1,10 @@
 package tbs.jumpsnew;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.SurfaceView;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.games.Games;
@@ -16,7 +17,6 @@ import tbs.jumpsnew.utility.Utility;
 
 public class MainActivity extends BaseGameActivity {
 
-
     // TAG & ACTIVITY:
     public static final String TAG = "Mini_RPG";
     public static Context context;
@@ -28,8 +28,9 @@ public class MainActivity extends BaseGameActivity {
     public static AdManager adManager;
     public static MainActivity mainActivity;
 
-    //Other apps ad
+    // Other apps ad
     public static OtherAppsAd otherAppsAd;
+    public static int adsWatched;
 
     public static void unlockAchievement(String id) {
         if (getApiClient().isConnected()) {
@@ -52,7 +53,9 @@ public class MainActivity extends BaseGameActivity {
         Utility.log("MainActivity Initialized");
         adManager = new AdManager(this);
         view = new GameView(this);
-        view.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+        view.setLayoutParams(new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.FILL_PARENT,
+                RelativeLayout.LayoutParams.FILL_PARENT));
 
         mainActivity = this;
 
@@ -100,16 +103,28 @@ public class MainActivity extends BaseGameActivity {
             Game.mode = GameMode.Arcade;
         }
 
+        // Set up other apps adView and add gameView
+        try {
+            final RelativeLayout gameContainer = (RelativeLayout) findViewById(R.id.game);
+            gameContainer.addView(view);
+            otherAppsAd = new OtherAppsAd(this, gameContainer);
 
-        //Set up other apps adView and add gameView
-        final RelativeLayout gameContainer = (RelativeLayout) findViewById(R.id.game);
-        gameContainer.addView(view);
-        otherAppsAd = new OtherAppsAd(this, gameContainer);
-        //Todo sidney
-        MainActivity.otherAppsAd.show();
+            String check = Utility.getPrefs(this).getString(Utility.CHECKOUT_OUR_OTHER_APPS);
+            if (!(check == null) && !(check.equals(Utility.CHECKOUT_OUR_OTHER_APPS)))
+                MainActivity.otherAppsAd.show(5000);
+        } catch (Exception e) {
+            Log.e("Exception: ", "ERROR! DIALOG");
+        }
 
-        //Load songs in a thread
+        // Load songs in a thread
         Utility.refreshSongs();
+
+        Utility.saveCoins(this, 99000);
+
+        Log.e("parsedUri : ", Uri.parse(
+                "android.resource://"
+                        + context.getApplicationInfo().packageName
+                        + "/raw/song1").toString());
     }
 
     @Override

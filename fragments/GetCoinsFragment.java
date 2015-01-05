@@ -116,8 +116,10 @@ public class GetCoinsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.get_coins, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater
+                .inflate(R.layout.get_coins, container, false);
         view.findViewById(R.id.iap).setOnClickListener(listener);
         view.findViewById(R.id.video_ad).setOnClickListener(listener);
         view.findViewById(R.id.fullscreen_ad).setOnClickListener(listener);
