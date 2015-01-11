@@ -43,6 +43,8 @@ public class Player extends GameObject {
     public int score;
     public int highScoreA; // ARCADE
     public int highScoreR; // RECRUIT
+    public int highScoreU; // ULTRA
+    public int highScoreS; // SINGUL
     public int gamesPlayed; // GAMES PLAYED
     public int tmpCoins; // COINS WHEN PLAYING ONLY
     // SPECIAL ACHIEVEMENTS
@@ -50,14 +52,21 @@ public class Player extends GameObject {
     // PAINT TRAIL
     public ArrayList<PaintParticle> paintTrail;
 
+    // OTHER:
+    int speed;
+    int right1;
+    int right2;
+    int bottom1;
+    int bottom2;
+
     public Player() {
         Utility.log("Player Initialized");
         splashParticles1 = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 12; i++) {
             splashParticles1.add(new Particle());
         }
         splashParticles2 = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 12; i++) {
             splashParticles2.add(new Particle());
         }
         playerJumpDistance = Screen.width - (GameValues.PLATFORM_WIDTH * 2)
@@ -67,7 +76,8 @@ public class Player extends GameObject {
 
     public static void setPlayerShape(PlayerShape playerShape) {
         Player.playerShape = playerShape;
-        l = Math.round((GameValues.PLAYER_SCALE / 2) / 0.7071f) - ((GameValues.PAINT_THICKNESS + 16) / 2);
+        l = Math.round((GameValues.PLAYER_SCALE / 2) / 0.7071f)
+                - ((GameValues.PAINT_THICKNESS + 16) / 2);
         xOffset = 0;
         switch (playerShape) {
             case RECT:
@@ -138,11 +148,21 @@ public class Player extends GameObject {
 
         if (isStarShape) {
             for (int i = 0; i < points.length; i += 4) {
-                points[i] = cx + (int) (l * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
-                points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
+                points[i] = cx
+                        + (int) (l * Math.cos(Math.toRadians(initRotation
+                        + (rotationStep * i / 2) + rotation)));
+                points[i + 1] = cy
+                        + (int) (l * Math.sin(Math.toRadians(initRotation
+                        + (rotationStep * i / 2) + rotation)));
 
-                points[i + 2] = cx + (int) ((l / 3) * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation + (rotationStep / 2))));
-                points[i + 3] = cy + (int) ((l / 3) * Math.sin(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation + (rotationStep / 2))));
+                points[i + 2] = cx
+                        + (int) ((l / 3) * Math.cos(Math.toRadians(initRotation
+                        + (rotationStep * i / 2) + rotation
+                        + (rotationStep / 2))));
+                points[i + 3] = cy
+                        + (int) ((l / 3) * Math.sin(Math.toRadians(initRotation
+                        + (rotationStep * i / 2) + rotation
+                        + (rotationStep / 2))));
             }
         } else {
             for (int i = 0; i < points.length; i += 2) {
@@ -157,7 +177,8 @@ public class Player extends GameObject {
     }
 
     public static void drawCircle(Canvas canvas) {
-        canvas.drawCircle(cx, cy, l - ((GameValues.PAINT_THICKNESS + 16) / 2), paint);
+        canvas.drawCircle(cx, cy, l - ((GameValues.PAINT_THICKNESS + 16) / 2),
+                paint);
     }
 
     @Override
@@ -203,7 +224,15 @@ public class Player extends GameObject {
         // PAINT
         for (int i = 0; i < paintTrail.size(); ++i) {
             if (paintTrail.get(i).active) {
-                paintTrail.get(i).yPos += GameValues.SPEED_FACTOR;
+                speed = GameValues.SPEED_FACTOR;
+                if (Game.mode == GameMode.Recruit) { // SLOW
+                    speed /= 1.5f;
+                    if (speed < 1)
+                        speed = 1;
+                } else if (Game.mode == GameMode.Ultra) { // ULTRA FAST
+                    speed *= 1.35f;
+                }
+                paintTrail.get(i).yPos += speed;
             }
         }
 
@@ -220,13 +249,16 @@ public class Player extends GameObject {
                 if (!isAlive(false)) {
                     startDying();
                 } else if (canPaint()) {
-                    int speed = GameValues.SPEED_FACTOR;
-                    if (Game.mode == GameMode.Recruit)
+                    speed = GameValues.SPEED_FACTOR;
+                    if (Game.mode == GameMode.Recruit) { // SLOW
                         speed /= 1.5f;
-                    if (speed < 1)
-                        speed = 1;
+                        if (speed < 1)
+                            speed = 1;
+                    } else if (Game.mode == GameMode.Ultra) { // ULTRA FAST
+                        speed *= 1.35f;
+                    }
                     paintTrail.get(paintIndex).height += speed;
-                    paintTrail.get(paintIndex).yPos = (yPos + (GameValues.PLAYER_SCALE / 4));
+                    paintTrail.get(paintIndex).yPos = (yPos + (scale / 11));
                 }
 
                 break;
@@ -284,10 +316,20 @@ public class Player extends GameObject {
                 MainActivity.preferences.put("hScore", String.valueOf(score));
                 highScoreA = score;
             }
-        } else {
+        } else if (Game.mode == GameMode.Recruit) {
             if (highScoreR < score) {
                 MainActivity.preferences.put("hScoreR", String.valueOf(score));
                 highScoreR = score;
+            }
+        } else if (Game.mode == GameMode.Ultra) {
+            if (highScoreU < score) {
+                MainActivity.preferences.put("hScoreU", String.valueOf(score));
+                highScoreU = score;
+            }
+        } else if (Game.mode == GameMode.Singularity) {
+            if (highScoreS < score) {
+                MainActivity.preferences.put("hScoreS", String.valueOf(score));
+                highScoreS = score;
             }
         }
 
@@ -403,10 +445,20 @@ public class Player extends GameObject {
     }
 
     public void land(boolean right) {
-        Game.lowBeat(310);
+        int coinPluser = 1;
+        Game.lowBeat(410);
         Game.alphaM = 255; // BLITZ
-        tmpCoins += 1;
         score += 1;
+
+        // COIN BONUS:
+        if (score >= 50) {
+            coinPluser += 1;
+        }
+        if (score >= 100) {
+            coinPluser += 1;
+        }
+        tmpCoins += coinPluser;
+
         // if (score % 5 == 0)
         Game.color = Game.colors[Utility.randInt(0, Game.colors.length - 1)];
         state = PlayerState.ON_GROUND;
@@ -438,10 +490,10 @@ public class Player extends GameObject {
 
     public boolean IsInBox(int x1, int y1, int width1, int height1, int x2,
                            int y2, int width2, int height2) {
-        int right1 = x1 + width1;
-        int right2 = x2 + width2;
-        int bottom1 = y1 + height1;
-        int bottom2 = y2 + height2;
+        right1 = x1 + width1;
+        right2 = x2 + width2;
+        bottom1 = y1 + height1;
+        bottom2 = y2 + height2;
 
         // Check if top-left point is in box chexk && y2 >= y2
         if (x2 >= x1 && x2 <= right1 && y2 <= bottom1)
@@ -478,7 +530,6 @@ public class Player extends GameObject {
         }
     }
 
-
     public void draw(Canvas canvas) {
         setShapeRotation(playerJumpPercentage * 180);
         paint.setColor(Game.color);
@@ -489,6 +540,21 @@ public class Player extends GameObject {
             default:
                 drawPolygon(canvas);
                 break;
+        }
+
+        // DRAW GLOW:
+        if (Game.alphaM > 0) {
+            paint.setColor(0xffe5e4a0);
+            paint.setAlpha(Game.alphaM);
+            switch (playerShape) {
+                case CIRCLE:
+                    drawCircle(canvas);
+                    break;
+                default:
+                    drawPolygon(canvas);
+                    break;
+            }
+            paint.setAlpha(255);
         }
     }
 

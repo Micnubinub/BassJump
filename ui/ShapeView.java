@@ -64,7 +64,6 @@ public class ShapeView extends View {
     }
 
 
-
     private void init(Player.PlayerShape playerShape) {
         this.playerShape = playerShape;
         cx = w / 2;

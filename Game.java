@@ -54,6 +54,7 @@ public class Game {
     public static Button storeBtn;
     public static Button soundBtn;
     public static Button achievBtn;
+    public static Button shareBtn;
     // SOUND && VISUALIZER:
     public static MediaPlayer mpSong;
     // COLORS:
@@ -64,10 +65,16 @@ public class Game {
     // MODE
     public static GameMode mode;
     public static AdManager adManager;
+    // CANVAS DATA;
+    public static Canvas canvasData;
+    // SPECIAL CONSTANTS:
+    public static String txt;
+    public static String scoreText;
+    public static boolean drawTop;
+    public static boolean drawBottom;
     // MOVING TEXTS:
     private static ArrayList<MovingText> animatedTexts; // ANIMATED TEXT LIST
     private static int animatedTextIndex; // WHICH TEXT TO USE
-
     // INTERFACE:
     private static GameObject scoreDisplay;
     // GLOBAL PARTICLES:
@@ -92,7 +99,8 @@ public class Game {
         // CONST
         context = cont;
 
-        font = Typeface.createFromAsset(MainActivity.context.getAssets(), "Chunkfive.otf");
+        font = Typeface.createFromAsset(MainActivity.context.getAssets(),
+                "Chunkfive.otf");
         paintText.setTypeface(font);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(GameValues.STROKE_WIDTH);
@@ -103,7 +111,7 @@ public class Game {
 
         circles = new ArrayList<>();
         circleIndex = 0;
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 2; ++i) {
             circles.add(new AnimCircle());
         }
 
@@ -121,6 +129,9 @@ public class Game {
         introShowing = true;
         adManager = new AdManager(context);
         Utility.addGameColors();
+
+        // CANVAS DATA:
+        canvasData = new Canvas();
 
     }
 
@@ -186,17 +197,17 @@ public class Game {
         }
 
         // FREQ:
-        HIGH_FREQUENCY -= 10;
+        HIGH_FREQUENCY -= 20;
         updateHighFreq();
         if (HIGH_FREQUENCY < 0) {
             HIGH_FREQUENCY = 0;
         }
-        MID_FREQUENCY -= 10;
+        MID_FREQUENCY -= 20;
         updateMidFreq();
         if (MID_FREQUENCY < 0) {
             MID_FREQUENCY = 0;
         }
-        LOW_FREQUENCY -= 10;
+        LOW_FREQUENCY -= 20;
         updatelowFreq();
         if (LOW_FREQUENCY < 0) {
             LOW_FREQUENCY = 0;
@@ -206,12 +217,20 @@ public class Game {
     public static void draw(Canvas canvas) {
         // DRAW EVERYTHING IN ORDER:
         // paint.setColor(0x000000); // DEFAULT
-        paint.setColor(0xffe5e4a0);
-        paint.setAlpha(25);
+        // // PARTICLES && TEXTS:
+        paint.setColor(0xff2e2d2e); // FUCK ALPHA
+        for (int i = 0; i < level.speedParticles.size(); ++i) {
+            canvas.drawRect(level.speedParticles.get(i).xPos,
+                    level.speedParticles.get(i).yPos,
+                    level.speedParticles.get(i).xPos
+                            + GameValues.SPEED_PARTICLE_WIDTH,
+                    level.speedParticles.get(i).yPos
+                            + GameValues.SPEED_PARTICLE_HEIGHT, paint);
+        }
+
+        paint.setColor(0xff42453a);
         canvas.drawCircle(player.getXCenter(), player.getYCenter(),
                 HIGH_F_HEIGHT * 1.15f, paint);
-        // canvas.drawCircle(player.getXCenter(), player.getYCenter(),
-        // MID_F_HEIGHT * 1.15f, paint);
         canvas.drawCircle(player.getXCenter(), player.getYCenter(),
                 LOW_F_HEIGHT * 1.15f, paint);
 
@@ -219,8 +238,8 @@ public class Game {
         for (int i = 0; i < level.platformsRight.size(); ++i) {
             paint.setColor(0xff5b5b5b);
             paint.setAlpha(255);
-            boolean drawTop = true;
-            boolean drawBottom = true;
+            drawTop = true;
+            drawBottom = true;
             if (level.platformsRight.get(i).hasNext
                     || Game.state != GameState.Playing) {
                 drawTop = false;
@@ -247,8 +266,8 @@ public class Game {
         for (int i = 0; i < level.platformsLeft.size(); ++i) {
             paint.setColor(0xff5b5b5b);
             paint.setAlpha(255);
-            boolean drawTop = true;
-            boolean drawBottom = true;
+            drawTop = true;
+            drawBottom = true;
             if (level.platformsLeft.get(i).hasNext
                     || Game.state != GameState.Playing) {
                 drawTop = false;
@@ -312,20 +331,8 @@ public class Game {
         // PLAYER:
         player.draw(canvas);
 
-        // // PARTICLES && TEXTS:
-        paint.setColor(Color.WHITE);
-        paint.setAlpha(8);
-        for (int i = 0; i < level.speedParticles.size(); ++i) {
-            canvas.drawRect(level.speedParticles.get(i).xPos,
-                    level.speedParticles.get(i).yPos,
-                    level.speedParticles.get(i).xPos
-                            + GameValues.SPEED_PARTICLE_WIDTH,
-                    level.speedParticles.get(i).yPos
-                            + GameValues.SPEED_PARTICLE_HEIGHT, paint);
-        }
-
         paintText.setTextAlign(Align.CENTER);
-        paintText.setTextSize(Screen.width / 9);
+        paintText.setTextSize(Screen.width / 11);
         for (int i = 0; i < animatedTexts.size(); ++i) {
             if (animatedTexts.get(i).active) {
                 paintText.setAlpha(animatedTexts.get(i).alpha);
@@ -356,17 +363,26 @@ public class Game {
                     paint);
             canvas.drawBitmap(BitmapLoader.achievm, achievBtn.xPos,
                     achievBtn.yPos, paint);
+            canvas.drawBitmap(BitmapLoader.share, shareBtn.xPos, shareBtn.yPos,
+                    paint);
             if (isPlaying)
                 canvas.drawBitmap(BitmapLoader.sound, soundBtn.xPos,
                         soundBtn.yPos, paint);
             else
                 canvas.drawBitmap(BitmapLoader.soundO, soundBtn.xPos,
                         soundBtn.yPos, paint);
+
             if (mode == GameMode.Arcade)
                 canvas.drawBitmap(BitmapLoader.modeArcade, modeBtn.xPos,
                         modeBtn.yPos, paint);
-            else
+            else if (mode == GameMode.Recruit)
                 canvas.drawBitmap(BitmapLoader.modeRecruit, modeBtn.xPos,
+                        modeBtn.yPos, paint);
+            else if (mode == GameMode.Ultra)
+                canvas.drawBitmap(BitmapLoader.modeUltra, modeBtn.xPos,
+                        modeBtn.yPos, paint);
+            else if (mode == GameMode.Singularity)
+                canvas.drawBitmap(BitmapLoader.modeSingular, modeBtn.xPos,
                         modeBtn.yPos, paint);
 
             // MODE TEXT:
@@ -379,8 +395,18 @@ public class Game {
                                 - GameValues.BUTTON_PADDING,
                         (modeBtn.yPos + GameValues.BUTTON_SCALE)
                                 - (GameValues.BUTTON_PADDING / 4), paintText);
-            else
+            else if (mode == GameMode.Recruit)
                 canvas.drawText("Recruit", modeBtn.xPos
+                                - GameValues.BUTTON_PADDING,
+                        (modeBtn.yPos + GameValues.BUTTON_SCALE)
+                                - (GameValues.BUTTON_PADDING / 4), paintText);
+            else if (mode == GameMode.Ultra)
+                canvas.drawText("Ultra", modeBtn.xPos
+                                - GameValues.BUTTON_PADDING,
+                        (modeBtn.yPos + GameValues.BUTTON_SCALE)
+                                - (GameValues.BUTTON_PADDING / 4), paintText);
+            else if (mode == GameMode.Singularity)
+                canvas.drawText("Singular", modeBtn.xPos
                                 - GameValues.BUTTON_PADDING,
                         (modeBtn.yPos + GameValues.BUTTON_SCALE)
                                 - (GameValues.BUTTON_PADDING / 4), paintText);
@@ -418,12 +444,19 @@ public class Game {
                         - GameValues.BUTTON_PADDING, paintText);
 
             // COINS:
-            // canvas.drawText("x" + player.tmpCoins, storeBtn.xPos
-            // - GameValues.BUTTON_PADDING, storeBtn.yPos
-            // + GameValues.BUTTON_SCALE, paintText);
+            txt = Utility.formatNumber(Utility.getCoins(context));
+            canvas.drawText(txt, storeBtn.xPos - GameValues.BUTTON_PADDING,
+                    storeBtn.yPos + GameValues.BUTTON_SCALE, paintText);
+            paintText.getTextBounds(txt, 0, txt.length(), result);
+            canvas.drawBitmap(
+                    BitmapLoader.coin,
+                    (storeBtn.xPos - result.width())
+                            - (GameValues.COIN_SCALE + GameValues.BUTTON_PADDING * 1.225f),
+                    (storeBtn.yPos + GameValues.BUTTON_SCALE)
+                            - GameValues.COIN_SCALE, paint);
 
             // SCORE & STATS:
-            String txt = ("Played: " + player.gamesPlayed);
+            txt = ("Played: " + player.gamesPlayed);
             paintText.setColor(0xffe5e4a0);
             paintText.setTextAlign(Align.LEFT);
             paintText.setTextSize(Screen.width / 19.25f);
@@ -432,18 +465,20 @@ public class Game {
                     txt,
                     (achievBtn.xPos + GameValues.BUTTON_SCALE + GameValues.BUTTON_PADDING),
                     (achievBtn.yPos + GameValues.BUTTON_SCALE), paintText);
-            if (mode == GameMode.Arcade)
-                canvas.drawText(
-                        "Best: " + player.highScoreA,
-                        (achievBtn.xPos + GameValues.BUTTON_SCALE + GameValues.BUTTON_PADDING),
-                        (achievBtn.yPos + GameValues.BUTTON_SCALE)
-                                - result.height(), paintText);
-            else
-                canvas.drawText(
-                        "Best: " + player.highScoreR,
-                        (achievBtn.xPos + GameValues.BUTTON_SCALE + GameValues.BUTTON_PADDING),
-                        (achievBtn.yPos + GameValues.BUTTON_SCALE)
-                                - result.height(), paintText);
+            scoreText = ("Best: " + player.highScoreA);
+            if (mode == GameMode.Recruit) {
+                scoreText = ("Best: " + player.highScoreR);
+            } else if (mode == GameMode.Ultra) {
+                scoreText = ("Best: " + player.highScoreU);
+            } else if (mode == GameMode.Singularity) {
+                scoreText = ("Best: " + player.highScoreS);
+            }
+
+            canvas.drawText(
+                    scoreText,
+                    (achievBtn.xPos + GameValues.BUTTON_SCALE + GameValues.BUTTON_PADDING),
+                    (achievBtn.yPos + GameValues.BUTTON_SCALE)
+                            - result.height(), paintText);
         } else if (state == GameState.Playing) {
             // SCORE
             paintText.setColor(0xffe5e4a0);
@@ -462,14 +497,22 @@ public class Game {
             }
             paintText.getTextBounds("0", 0, "0".length(), result);
             paintText.setTextSize(Screen.width / 15.5f);
-            String txt = "";
+            txt = "";
             if (mode == GameMode.Arcade) {
                 txt = ("BEST: " + String.valueOf(player.highScoreA));
                 if (player.score > player.highScoreA)
                     txt = ("NEW BEST!");
-            } else {
+            } else if (mode == GameMode.Recruit) {
                 txt = ("BEST: " + String.valueOf(player.highScoreR));
                 if (player.score > player.highScoreR)
+                    txt = ("NEW BEST!");
+            } else if (mode == GameMode.Ultra) {
+                txt = ("BEST: " + String.valueOf(player.highScoreU));
+                if (player.score > player.highScoreU)
+                    txt = ("NEW BEST!");
+            } else if (mode == GameMode.Singularity) {
+                txt = ("BEST: " + String.valueOf(player.highScoreS));
+                if (player.score > player.highScoreS)
                     txt = ("NEW BEST!");
             }
             paintText.setColor(0xffe5e4a0);
@@ -507,33 +550,33 @@ public class Game {
     public static void setupGame() {
         // SETUP NEW GAME
         // ADS
-        if ((player.gamesPlayed + 1) % 10 == 0 && player.gamesPlayed > 0) {
-            // AD WARNING:
-            MainActivity.getView().post(new Runnable() {
-                @Override
-                public void run() {
-                    Utility.showToast("Ad Loaded!", context);
-                }
-            });
-        }
-        if (player.gamesPlayed % 10 == 0 && player.gamesPlayed > 0) {
-            MainActivity.getView().post(new Runnable() {
-                @Override
-                public void run() {
-                    final InterstitialAd ad = Game.adManager.getFullscreenAd();
-                    if (ad.isLoaded())
-                        ad.show();
-                }
-            });
 
-        } else if (player.gamesPlayed % 7 == 0 && player.gamesPlayed > 0) {
-            MainActivity.getView().post(new Runnable() {
-                @Override
-                public void run() {
-                    Game.adManager.loadFullscreenAd();
-                }
-            });
+        if (MainActivity.showAds) {
+            if ((player.gamesPlayed + 1) % 10 == 0 && player.gamesPlayed > 0) {
+                // AD WARNING:
+                MainActivity.getView().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Utility.showToast("Ad Showing!", context);
+                    }
+                });
+            }
 
+            if (player.gamesPlayed % 10 == 0 && player.gamesPlayed > 0) {
+                MainActivity.getView().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        final InterstitialAd ad = Game.adManager
+                                .getFullscreenAd();
+                        if (ad.isLoaded()) {
+                            ad.show();
+                        } else {
+                            Game.adManager.loadFullscreenAd();
+                        }
+                    }
+                });
+
+            }
         }
         Utility.log("Game Setup Initialized");
         GameValues.SPEED_BONUS = 1;
@@ -543,10 +586,18 @@ public class Game {
 
         // SAVE SCORE TO LB
         if (MainActivity.getApiClient().isConnected()) {
-            Games.Leaderboards.submitScore(MainActivity.getApiClient(),
-                    "CgkIvYbi1pMMEAIQBg", player.highScoreA);
-            Games.Leaderboards.submitScore(MainActivity.getApiClient(),
-                    "CgkIvYbi1pMMEAIQBw", player.highScoreR);
+            if (player.highScoreA > 0)
+                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
+                        "CgkIvYbi1pMMEAIQBg", player.highScoreA);
+            if (player.highScoreR > 0)
+                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
+                        "CgkIvYbi1pMMEAIQBw", player.highScoreR);
+            if (player.highScoreU > 0)
+                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
+                        "CgkIvYbi1pMMEAIQEQ", player.highScoreU);
+            if (player.highScoreS > 0)
+                Games.Leaderboards.submitScore(MainActivity.getApiClient(),
+                        "CgkIvYbi1pMMEAIQEg", player.highScoreS);
 
         }
 
@@ -557,7 +608,7 @@ public class Game {
 
         // TEXT
         animatedTexts = new ArrayList<>();
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 5; ++i) {
             animatedTexts.add(new MovingText());
         }
 
@@ -670,6 +721,11 @@ public class Game {
         storeBtn.yPos = (soundBtn.yPos - GameValues.BUTTON_SCALE)
                 - (GameValues.BUTTON_PADDING);
 
+        shareBtn = new Button();
+        shareBtn.scale = GameValues.BUTTON_SCALE;
+        shareBtn.xPos = GameValues.BUTTON_PADDING;
+        shareBtn.yPos = soundBtn.yPos;
+
         // MOVING TEXT:
         animatedTextIndex = 0;
         animatedTexts = new ArrayList<>();
@@ -744,6 +800,7 @@ public class Game {
     }
 
     private static void playSong(File file) {
+
         if (mpSong != null) {
             if (mpSong.isPlaying())
                 mpSong.stop();
@@ -755,11 +812,7 @@ public class Game {
     }
 
     public static void playDefaultSong() {
-        if (mpSong != null) {
-            if (mpSong.isLooping())
-                mpSong.stop();
-            mpSong.release();
-        }
+        mpSong = null;
         mpSong = MediaPlayer.create(MainActivity.context, R.raw.song1);
         setUpSong();
     }
@@ -777,14 +830,13 @@ public class Game {
         }
 
         final String equipped = Utility.getEquippedSong(context);
-
         final String[] songDetails = Utility.getSongTitle(equipped).split(
                 Utility.SEP);
-        if (songDetails == null || (songDetails[0] + songDetails[1]).length() < 2)
+        if (songDetails == null
+                || (songDetails[0] + songDetails[1]).length() < 2)
             songName = "Meizong - Colossus"; // DEFAULT
         else
             songName = songDetails[1] + " - " + songDetails[0];
-
 
         try {
             mpSong.prepare();

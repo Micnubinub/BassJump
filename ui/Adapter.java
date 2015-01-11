@@ -79,7 +79,7 @@ public class Adapter extends BaseAdapter {
                 break;
         }
 
-        view.setPrice(String.valueOf(item.price));
+        view.setPrice(" " + Utility.formatNumber(item.price)); // GAP
         view.setBought(item.bought);
         view.setPosition(position);
         view.getView().findViewById(R.id.buy_equip).setTag(position);

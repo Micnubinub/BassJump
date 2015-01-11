@@ -46,7 +46,7 @@ public class CustomDialog extends DialogFragment {
             MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQCw");
         }
         try {
-            coinText.setText(String.valueOf(numCoins));
+            coinText.setText(Utility.formatNumber(numCoins));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -121,7 +121,9 @@ public class CustomDialog extends DialogFragment {
 
         tabs.setViewPager(pager);
 
-        Toast.makeText(Game.context, "Listing song in the Music or music folder", Toast.LENGTH_LONG).show();
+        Toast.makeText(Game.context,
+                "Listing song in the Music or music folder", Toast.LENGTH_LONG)
+                .show();
 
     }
 

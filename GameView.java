@@ -1,18 +1,24 @@
 package tbs.jumpsnew;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.opengl.GLSurfaceView;
 import android.support.v4.app.FragmentActivity;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 import com.google.android.gms.games.Games;
+
+import java.nio.IntBuffer;
+
+import javax.microedition.khronos.egl.EGL10;
+import javax.microedition.khronos.egl.EGLContext;
+import javax.microedition.khronos.opengles.GL10;
 
 import tbs.jumpsnew.utility.BaseGameActivity;
 import tbs.jumpsnew.utility.Utility;
 
-public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-    private static SurfaceHolder surfaceHolder;
+public class GameView extends GLSurfaceView implements SurfaceHolder.Callback {
     private final Context context;
     private GameThread displayThread;
 
@@ -20,6 +26,28 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         super(context);
         this.context = context;
         InitView();
+    }
+
+    public static Bitmap SavePixels(int x, int y, int w, int h) {
+        EGL10 egl = (EGL10) EGLContext.getEGL();
+        GL10 gl = (GL10) egl.eglGetCurrentContext().getGL();
+        int b[] = new int[w * (y + h)];
+        int bt[] = new int[w * h];
+        IntBuffer ib = IntBuffer.wrap(b);
+        ib.position(0);
+        gl.glReadPixels(x, 0, w, y + h, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, ib);
+        for (int i = 0, k = 0; i < h; i++, k++) {
+            for (int j = 0; j < w; j++) {
+                int pix = b[i * w + j];
+                int pb = (pix >> 16) & 0xff;
+                int pr = (pix << 16) & 0x00ff0000;
+                int pix1 = (pix & 0xff00ff00) | pr | pb;
+                bt[(h - k - 1) * w + j] = pix1;
+            }
+        }
+
+        Bitmap sb = Bitmap.createBitmap(bt, w, h, Bitmap.Config.ARGB_8888);
+        return sb;
     }
 
     void InitView() {
@@ -50,7 +78,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                         && y <= Game.leaderBtn.yPos + GameValues.BUTTON_SCALE) {
                     // LEADER:
                     if (BaseGameActivity.getApiClient().isConnected()) {
-                        final String leadID = Game.mode == GameMode.Arcade ? "CgkIvYbi1pMMEAIQBg" : "CgkIvYbi1pMMEAIQBw";
+                        String leadID = "";
+                        if (Game.mode == GameMode.Arcade) {
+                            leadID = "CgkIvYbi1pMMEAIQBg";
+                        } else if (Game.mode == GameMode.Recruit) {
+                            leadID = "CgkIvYbi1pMMEAIQBw";
+                        } else if (Game.mode == GameMode.Ultra) {
+                            leadID = "CgkIvYbi1pMMEAIQEQ";
+                        } else { // Singular
+                            leadID = "CgkIvYbi1pMMEAIQEg";
+                        }
                         ((FragmentActivity) context)
                                 .startActivityForResult(
                                         Games.Leaderboards
@@ -110,5 +147,4 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             displayThread.start();
         }
     }
-
 }

@@ -6,24 +6,26 @@ import android.graphics.Paint;
 import android.view.SurfaceHolder;
 
 public class GameThread extends Thread {
-    final SurfaceHolder surfaceHolder;
+    public static SurfaceHolder surfaceHolder;
     final Paint backgroundPaint;
     final long DELAY = 1;
     long sleepTime;
     long lastUpdate = System.currentTimeMillis();
     boolean isRunning;
+    int delta;
+    Canvas canvas;
 
     public GameThread(SurfaceHolder surfaceHolder, Context context) {
         this.surfaceHolder = surfaceHolder;
         this.backgroundPaint = new Paint();
-        this.backgroundPaint.setARGB(255, 40, 40, 40);
+        this.backgroundPaint.setColor(0xff292929);
         this.isRunning = true;
     }
 
     @Override
     public void run() {
         while (isRunning) {
-            int delta = (int) (System.currentTimeMillis() - lastUpdate);
+            delta = (int) (System.currentTimeMillis() - lastUpdate);
             GameValues.SPEED_FACTOR = (int) ((GameValues.SPEED_FACTOR_ORIGINAL * GameValues.SPEED_BONUS) * delta);
             if (GameValues.SPEED_FACTOR < 1)
                 GameValues.SPEED_FACTOR = 1;
@@ -31,7 +33,7 @@ public class GameThread extends Thread {
             lastUpdate = System.currentTimeMillis();
             Game.update();
 
-            Canvas canvas = surfaceHolder.lockCanvas(null);
+            canvas = surfaceHolder.lockCanvas(null);
             if (canvas != null) {
                 synchronized (surfaceHolder) {
                     canvas.drawRect(0, 0, canvas.getWidth(),

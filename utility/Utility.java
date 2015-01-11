@@ -16,6 +16,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -27,16 +28,18 @@ import tbs.jumpsnew.ui.ColorView;
 import tbs.jumpsnew.ui.ShapeView;
 
 public class Utility {
-    //Todo add stars
+    // Todo add stars
+    //Todo toggle colors
 
     public static final String EQUIPPED_SONG = "EQUIPPED_SONG";
     public static final String EQUIPPED_SHAPE = "EQUIPPED_SHAPE";
+    public static final String EQUIPPED_COLORS = "EQUIPPED_COLORS";
     public static final String BOUGHT_SONGS = "BOUGHT_SONGS";
     public static final String BOUGHT_COLORS = "BOUGHT_COLORS";
     public static final String BOUGHT_SHAPES = "BOUGHT_SHAPES";
     public static final String COINS = "COINS";
-    public static final int SONG_PRICE = 1000;
-    public static final int COLOR_PRICE = 500;
+    public static final int SONG_PRICE = 500;
+    public static final int COLOR_PRICE = 100;
     public static final String SEP = "//,/,//";
 
     public static final String COLOR_RED_DARK = "COLOR_RED_DARK";
@@ -66,6 +69,11 @@ public class Utility {
     public static final String COLOR_ORANGE = "COLOR_ORANGE";
     public static final String COLOR_PURPLE = "COLOR_PURPLE";
     public static final String COLOR_WHITE = "COLOR_WHITE";
+    public static final String COLOR_BLACK = "COLOR_BLACK";
+    public static final String COLOR_METALLIC = "COLOR_METALLIC";
+    public static final String COLOR_INCOG = "COLOR_INCOG";
+    public static final String COLOR_TWENTY = "COLOR_TWENTY";
+    public static final String COLOR_CHOC = "COLOR_CHOC";
 
     public static final String SHAPE_RECTANGLE = "SHAPE_RECTANGLE";
     public static final String SHAPE_TRIANGLE = "SHAPE_TRIANGLE";
@@ -80,6 +88,8 @@ public class Utility {
     public static final String SONG = "SONG";
     public static final String CHECKOUT_OUR_OTHER_APPS = "CHECKOUT_OUR_OTHER_APPS";
 
+    // RANDOM
+    public static Random rand;
     private static ArrayList<StoreItem> songs;
     private static final Runnable songRefresher = new Runnable() {
         @Override
@@ -98,6 +108,10 @@ public class Utility {
             }
         }
     };
+
+    public static void setupRandom() {
+        rand = new Random();
+    }
 
     public static void showToast(String a, Context context) {
         Toast.makeText(context, a, Toast.LENGTH_SHORT).show();
@@ -118,12 +132,11 @@ public class Utility {
 
     // Random in Range
     public static int randInt(int min, int max) {
-        // Fix
-        return new Random().nextInt((max - min) + 1) + min;
+        return rand.nextInt((max - min) + 1) + min;
     }
 
     public static float randFloat(int minX, int maxX) {
-        return new Random().nextFloat() * (maxX - minX) + minX;
+        return rand.nextFloat() * (maxX - minX) + minX;
     }
 
     public static void addGameColors() {
@@ -201,9 +214,16 @@ public class Utility {
         final ArrayList<StoreItem> items = new ArrayList<>();
 
         final String boughtColors = getBoughtColors(context);
-        final String[] colors = {COLOR_WHITE,
-                COLOR_RED_LIGHT,
-                COLOR_RED, COLOR_RED_DARK, COLOR_PINK_LIGHT, COLOR_PINK, COLOR_PINK_DARK, COLOR_BLUE_LIGHT, COLOR_BLUE, COLOR_BLUE_DARK, COLOR_INDIGO_LIGHT, COLOR_INDIGO, COLOR_INDIGO_DARK, COLOR_GREEN_LIGHT, COLOR_GREEN, COLOR_GREEN_DARK, COLOR_YELLOW_LIGHT, COLOR_YELLOW, COLOR_YELLOW_DARK, COLOR_ORANGE_LIGHT, COLOR_ORANGE, COLOR_ORANGE_DARK, COLOR_PURPLE_LIGHT, COLOR_PURPLE, COLOR_PURPLE_DARK};
+        final String[] colors = {COLOR_WHITE, COLOR_RED_LIGHT, COLOR_RED,
+                COLOR_RED_DARK, COLOR_PINK_LIGHT, COLOR_PINK, COLOR_PINK_DARK,
+                COLOR_BLUE_LIGHT, COLOR_BLUE, COLOR_BLUE_DARK,
+                COLOR_INDIGO_LIGHT, COLOR_INDIGO, COLOR_INDIGO_DARK,
+                COLOR_GREEN_LIGHT, COLOR_GREEN, COLOR_GREEN_DARK,
+                COLOR_YELLOW_LIGHT, COLOR_YELLOW, COLOR_YELLOW_DARK,
+                COLOR_ORANGE_LIGHT, COLOR_ORANGE, COLOR_ORANGE_DARK,
+                COLOR_PURPLE_LIGHT, COLOR_PURPLE, COLOR_PURPLE_DARK,
+                COLOR_TWENTY, COLOR_CHOC, COLOR_INCOG, COLOR_METALLIC,
+                COLOR_BLACK};
         for (String color : colors) {
             items.add(getColorStoreItem(boughtColors, color));
         }
@@ -215,8 +235,13 @@ public class Utility {
         final ArrayList<StoreItem> items = new ArrayList<>();
 
         final String boughtShapes = getBoughtShapes(context);
-        final String[] shapes = {SHAPE_RECTANGLE, SHAPE_TRIANGLE, SHAPE_CIRCLE, SHAPE_PENTAGON, SHAPE_HEXAGON,
-                /**SHAPE_RECTANGLE_STAR, SHAPE_TRIANGLE_STAR, SHAPE_PENTAGON_STAR, SHAPE_HEXAGON_STAR*/};
+        final String[] shapes = {SHAPE_RECTANGLE, SHAPE_TRIANGLE,
+                SHAPE_CIRCLE, SHAPE_PENTAGON, SHAPE_HEXAGON,
+
+                SHAPE_RECTANGLE_STAR, SHAPE_TRIANGLE_STAR, SHAPE_PENTAGON_STAR,
+                SHAPE_HEXAGON_STAR
+
+        };
         for (String shape : shapes) {
             items.add(getShapeStoreItem(boughtShapes, shape));
         }
@@ -244,50 +269,60 @@ public class Utility {
             color = 0xffe84e40;
         else if (tag.equals(COLOR_RED))
             color = 0xffe51c23;
-        else if (tag.equals(
-                COLOR_RED_DARK)) color = 0xffd01716;
-        else if (tag.equals(
-                COLOR_PINK_LIGHT)) color = 0xfff06292;
-        else if (tag.equals(
-                COLOR_PINK)) color = 0xffe91e63;
-        else if (tag.equals(
-                COLOR_PINK_DARK)) color = 0xffc2185b;
-        else if (tag.equals(
-                COLOR_BLUE_LIGHT)) color = 0xff738ffe;
-        else if (tag.equals(
-                COLOR_BLUE)) color = 0xff5677fc;
-        else if (tag.equals(
-                COLOR_BLUE_DARK)) color = 0xff455ede;
-        else if (tag.equals(
-                COLOR_INDIGO_LIGHT)) color = 0xff5c6bc0;
-        else if (tag.equals(
-                COLOR_INDIGO)) color = 0xff3f51b5;
-        else if (tag.equals(
-                COLOR_INDIGO_DARK)) color = 0xff303f9f;
-        else if (tag.equals(
-                COLOR_GREEN_LIGHT)) color = 0xff42bd41;
-        else if (tag.equals(
-                COLOR_GREEN)) color = 0xff259b24;
-        else if (tag.equals(
-                COLOR_GREEN_DARK)) color = 0xff0a7e07;
-        else if (tag.equals(
-                COLOR_YELLOW_LIGHT)) color = 0xfffff176;
-        else if (tag.equals(
-                COLOR_YELLOW)) color = 0xffffeb3b;
-        else if (tag.equals(
-                COLOR_YELLOW_DARK)) color = 0xfffdd835;
-        else if (tag.equals(
-                COLOR_ORANGE_LIGHT)) color = 0xffffa726;
-        else if (tag.equals(
-                COLOR_ORANGE)) color = 0xfffb8c00;
-        else if (tag.equals(
-                COLOR_ORANGE_DARK)) color = 0xffe65100;
-        else if (tag.equals(
-                COLOR_PURPLE_LIGHT)) color = 0xffab47bc;
-        else if (tag.equals(
-                COLOR_PURPLE)) color = 0xff9c27b0;
-        else if (tag.equals(
-                COLOR_PURPLE_DARK)) color = 0xff7b1fa2;
+        else if (tag.equals(COLOR_RED_DARK))
+            color = 0xffd01716;
+        else if (tag.equals(COLOR_PINK_LIGHT))
+            color = 0xfff06292;
+        else if (tag.equals(COLOR_PINK))
+            color = 0xffe91e63;
+        else if (tag.equals(COLOR_PINK_DARK))
+            color = 0xffc2185b;
+        else if (tag.equals(COLOR_BLUE_LIGHT))
+            color = 0xff738ffe;
+        else if (tag.equals(COLOR_BLUE))
+            color = 0xff5677fc;
+        else if (tag.equals(COLOR_BLUE_DARK))
+            color = 0xff455ede;
+        else if (tag.equals(COLOR_INDIGO_LIGHT))
+            color = 0xff5c6bc0;
+        else if (tag.equals(COLOR_INDIGO))
+            color = 0xff3f51b5;
+        else if (tag.equals(COLOR_INDIGO_DARK))
+            color = 0xff303f9f;
+        else if (tag.equals(COLOR_GREEN_LIGHT))
+            color = 0xff42bd41;
+        else if (tag.equals(COLOR_GREEN))
+            color = 0xff259b24;
+        else if (tag.equals(COLOR_GREEN_DARK))
+            color = 0xff0a7e07;
+        else if (tag.equals(COLOR_YELLOW_LIGHT))
+            color = 0xfffff176;
+        else if (tag.equals(COLOR_YELLOW))
+            color = 0xffffeb3b;
+        else if (tag.equals(COLOR_YELLOW_DARK))
+            color = 0xfffdd835;
+        else if (tag.equals(COLOR_ORANGE_LIGHT))
+            color = 0xffffa726;
+        else if (tag.equals(COLOR_ORANGE))
+            color = 0xfffb8c00;
+        else if (tag.equals(COLOR_ORANGE_DARK))
+            color = 0xffe65100;
+        else if (tag.equals(COLOR_PURPLE_LIGHT))
+            color = 0xffab47bc;
+        else if (tag.equals(COLOR_PURPLE))
+            color = 0xff9c27b0;
+        else if (tag.equals(COLOR_PURPLE_DARK))
+            color = 0xff7b1fa2;
+        else if (tag.equals(COLOR_BLACK))
+            color = 0xff000000;
+        else if (tag.equals(COLOR_METALLIC))
+            color = 0xff535353;
+        else if (tag.equals(COLOR_INCOG))
+            color = 0xff292929;
+        else if (tag.equals(COLOR_TWENTY))
+            color = 0xff69661d;
+        else if (tag.equals(COLOR_CHOC))
+            color = 0xff53461a;
         return color;
     }
 
@@ -310,14 +345,18 @@ public class Utility {
             shape = Player.PlayerShape.TRIANGLE;
         else if (tag.equals(SHAPE_HEXAGON))
             shape = Player.PlayerShape.HEXAGON;
-        /** else if (tag.equals(SHAPE_RECTANGLE_STAR))
-         shape = Player.PlayerShape.RECT_STAR;
-        else if (tag.equals(SHAPE_PENTAGON_STAR))
-            shape = Player.PlayerShape.PENTAGON_STAR;
-        else if (tag.equals(SHAPE_TRIANGLE_STAR))
-            shape = Player.PlayerShape.TRIANGLE_STAR;
-        else if (tag.equals(SHAPE_HEXAGON_STAR))
-         shape = Player.PlayerShape.HEXAGON_STAR; */
+
+        else if (tag.equals(SHAPE_RECTANGLE_STAR)) shape =
+                Player.PlayerShape.RECT_STAR;
+        else if
+                (tag.equals(SHAPE_PENTAGON_STAR)) shape =
+                    Player.PlayerShape.PENTAGON_STAR;
+        else if
+                (tag.equals(SHAPE_TRIANGLE_STAR)) shape =
+                    Player.PlayerShape.TRIANGLE_STAR;
+        else if
+                (tag.equals(SHAPE_HEXAGON_STAR)) shape =
+                    Player.PlayerShape.HEXAGON_STAR;
         return shape;
     }
 
@@ -329,8 +368,10 @@ public class Utility {
 
     public static String getEquippedSong(Context context) {
         String out = getPrefs(context).getString(EQUIPPED_SONG);
+        //Todo
         out = out == null ? "" : out;
-        out = out.length() < 2 ? "android.resource://" + context.getApplicationInfo().packageName + "/raw/song1" : out;
+        out = out.length() < 2 ? "android.resource://"
+                + context.getApplicationInfo().packageName + "/raw/song1" : out;
         return out;
     }
 
@@ -369,6 +410,7 @@ public class Utility {
 
     public static String getBoughtSongs(Context context) {
         final StringBuilder builder = new StringBuilder();
+        //Todo
         builder.append("android.resource://"
                 + context.getApplicationInfo().packageName + "/raw/song1");
 
@@ -406,6 +448,7 @@ public class Utility {
             builder.append(SEP);
         builder.append(tag);
         getPrefs(context).put(BOUGHT_SHAPES, builder.toString());
+        madePurchase();
     }
 
     public static void addBoughtSongs(Context context, String tag) {
@@ -415,6 +458,7 @@ public class Utility {
             builder.append(SEP);
         builder.append(tag);
         getPrefs(context).put(BOUGHT_SONGS, builder.toString());
+        madePurchase();
     }
 
     public static void addBoughtColors(Context context, String tag) {
@@ -425,10 +469,40 @@ public class Utility {
         builder.append(tag);
         getPrefs(context).put(BOUGHT_COLORS, builder.toString());
         addGameColors();
+        madePurchase();
+    }
+
+    public static void addEquippedColors(Context context, String tag) {
+        //Todo
+        final StringBuilder builder = new StringBuilder();
+        builder.append(getBoughtColors(context));
+        if (builder.toString().length() > 1)
+            builder.append(SEP);
+        builder.append(tag);
+        getPrefs(context).put(BOUGHT_COLORS, builder.toString());
+        addGameColors();
+        madePurchase();
+    }
+
+    public static void removeEquippedColors(Context context, String tag) {
+        //Todo
+        final StringBuilder builder = new StringBuilder();
+        builder.append(getBoughtColors(context));
+        if (builder.toString().length() > 1)
+            builder.append(SEP);
+        builder.append(tag);
+        getPrefs(context).put(BOUGHT_COLORS, builder.toString());
+        addGameColors();
+        madePurchase();
+    }
+
+    public static void madePurchase() {
+        MainActivity.unlockAchievement("CgkIvYbi1pMMEAIQEw");
     }
 
     public static StoreItem getShapeStoreItem(String boughtShapes, String tag) {
-        return new StoreItem(StoreItem.Type.SHAPE, tag, getShapeName(tag), "Shape", getShapePrice(tag), boughtShapes.contains(tag));
+        return new StoreItem(StoreItem.Type.SHAPE, tag, getShapeName(tag),
+                "Shape", getShapePrice(tag), boughtShapes.contains(tag));
     }
 
     private static String getShapeName(String tag) {
@@ -478,72 +552,105 @@ public class Utility {
     }
 
     public static StoreItem getColorStoreItem(String boughtColors, String tag) {
-        return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
-                "Color", COLOR_PRICE, boughtColors.contains(tag));
+        if (tag.equals(COLOR_BLACK)) {
+            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
+                    "Color", 100000, boughtColors.contains(tag));
+        } else if (tag.equals(COLOR_METALLIC)) {
+            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
+                    "Color", 50000, boughtColors.contains(tag));
+        } else if (tag.equals(COLOR_INCOG)) {
+            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
+                    "Color", 10000, boughtColors.contains(tag));
+        } else if (tag.equals(COLOR_TWENTY)) {
+            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
+                    "Color", 21, boughtColors.contains(tag));
+        } else if (tag.equals(COLOR_CHOC)) {
+            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
+                    "Color", 5000, boughtColors.contains(tag));
+        } else {
+            return new StoreItem(StoreItem.Type.COLOR, tag, getColorName(tag),
+                    "Color", COLOR_PRICE, boughtColors.contains(tag));
+        }
     }
 
     private static String getColorName(String tag) {
-        String color = "Weite";
-
+        String color = "White";
 
         if (tag.equals(COLOR_RED_LIGHT))
             color = "Light red";
         else if (tag.equals(COLOR_RED))
             color = "Red";
-        else if (tag.equals(
-                COLOR_RED_DARK)) color = "Dark red";
-        else if (tag.equals(
-                COLOR_PINK_LIGHT)) color = "Light pink";
-        else if (tag.equals(
-                COLOR_PINK)) color = "Pink";
-        else if (tag.equals(
-                COLOR_PINK_DARK)) color = "Dark pink";
-        else if (tag.equals(
-                COLOR_BLUE_LIGHT)) color = "Light Blue";
-        else if (tag.equals(
-                COLOR_BLUE)) color = "Blue";
-        else if (tag.equals(
-                COLOR_BLUE_DARK)) color = "Dark blue";
-        else if (tag.equals(
-                COLOR_INDIGO_LIGHT)) color = "Light indigo";
-        else if (tag.equals(
-                COLOR_INDIGO)) color = "Indigo";
-        else if (tag.equals(
-                COLOR_INDIGO_DARK)) color = "Dark indigo";
-        else if (tag.equals(
-                COLOR_GREEN_LIGHT)) color = "Light green";
-        else if (tag.equals(
-                COLOR_GREEN)) color = "Green";
-        else if (tag.equals(
-                COLOR_GREEN_DARK)) color = "Dark green";
-        else if (tag.equals(
-                COLOR_YELLOW_LIGHT)) color = "Light yellow";
-        else if (tag.equals(
-                COLOR_YELLOW)) color = "Yellow";
-        else if (tag.equals(
-                COLOR_YELLOW_DARK)) color = "Dark yellow";
-        else if (tag.equals(
-                COLOR_ORANGE_LIGHT)) color = "Light orange";
-        else if (tag.equals(
-                COLOR_ORANGE)) color = "Orange";
-        else if (tag.equals(
-                COLOR_ORANGE_DARK)) color = "Dark orange";
-        else if (tag.equals(
-                COLOR_PURPLE_LIGHT)) color = "Light Purple";
-        else if (tag.equals(
-                COLOR_PURPLE)) color = "Purple";
-        else if (tag.equals(
-                COLOR_PURPLE_DARK)) color = "Dark Purple";
+        else if (tag.equals(COLOR_RED_DARK))
+            color = "Dark red";
+        else if (tag.equals(COLOR_PINK_LIGHT))
+            color = "Light pink";
+        else if (tag.equals(COLOR_PINK))
+            color = "Pink";
+        else if (tag.equals(COLOR_PINK_DARK))
+            color = "Dark pink";
+        else if (tag.equals(COLOR_BLUE_LIGHT))
+            color = "Light Blue";
+        else if (tag.equals(COLOR_BLUE))
+            color = "Blue";
+        else if (tag.equals(COLOR_BLUE_DARK))
+            color = "Dark blue";
+        else if (tag.equals(COLOR_INDIGO_LIGHT))
+            color = "Light indigo";
+        else if (tag.equals(COLOR_INDIGO))
+            color = "Indigo";
+        else if (tag.equals(COLOR_INDIGO_DARK))
+            color = "Dark indigo";
+        else if (tag.equals(COLOR_GREEN_LIGHT))
+            color = "Light green";
+        else if (tag.equals(COLOR_GREEN))
+            color = "Green";
+        else if (tag.equals(COLOR_GREEN_DARK))
+            color = "Dark green";
+        else if (tag.equals(COLOR_YELLOW_LIGHT))
+            color = "Light yellow";
+        else if (tag.equals(COLOR_YELLOW))
+            color = "Yellow";
+        else if (tag.equals(COLOR_YELLOW_DARK))
+            color = "Dark yellow";
+        else if (tag.equals(COLOR_ORANGE_LIGHT))
+            color = "Light orange";
+        else if (tag.equals(COLOR_ORANGE))
+            color = "Orange";
+        else if (tag.equals(COLOR_ORANGE_DARK))
+            color = "Dark orange";
+        else if (tag.equals(COLOR_PURPLE_LIGHT))
+            color = "Light Purple";
+        else if (tag.equals(COLOR_PURPLE))
+            color = "Purple";
+        else if (tag.equals(COLOR_PURPLE_DARK))
+            color = "Dark Purple";
+        else if (tag.equals(COLOR_BLACK))
+            color = "Vortex Black";
+        else if (tag.equals(COLOR_METALLIC))
+            color = "Tesla";
+        else if (tag.equals(COLOR_INCOG))
+            color = "Incog";
+        else if (tag.equals(COLOR_TWENTY))
+            color = "21";
+        else if (tag.equals(COLOR_CHOC))
+            color = "Chocolate";
 
         return color;
     }
 
     public static StoreItem getSongStoreItem(String boughtSongs, String song) {
-        final String[] songDetails = getSongTitle(song).split(SEP);
-        return new StoreItem(StoreItem.Type.SONG, song, songDetails[0],
-                songDetails[1], SONG_PRICE, boughtSongs.contains(song));
+        try {
+            final String[] songDetails = getSongTitle(song).split(SEP);
+            return new StoreItem(StoreItem.Type.SONG, song, songDetails[0],
+                    songDetails[1], SONG_PRICE, boughtSongs.contains(song));
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new StoreItem(StoreItem.Type.SONG, song, "?", "?",
+                    SONG_PRICE, boughtSongs.contains(song));
+        } catch (Exception ex) {
+            return new StoreItem(StoreItem.Type.SONG, song, "?", "?",
+                    SONG_PRICE, boughtSongs.contains(song));
+        }
     }
-
 
     public static String getSongTitle(String song) {
         try {
@@ -553,14 +660,16 @@ public class Utility {
             final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
             mmr.setDataSource(song);
 
-            String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            String title = mmr
+                    .extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
             if (title == null || title.length() < 1 || title.equals("null")) {
                 title = new File(song).getName();
                 if (title == null || title.length() < 1 || title.equals("null"))
                     title = "UnKnown";
             }
 
-            String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            String artist = mmr
+                    .extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             if (artist == null || artist.length() < 1 || artist.equals("null"))
                 artist = "Unkown";
 
@@ -580,12 +689,15 @@ public class Utility {
     public static String getRawFileSongName(String song) {
         if (song.endsWith("song1"))
             return "Colossus" + SEP + "Meizong";
-//        if (song.endsWith("song2"))
-//            return "Song 2...";
+        // if (song.endsWith("song2"))
+        // return "Song 2...";
 
         return "Unknown" + SEP + "Unknown";
     }
 
+    public static String formatNumber(int i) {
+        return NumberFormat.getIntegerInstance().format(i);
+    }
 
     public static SecurePreferences getPrefs(Context context) {
         return new SecurePreferences(context, "prefs_tbs_n", "X5TBSSDVSHYGF",

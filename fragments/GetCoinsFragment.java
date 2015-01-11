@@ -27,7 +27,7 @@ public class GetCoinsFragment extends Fragment {
         @Override
         public void onAdOpened() {
             super.onAdOpened();
-            Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + 25);
+            Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + 50);
             CustomDialog.setNumCoins(Utility.getCoins(Game.context));
         }
 
@@ -65,9 +65,21 @@ public class GetCoinsFragment extends Fragment {
                     else
                         adManager.loadFullscreenAd();
                     break;
-                case R.id.iap:
-                    toast("Coming soon");
-                    break;
+//			case R.id.iap1:
+//				MainActivity.purchases.makePurchase(GameValues.IAP_1_ID);
+//				break;
+//			case R.id.iap2:
+//				MainActivity.purchases.makePurchase(GameValues.IAP_2_ID);
+//				break;
+//			case R.id.iap3:
+//				MainActivity.purchases.makePurchase(GameValues.IAP_3_ID);
+//				break;
+//			case R.id.iap4:
+//				MainActivity.purchases.makePurchase(GameValues.IAP_4_ID);
+//				break;
+//			case R.id.iap5:
+//				MainActivity.purchases.makePurchase(GameValues.IAP_5_ID);
+//				break;
             }
         }
     };
@@ -81,7 +93,8 @@ public class GetCoinsFragment extends Fragment {
         @Override
         public void onAdOpened() {
             super.onAdOpened();
-            Utility.saveCoins(Game.context, Utility.getCoins(Game.context) + 50);
+            Utility.saveCoins(Game.context,
+                    Utility.getCoins(Game.context) + 100);
             CustomDialog.setNumCoins(Utility.getCoins(Game.context));
         }
 
@@ -124,7 +137,11 @@ public class GetCoinsFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View view = inflater
                 .inflate(R.layout.get_coins, container, false);
-        view.findViewById(R.id.iap).setOnClickListener(listener);
+        view.findViewById(R.id.iap1).setOnClickListener(listener);
+        view.findViewById(R.id.iap2).setOnClickListener(listener);
+        view.findViewById(R.id.iap3).setOnClickListener(listener);
+        view.findViewById(R.id.iap4).setOnClickListener(listener);
+        view.findViewById(R.id.iap5).setOnClickListener(listener);
         view.findViewById(R.id.video_ad).setOnClickListener(listener);
         view.findViewById(R.id.fullscreen_ad).setOnClickListener(listener);
         return view;

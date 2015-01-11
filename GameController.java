@@ -1,11 +1,17 @@
 package tbs.jumpsnew;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.net.Uri;
-import android.widget.Toast;
+import android.provider.MediaStore.Images;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import tbs.jumpsnew.managers.StoreManager;
-import tbs.jumpsnew.utility.Utility;
 
 public class GameController {
 
@@ -28,17 +34,8 @@ public class GameController {
                     } else {
                         // TURN ON
                         try {
-                            Game.mpSong.reset();
-                            Game.mpSong.prepare();
                             Game.mpSong.start();
                         } catch (Exception r) {
-                            try {
-
-                                Utility.equipSong(Game.context, Utility.getEquippedSong(Game.context));
-                            } catch (Exception e) {
-                                Toast.makeText(Game.context, "Failed to play song", Toast.LENGTH_LONG).show();
-                                e.printStackTrace();
-                            }
                             r.printStackTrace();
                         }
                         MainActivity.preferences.put("musicOn", "on");
@@ -69,13 +66,26 @@ public class GameController {
                         && y >= Game.modeBtn.yPos
                         && y <= Game.modeBtn.yPos + GameValues.BUTTON_SCALE) {
                     // STORE:
-                    if (Game.mode == GameMode.Arcade) {
-                        Game.mode = GameMode.Recruit;
-                        MainActivity.preferences.put("gMode", "recruit");
-                    } else {
+                    if (Game.mode == GameMode.Recruit) {
                         Game.mode = GameMode.Arcade;
                         MainActivity.preferences.put("gMode", "arcade");
+                    } else if (Game.mode == GameMode.Arcade) {
+                        Game.mode = GameMode.Ultra;
+                        MainActivity.preferences.put("gMode", "ultra");
+                    } else if (Game.mode == GameMode.Ultra) {
+                        Game.mode = GameMode.Singularity;
+                        MainActivity.preferences.put("gMode", "singul");
+                    } else if (Game.mode == GameMode.Singularity) {
+                        Game.mode = GameMode.Recruit;
+                        MainActivity.preferences.put("gMode", "recruit");
                     }
+                } else if (x >= Game.shareBtn.xPos
+                        && x <= Game.shareBtn.xPos + GameValues.BUTTON_SCALE
+                        && y >= Game.shareBtn.yPos
+                        && y <= Game.shareBtn.yPos + GameValues.BUTTON_SCALE) {
+                    // SHARE:
+                    share();
+                    // Utility.showToast("Share Coming Soon!", Game.context);
                 } else if (x >= Game.storeBtn.xPos
                         && x <= Game.storeBtn.xPos + GameValues.BUTTON_SCALE
                         && y >= Game.storeBtn.yPos
@@ -101,5 +111,40 @@ public class GameController {
 
     public static void released(int x, int y, int index) {
 
+    }
+
+    public static void share() {
+        Calendar c = Calendar.getInstance();
+        Date d = c.getTime();
+
+        Game.update();
+        Config conf = Config.RGB_565;
+        Bitmap image = Bitmap.createBitmap(Screen.width, Screen.height, conf);
+        Canvas canvas = GameThread.surfaceHolder.lockCanvas(null);
+        canvas.setBitmap(image);
+        Paint backgroundPaint = new Paint();
+        backgroundPaint.setColor(0xff292929);
+        canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(),
+                backgroundPaint);
+        Game.draw(canvas);
+        Bitmap screen = Bitmap.createBitmap(image, 0, 0, Screen.width,
+                Screen.height);
+        canvas.setBitmap(null);
+        GameThread.surfaceHolder.unlockCanvasAndPost(canvas);
+        String path = Images.Media.insertImage(
+                Game.context.getContentResolver(), screen, "screenShotBJ" + d
+                        + ".png", null);
+        System.out.println(path + " PATH");
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        Uri screenshotUri = Uri.parse(path);
+        shareIntent.setType("*/*");
+        shareIntent
+                .putExtra(
+                        Intent.EXTRA_TEXT,
+                        "Check out my High Score on Bass Jump: \nhttps://play.google.com/store/apps/details?id=tbs.jumpsnew");
+        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
+        Game.context.startActivity(Intent.createChooser(shareIntent,
+                "Share High Score:"));
     }
 }

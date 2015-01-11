@@ -3,6 +3,7 @@ package tbs.jumpsnew.utility;
 import android.content.Context;
 import android.view.View;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -17,9 +18,25 @@ public class AdManager {
 
     public AdManager(Context context) {
         bannerAd = new AdView(context);
-        bannerAd.setAdUnitId(context.getResources().getString(R.string.banner_id));
+        bannerAd.setAdUnitId(context.getResources().getString(
+                R.string.banner_id));
+
         fullscreenAd = new InterstitialAd(context);
-        fullscreenAd.setAdUnitId(context.getResources().getString(R.string.fullscreen_id));
+        fullscreenAd.setAdUnitId(context.getResources().getString(
+                R.string.fullscreen_id));
+        fullscreenAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                // super.onAdLoaded();
+            }
+
+            @Override
+            public void onAdClosed() {
+                loadFullscreenAd(); // LOAD NEXT ONE
+
+            }
+        });
+
         videoAd = new InterstitialAd(context);
         videoAd.setAdUnitId(context.getResources().getString(R.string.video_id));
     }
@@ -32,8 +49,12 @@ public class AdManager {
     }
 
     public void loadFullscreenAd() { // Get And Load Fullscreen Ad
-        AdRequest adRequest = new AdRequest.Builder().build();
-        fullscreenAd.loadAd(adRequest);
+        try {
+            AdRequest adRequest = new AdRequest.Builder().build();
+            fullscreenAd.loadAd(adRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void loadVideoAd() { // Get And Load Video Ad

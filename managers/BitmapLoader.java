@@ -20,10 +20,16 @@ public class BitmapLoader {
     public static Bitmap achiv;
     public static Bitmap store;
     public static Bitmap achievm;
+    public static Bitmap share;
 
     // MODES:
     public static Bitmap modeArcade;
     public static Bitmap modeRecruit;
+    public static Bitmap modeUltra;
+    public static Bitmap modeSingular;
+
+    // COIN:
+    public static Bitmap coin;
 
     public BitmapLoader() {
         Utility.log("BitmapLoader Initialized");
@@ -64,6 +70,10 @@ public class BitmapLoader {
                                 MainActivity.context.getResources(),
                                 R.drawable.achiv2), GameValues.BUTTON_SCALE,
                         GameValues.BUTTON_SCALE);
+        share = Utility.getResizedBitmap(
+                BitmapFactory.decodeResource(
+                        MainActivity.context.getResources(), R.drawable.share),
+                GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
 
         // MODE:
         modeArcade = Utility.getResizedBitmap(BitmapFactory.decodeResource(
@@ -72,5 +82,17 @@ public class BitmapLoader {
         modeRecruit = Utility.getResizedBitmap(BitmapFactory.decodeResource(
                         MainActivity.context.getResources(), R.drawable.moderecruit),
                 GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
+//		modeUltra = Utility.getResizedBitmap(BitmapFactory.decodeResource(
+//				MainActivity.context.getResources(), R.drawable.modeultra),
+//				GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
+//		modeSingular = Utility.getResizedBitmap(BitmapFactory.decodeResource(
+//				MainActivity.context.getResources(), R.drawable.modesingul),
+//				GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
+
+        // COIN:
+        coin = Utility.getResizedBitmap(
+                BitmapFactory.decodeResource(
+                        MainActivity.context.getResources(), R.drawable.coin),
+                GameValues.COIN_SCALE, GameValues.COIN_SCALE);
     }
 }

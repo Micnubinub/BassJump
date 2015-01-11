@@ -27,6 +27,10 @@ public class Level {
     // MOVEMENT
     public boolean moving;
     public boolean canMove;
+    // OTHER:
+    public int gap;
+    public int speed;
+    private int platformIndexer;
 
     public Level() {
         Utility.log("Level Initialized");
@@ -66,6 +70,7 @@ public class Level {
         canMove = true;
 
         // PLATFORMS
+        platformIndexer = 2;
         hadTwo = false;
         powerCountdown = 0;
         gapRight = false;
@@ -91,11 +96,14 @@ public class Level {
     }
 
     public void update() {
-        int speed = GameValues.SPEED_FACTOR;
-        if (Game.mode == GameMode.Recruit)
+        speed = GameValues.SPEED_FACTOR;
+        if (Game.mode == GameMode.Recruit) { // SLOW
             speed /= 1.5f;
-        if (speed < 1)
-            speed = 1;
+            if (speed < 1)
+                speed = 1;
+        } else if (Game.mode == GameMode.Ultra) { // ULTRA FAST
+            speed *= 1.35f;
+        }
         for (int i = 0; i < platformAmount; ++i) {
             platformsLeft.get(i).yPos += (speed);
             if (platformsLeft.get(platformIndexR).yPos >= 0) {
@@ -171,40 +179,48 @@ public class Level {
 
     public int generateGap(boolean right) {
         if (Game.state == GameState.Playing) {
-            int gap = 0;
-            if (powerCountdown <= 0) {
-                if (Game.state == GameState.Playing) {
-                    if (right == gapRight)
-                        platformsPerSide -= 1;
-                    if (right == gapRight && platformsPerSide <= 0) {
-                        if (Utility.randInt(0, 3) == 0) {
-                            platformsPerSide = Utility.randInt(3, 4);
-                        } else {
-                            if (!hadTwo) {
-                                platformsPerSide = Utility.randInt(2, 3);
-                                hadTwo = (platformsPerSide == 2);
-
+            gap = 0;
+            if (Game.mode != GameMode.Singularity) {
+                if (powerCountdown <= 0) {
+                    if (Game.state == GameState.Playing) {
+                        if (right == gapRight)
+                            platformsPerSide -= 1;
+                        if (right == gapRight && platformsPerSide <= 0) {
+                            if (Utility.randInt(0, 3) == 0) {
+                                platformsPerSide = Utility.randInt(3, 4);
                             } else {
-                                platformsPerSide = 3;
+                                if (!hadTwo) {
+                                    platformsPerSide = Utility.randInt(2, 3);
+                                    hadTwo = (platformsPerSide == 2);
+
+                                } else {
+                                    platformsPerSide = 3;
+                                }
                             }
+
+                            if (platformsPerSide > 1) {
+                                gap = Utility
+                                        .randInt(
+                                                (GameValues.PLATFORM_HEIGHT),
+                                                ((GameValues.PLATFORM_HEIGHT) * (platformsPerSide - 1)));
+                            } else {
+                                gap = GameValues.PLATFORM_HEIGHT;
+                            }
+                            if (Game.mode == GameMode.Ultra) {
+                                gap /= 1.35f;
+                            }
+                            gapRight = !gapRight;
                         }
-
-                        if (platformsPerSide > 1)
-                            gap = Utility
-                                    .randInt(
-                                            (GameValues.PLATFORM_HEIGHT),
-                                            ((GameValues.PLATFORM_HEIGHT) * (platformsPerSide - 1)));
-                        else
-                            gap = GameValues.PLATFORM_HEIGHT;
-                        // if (Utility.randInt(0, 2) == 0) {
-                        // gap = -1;
-                        // }
-
-                        gapRight = !gapRight;
                     }
+                } else {
+                    powerCountdown -= 1;
                 }
-            } else {
-                powerCountdown -= 1;
+            } else { // SINGULARITY
+                platformIndexer -= 1;
+                if (platformIndexer == 0) {
+                    gap = GameValues.PLATFORM_HEIGHT;
+                    platformIndexer = 1;
+                }
             }
 
             return gap;
