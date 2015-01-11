@@ -4,10 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-
-import java.util.Arrays;
 
 import tbs.jumpsnew.Game;
 import tbs.jumpsnew.objects.Player;
@@ -18,8 +15,6 @@ import tbs.jumpsnew.objects.Player;
  */
 public class ShapeView extends View {
     private static final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private static final int scoreBackground = 0xff404040;
-    private static final int color = 0xffe5e475;
     private static int thickness = 12;
     private int[] points;
     private Player.PlayerShape playerShape;
@@ -87,11 +82,7 @@ public class ShapeView extends View {
                 initHexagon();
                 setShapeRotation(-90);
                 break;
-            case RECT_STAR:
-                initRectAngleStar();
-                setShapeRotation(-90);
-                break;
-            case TRIANGLE_STAR:
+            case SHURIKEN_STAR:
                 initTriangleStar();
                 setShapeRotation(-90);
                 break;
@@ -99,14 +90,10 @@ public class ShapeView extends View {
                 initPentagonStar();
                 setShapeRotation(-90);
                 break;
-            case HEXAGON_STAR:
-                initHexagonStar();
-                setShapeRotation(-90);
-                break;
         }
 
         paint.setColor(Game.color);
-        paint.setStrokeWidth(isStarShape ? thickness / 2 : thickness);
+        paint.setStrokeWidth(thickness);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStyle(Paint.Style.STROKE);
     }
@@ -139,13 +126,6 @@ public class ShapeView extends View {
         angleOffSet = 0;
     }
 
-    private void initRectAngleStar() {
-        isStarShape = true;
-        points = new int[16];
-        initRotation = 45;
-        rotationStep = 90;
-        angleOffSet = 0;
-    }
 
     private void initTriangleStar() {
         isStarShape = true;
@@ -163,14 +143,7 @@ public class ShapeView extends View {
         angleOffSet = 72;
     }
 
-    private void initHexagonStar() {
-        isStarShape = true;
-        points = new int[24];
-        initRotation = 30;
-        rotationStep = 60;
-        angleOffSet = 0;
 
-    }
 
     public void setShapeRotation(double rotation) {
         if (points == null || points.length <= 5)
@@ -189,13 +162,10 @@ public class ShapeView extends View {
             }
         } else {
             for (int i = 0; i < points.length; i += 2) {
-                points[i] = cx
-                        + (int) (l * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
-                points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(initRotation
-                        + (rotationStep * i / 2) + rotation)));
+                points[i] = cx + (int) (l * Math.cos(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
+                points[i + 1] = cy + (int) (l * Math.sin(Math.toRadians(initRotation + (rotationStep * i / 2) + rotation)));
             }
         }
-        Log.e(String.valueOf(playerShape), Arrays.toString(points));
     }
 
     public void drawPolygon(Canvas canvas) {

@@ -95,6 +95,12 @@ public class Player extends GameObject {
             case CIRCLE:
                 // l = (GameValues.PLAYER_SCALE / 2) - GameValues.PAINT_THICKNESS;
                 break;
+            case SHURIKEN_STAR:
+                initShurikenStar();
+                break;
+            case PENTAGON_STAR:
+                initPentagonStar();
+                break;
         }
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth((GameValues.PAINT_THICKNESS + 16));
@@ -133,6 +139,22 @@ public class Player extends GameObject {
     // Math.cos(Math.toRadians(cosAngle)));
     // }
 
+    private static void initShurikenStar() {
+        isStarShape = true;
+        points = new int[12];
+        initRotation = 90;
+        rotationStep = 120;
+        angleOffSet = 30;
+    }
+
+    private static void initPentagonStar() {
+        isStarShape = true;
+        points = new int[20];
+        initRotation = 0;
+        rotationStep = 72;
+        angleOffSet = 72;
+    }
+
     private static void initHexagon() {
         points = new int[12];
         initRotation = 30;
@@ -148,28 +170,28 @@ public class Player extends GameObject {
 
         if (isStarShape) {
             for (int i = 0; i < points.length; i += 4) {
-                points[i] = cx
+                points[(i) % points.length] = cx
                         + (int) (l * Math.cos(Math.toRadians(initRotation
                         + (rotationStep * i / 2) + rotation)));
-                points[i + 1] = cy
+                points[(i + 1) % points.length] = cy
                         + (int) (l * Math.sin(Math.toRadians(initRotation
                         + (rotationStep * i / 2) + rotation)));
 
-                points[i + 2] = cx
+                points[(i + 2) % points.length] = cx
                         + (int) ((l / 3) * Math.cos(Math.toRadians(initRotation
                         + (rotationStep * i / 2) + rotation
                         + (rotationStep / 2))));
-                points[i + 3] = cy
+                points[(i + 3) % points.length] = cy
                         + (int) ((l / 3) * Math.sin(Math.toRadians(initRotation
                         + (rotationStep * i / 2) + rotation
                         + (rotationStep / 2))));
             }
         } else {
             for (int i = 0; i < points.length; i += 2) {
-                points[i] = cx
+                points[(i) % points.length] = cx
                         + (int) (l * Math.cos(Math.toRadians(initRotation
                         + (rotationStep * i / 2) + rotation)));
-                points[i + 1] = cy
+                points[(i + 1) % points.length] = cy
                         + (int) (l * Math.sin(Math.toRadians(initRotation
                         + (rotationStep * i / 2) + rotation)));
             }
@@ -559,6 +581,6 @@ public class Player extends GameObject {
     }
 
     public enum PlayerShape {
-        CIRCLE, RECT, TRIANGLE, HEXAGON, PENTAGON, RECT_STAR, TRIANGLE_STAR, HEXAGON_STAR, PENTAGON_STAR
+        CIRCLE, RECT, TRIANGLE, HEXAGON, PENTAGON, SHURIKEN_STAR, PENTAGON_STAR
     }
 }

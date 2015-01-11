@@ -80,10 +80,8 @@ public class Utility {
     public static final String SHAPE_CIRCLE = "SHAPE_CIRCLE";
     public static final String SHAPE_PENTAGON = "SHAPE_PENTAGON";
     public static final String SHAPE_HEXAGON = "SHAPE_HEXAGON";
-    public static final String SHAPE_RECTANGLE_STAR = "SHAPE_RECTANGLE_STAR";
-    public static final String SHAPE_TRIANGLE_STAR = "SHAPE_TRIANGLE_STAR";
+    public static final String SHAPE_SHURIKEN_STAR = "SHAPE_SHURIKEN_STAR";
     public static final String SHAPE_PENTAGON_STAR = "SHAPE_PENTAGON_STAR";
-    public static final String SHAPE_HEXAGON_STAR = "SHAPE_HEXAGON_STAR";
 
     public static final String SONG = "SONG";
     public static final String CHECKOUT_OUR_OTHER_APPS = "CHECKOUT_OUR_OTHER_APPS";
@@ -236,12 +234,7 @@ public class Utility {
 
         final String boughtShapes = getBoughtShapes(context);
         final String[] shapes = {SHAPE_RECTANGLE, SHAPE_TRIANGLE,
-                SHAPE_CIRCLE, SHAPE_PENTAGON, SHAPE_HEXAGON,
-
-                SHAPE_RECTANGLE_STAR, SHAPE_TRIANGLE_STAR, SHAPE_PENTAGON_STAR,
-                SHAPE_HEXAGON_STAR
-
-        };
+                SHAPE_CIRCLE, SHAPE_PENTAGON, SHAPE_HEXAGON, SHAPE_PENTAGON_STAR, SHAPE_SHURIKEN_STAR};
         for (String shape : shapes) {
             items.add(getShapeStoreItem(boughtShapes, shape));
         }
@@ -345,18 +338,12 @@ public class Utility {
             shape = Player.PlayerShape.TRIANGLE;
         else if (tag.equals(SHAPE_HEXAGON))
             shape = Player.PlayerShape.HEXAGON;
-
-        else if (tag.equals(SHAPE_RECTANGLE_STAR)) shape =
-                Player.PlayerShape.RECT_STAR;
         else if
                 (tag.equals(SHAPE_PENTAGON_STAR)) shape =
                     Player.PlayerShape.PENTAGON_STAR;
         else if
-                (tag.equals(SHAPE_TRIANGLE_STAR)) shape =
-                    Player.PlayerShape.TRIANGLE_STAR;
-        else if
-                (tag.equals(SHAPE_HEXAGON_STAR)) shape =
-                    Player.PlayerShape.HEXAGON_STAR;
+                (tag.equals(SHAPE_SHURIKEN_STAR)) shape =
+                    Player.PlayerShape.SHURIKEN_STAR;
         return shape;
     }
 
@@ -516,14 +503,10 @@ public class Utility {
             shape = "Triangle";
         else if (tag.equals(SHAPE_PENTAGON))
             shape = "Pentagon";
-        else if (tag.equals(SHAPE_HEXAGON_STAR))
-            shape = "Hexagram";
-        else if (tag.equals(SHAPE_TRIANGLE_STAR))
-            shape = "Tri-gram";
+        else if (tag.equals(SHAPE_SHURIKEN_STAR))
+            shape = "Shuriken";
         else if (tag.equals(SHAPE_PENTAGON_STAR))
             shape = "Pentagram";
-        else if (tag.equals(SHAPE_RECTANGLE_STAR))
-            shape = "Rect-gram";
         else
             shape = "Rectangle";
 
@@ -540,13 +523,9 @@ public class Utility {
             price = 2500;
         else if (tag.equals(SHAPE_HEXAGON))
             price = 10000;
-        else if (tag.equals(SHAPE_TRIANGLE_STAR))
-            price = 900;
-        else if (tag.equals(SHAPE_RECTANGLE_STAR))
-            price = 2200;
         else if (tag.equals(SHAPE_PENTAGON_STAR))
-            price = 4200;
-        else if (tag.equals(SHAPE_HEXAGON_STAR))
+            price = 12000;
+        else if (tag.equals(SHAPE_SHURIKEN_STAR))
             price = 15000;
         return price;
     }

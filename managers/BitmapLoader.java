@@ -82,12 +82,12 @@ public class BitmapLoader {
         modeRecruit = Utility.getResizedBitmap(BitmapFactory.decodeResource(
                         MainActivity.context.getResources(), R.drawable.moderecruit),
                 GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
-//		modeUltra = Utility.getResizedBitmap(BitmapFactory.decodeResource(
-//				MainActivity.context.getResources(), R.drawable.modeultra),
-//				GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
-//		modeSingular = Utility.getResizedBitmap(BitmapFactory.decodeResource(
-//				MainActivity.context.getResources(), R.drawable.modesingul),
-//				GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
+        modeUltra = Utility.getResizedBitmap(BitmapFactory.decodeResource(
+                        MainActivity.context.getResources(), R.drawable.modeultra),
+                GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
+        modeSingular = Utility.getResizedBitmap(BitmapFactory.decodeResource(
+                        MainActivity.context.getResources(), R.drawable.modesingul),
+                GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
 
         // COIN:
         coin = Utility.getResizedBitmap(
