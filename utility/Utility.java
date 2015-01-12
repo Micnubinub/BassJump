@@ -28,8 +28,7 @@ import tbs.jumpsnew.ui.ColorView;
 import tbs.jumpsnew.ui.ShapeView;
 
 public class Utility {
-    // Todo add stars
-    //Todo toggle colors
+    // Todo add more 2d shapes
 
     public static final String EQUIPPED_SONG = "EQUIPPED_SONG";
     public static final String EQUIPPED_SHAPE = "EQUIPPED_SHAPE";
@@ -98,6 +97,12 @@ public class Utility {
                             + Game.context.getApplicationInfo().packageName
                             + "/raw/song1").toString(), "Colossus", "Meizong",
                     0, true));
+            //Todo sidney
+            songs.add(new StoreItem(StoreItem.Type.SONG, Uri.parse(
+                    "android.resource://"
+                            + Game.context.getApplicationInfo().packageName
+                            + "/raw/song2").toString(), "Song2Name", "s2Artist",
+                    0, true));
             final String boughtSongs = getBoughtSongs(Game.context);
             final ArrayList<File> songFiles = FileManager.scanForMusic();
             for (int i = 0; i < songFiles.size(); i++) {
@@ -138,18 +143,11 @@ public class Utility {
     }
 
     public static void addGameColors() {
-        final ArrayList<StoreItem> colors = Utility
-                .getColorStoreItems(Game.context);
-        final ArrayList<StoreItem> tmp = new ArrayList<>();
-
+        final ArrayList<StoreItem> colors = Utility.getEquippedColorStoreItems(Game.context);
+        Log.e("addingColors", colors.toString());
+        Game.colors = new int[colors.size()];
         for (int i = 0; i < colors.size(); i++) {
-            if (colors.get(i).bought)
-                tmp.add(colors.get(i));
-        }
-
-        Game.colors = new int[tmp.size()];
-        for (int i = 0; i < tmp.size(); i++) {
-            Game.colors[i] = Utility.getColor(tmp.get(i).tag);
+            Game.colors[i] = Utility.getColor(colors.get(i).tag);
         }
 
     }
@@ -210,8 +208,8 @@ public class Utility {
 
     public static ArrayList<StoreItem> getColorStoreItems(Context context) {
         final ArrayList<StoreItem> items = new ArrayList<>();
-
         final String boughtColors = getBoughtColors(context);
+        final String equippedColors = getEquippedColors(context);
         final String[] colors = {COLOR_WHITE, COLOR_RED_LIGHT, COLOR_RED,
                 COLOR_RED_DARK, COLOR_PINK_LIGHT, COLOR_PINK, COLOR_PINK_DARK,
                 COLOR_BLUE_LIGHT, COLOR_BLUE, COLOR_BLUE_DARK,
@@ -223,9 +221,20 @@ public class Utility {
                 COLOR_TWENTY, COLOR_CHOC, COLOR_INCOG, COLOR_METALLIC,
                 COLOR_BLACK};
         for (String color : colors) {
-            items.add(getColorStoreItem(boughtColors, color));
+            final StoreItem storeItem = getColorStoreItem(boughtColors, color);
+            storeItem.equipped = equippedColors.contains(storeItem.tag);
+            items.add(storeItem);
         }
 
+        return items;
+    }
+
+    public static ArrayList<StoreItem> getEquippedColorStoreItems(Context context) {
+        final ArrayList<StoreItem> items = new ArrayList<>();
+        final String[] colors = Utility.getEquippedColors(context).split(SEP);
+        for (String color : colors) {
+            items.add(getColorStoreItem("", color));
+        }
         return items;
     }
 
@@ -355,7 +364,6 @@ public class Utility {
 
     public static String getEquippedSong(Context context) {
         String out = getPrefs(context).getString(EQUIPPED_SONG);
-        //Todo
         out = out == null ? "" : out;
         out = out.length() < 2 ? "android.resource://"
                 + context.getApplicationInfo().packageName + "/raw/song1" : out;
@@ -397,10 +405,12 @@ public class Utility {
 
     public static String getBoughtSongs(Context context) {
         final StringBuilder builder = new StringBuilder();
-        //Todo
         builder.append("android.resource://"
                 + context.getApplicationInfo().packageName + "/raw/song1");
+        builder.append(SEP);
 
+        builder.append("android.resource://"
+                + context.getApplicationInfo().packageName + "/raw/song2");
         String out = getPrefs(context).getString(BOUGHT_SONGS);
         out = out == null ? "" : out;
 
@@ -426,6 +436,23 @@ public class Utility {
         builder.append(SEP);
         builder.append(out);
         return builder.toString();
+    }
+
+    public static String getEquippedColors(Context context) {
+        StringBuilder builder = new StringBuilder();
+
+
+        String out = getPrefs(context).getString(EQUIPPED_COLORS);
+        out = out == null ? "" : out;
+
+        if (out.length() < 4) {
+            builder.append(COLOR_BLUE);
+            builder.append(SEP);
+            builder.append(COLOR_RED);
+            return builder.toString();
+        }
+
+        return out;
     }
 
     public static void addBoughtShapes(Context context, String tag) {
@@ -460,27 +487,36 @@ public class Utility {
     }
 
     public static void addEquippedColors(Context context, String tag) {
-        //Todo
         final StringBuilder builder = new StringBuilder();
-        builder.append(getBoughtColors(context));
+        builder.append(getEquippedColors(context));
+
+        if (tag.equals(COLOR_BLUE) || tag.equals(COLOR_RED)) {
+            Toast.makeText(context, "Cannot toggle default colors", Toast.LENGTH_LONG).show();
+        }
+
+        if (builder.toString().contains(tag))
+            return;
+
         if (builder.toString().length() > 1)
             builder.append(SEP);
         builder.append(tag);
-        getPrefs(context).put(BOUGHT_COLORS, builder.toString());
+        getPrefs(context).put(EQUIPPED_COLORS, builder.toString());
         addGameColors();
         madePurchase();
     }
 
     public static void removeEquippedColors(Context context, String tag) {
-        //Todo
-        final StringBuilder builder = new StringBuilder();
-        builder.append(getBoughtColors(context));
-        if (builder.toString().length() > 1)
-            builder.append(SEP);
-        builder.append(tag);
-        getPrefs(context).put(BOUGHT_COLORS, builder.toString());
+        String equippedColors = getEquippedColors(context);
+        final String[] split = equippedColors.split(SEP + tag);
+
+        if (split.length > 1)
+            equippedColors = split[0] + split[1];
+        else if (split.length == 1) {
+            equippedColors = split[0];
+        }
+        getPrefs(context).put(EQUIPPED_COLORS, equippedColors);
         addGameColors();
-        madePurchase();
+        return;
     }
 
     public static void madePurchase() {
@@ -668,6 +704,7 @@ public class Utility {
     public static String getRawFileSongName(String song) {
         if (song.endsWith("song1"))
             return "Colossus" + SEP + "Meizong";
+        //Todo sidney
         // if (song.endsWith("song2"))
         // return "Song 2...";
 

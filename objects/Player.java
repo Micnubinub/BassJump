@@ -21,7 +21,6 @@ public class Player extends GameObject {
     // Color
     public static int paintIndex;
     public static PlayerShape playerShape;
-    // Todo fix with scaling
     public static int paintTrailOffset;
     private static int[] points;
     // Michael's quick fix
@@ -108,6 +107,7 @@ public class Player extends GameObject {
     }
 
     private static void initRectAngle() {
+        isStarShape = false;
         points = new int[8];
         initRotation = 45;
         rotationStep = 90;
@@ -116,6 +116,7 @@ public class Player extends GameObject {
     }
 
     private static void initTriangle() {
+        isStarShape = false;
         points = new int[6];
         initRotation = 90;
         rotationStep = 120;
@@ -125,6 +126,7 @@ public class Player extends GameObject {
     }
 
     private static void initPentagon() {
+        isStarShape = false;
         points = new int[10];
         initRotation = 0;
         rotationStep = 72;
@@ -145,6 +147,7 @@ public class Player extends GameObject {
         initRotation = 90;
         rotationStep = 120;
         angleOffSet = 30;
+        l = Math.round((GameValues.PLAYER_SCALE / 2) / 0.55f);
     }
 
     private static void initPentagonStar() {
@@ -156,6 +159,7 @@ public class Player extends GameObject {
     }
 
     private static void initHexagon() {
+        isStarShape = false;
         points = new int[12];
         initRotation = 30;
         rotationStep = 60;

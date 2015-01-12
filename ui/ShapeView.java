@@ -144,7 +144,6 @@ public class ShapeView extends View {
     }
 
 
-
     public void setShapeRotation(double rotation) {
         if (points == null || points.length <= 5)
             return;

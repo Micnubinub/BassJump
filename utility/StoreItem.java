@@ -6,6 +6,7 @@ public class StoreItem {
     public final String name, description;
     public final String tag;
     public boolean bought;
+    public boolean equipped;
 
     public StoreItem(Type type, String tag, String name, String description,
                      int price, boolean bought) {
@@ -15,6 +16,11 @@ public class StoreItem {
         this.bought = bought;
         this.name = name;
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return tag;
     }
 
     public enum Type {

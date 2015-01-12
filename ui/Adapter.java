@@ -62,6 +62,15 @@ public class Adapter extends BaseAdapter {
         final StoreItem item = storeItems.get(position);
         view.setName(item.name);
         view.setDescription(item.description);
+
+
+        view.setPrice(" " + Utility.formatNumber(item.price)); // GAP
+        view.setBought(item.bought);
+        view.setPosition(position);
+        final Button button = (Button) (view.getView().findViewById(R.id.buy_equip));
+        button.setTag(position);
+        button.setOnClickListener(storeClickListener);
+
         switch (item.type) {
             case SHAPE:
                 view.setIcon(Utility.getShape(context, item.tag));
@@ -76,21 +85,35 @@ public class Adapter extends BaseAdapter {
                 break;
             case COLOR:
                 view.setIcon(Utility.getColor(context, item.tag));
+                if (item.bought) {
+                    if (item.tag.equals(Utility.COLOR_BLUE) || item.tag.equals(Utility.COLOR_RED)) {
+                        button.setText("Added");
+                        button.setOnClickListener(null);
+                    } else {
+                        button.setText(item.equipped ? "Remove" : "Use");
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (item.equipped)
+                                    Utility.removeEquippedColors(context, item.tag);
+                                else
+                                    Utility.addEquippedColors(context, item.tag);
+
+                                item.equipped = !item.equipped;
+                                try {
+                                    notifyDataSetChanged();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        });
+                    }
+                }
+
                 break;
         }
 
-        view.setPrice(" " + Utility.formatNumber(item.price)); // GAP
-        view.setBought(item.bought);
-        view.setPosition(position);
-        view.getView().findViewById(R.id.buy_equip).setTag(position);
-        view.getView().findViewById(R.id.buy_equip).setOnClickListener(storeClickListener);
-        if (item.type == StoreItem.Type.COLOR) {
-            if (item.bought) {
-                ((Button) (view.getView().findViewById(R.id.buy_equip))).setText("Added");
-                ((view.getView().findViewById(R.id.buy_equip))).setOnClickListener(null);
-            }
-
-        }
         view.getView().setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT, ListViewLib.dpToPixels(96)));
         return view.getView();
     }

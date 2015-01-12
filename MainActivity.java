@@ -161,7 +161,7 @@ public class MainActivity extends BaseGameActivity {
 
         // Load songs in a thread
         Utility.refreshSongs();
-
+//Utility.saveCoins(this, 212424124);
         // PURCHASES: (PUT IN LATER)
         //purchases = new GPurchaseManager();
 
