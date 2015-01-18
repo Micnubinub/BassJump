@@ -233,10 +233,9 @@ public class FileManager {
 
         final File file = Environment.getExternalStorageDirectory();
         for (File file1 : file.listFiles()) {
-            if (file1.isDirectory() && file1.getName().toLowerCase().contains("music"))
+            if (file1.isDirectory())
                 directories.add(file1);
         }
-
         while (directories.size() > 0) {
             getMusicFromDirectory(directories.get(0));
         }
