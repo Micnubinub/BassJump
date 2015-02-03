@@ -46,8 +46,7 @@ public class GameView extends GLSurfaceView implements SurfaceHolder.Callback {
             }
         }
 
-        Bitmap sb = Bitmap.createBitmap(bt, w, h, Bitmap.Config.ARGB_8888);
-        return sb;
+        return Bitmap.createBitmap(bt, w, h, Bitmap.Config.ARGB_8888);
     }
 
     void InitView() {

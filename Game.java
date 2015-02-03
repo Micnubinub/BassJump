@@ -11,13 +11,19 @@ import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.leaderboard.LeaderboardScore;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import tbs.jumpsnew.animation.MovingText;
 import tbs.jumpsnew.levels.Level;
@@ -31,13 +37,19 @@ import tbs.jumpsnew.utility.GameObject;
 import tbs.jumpsnew.utility.Utility;
 
 public class Game {
+    //Todo make it so users can equip muliple songs, and just shuffle through them
+    //Todo make it so users can dictate which colors are equipped, and shuffle through those
+    //Todo make it so users can dictate which shapes are equipped, and shuffle through those
     private static final Paint paintText = new Paint();
     private static final Paint paintVisualizer = new Paint();
     private static final Rect result = new Rect();
     private static final RectF paintTrailRect = new RectF();
     // PAINTER:
     private static final Paint paint = new Paint();
+    //MusicShuffle
+    private static final Random random = new Random();
     public static int[] colors = new int[]{0xffbb00};
+    public static int background = 0xff292929;
     // CONTEXT
     public static Context context;
     // LEVEL AND PLAYER:
@@ -72,6 +84,7 @@ public class Game {
     public static String scoreText;
     public static boolean drawTop;
     public static boolean drawBottom;
+    public static String[] songs;
     // MOVING TEXTS:
     private static ArrayList<MovingText> animatedTexts; // ANIMATED TEXT LIST
     private static int animatedTextIndex; // WHICH TEXT TO USE
@@ -94,6 +107,17 @@ public class Game {
     private static int introDelay;
     private static int loadProg;
     private static int loadWidth;
+    private static String currSong;
+    private static Timer timer = new Timer();
+    private static TimerTask timerTask = new TimerTask() {
+        @Override
+        public void run() {
+            playNextSong();
+        }
+    };
+    // RANKING:
+    private static LeaderboardScore leaderboard;
+
 
     public static void init(Context cont) {
         // CONST
@@ -118,7 +142,9 @@ public class Game {
         // MUSIC
         isPlaying = true;
         beatDetector = new BeatDetectorByFrequency();
-        Utility.equipSong(context, Utility.getEquippedSong(context));
+        Utility.equipSongs(context, Utility.getEquippedSongs(context));
+        Log.e("songs", Arrays.toString(songs));
+
 
         // LOAD IMAGES ONCE
         new BitmapLoader();
@@ -132,11 +158,10 @@ public class Game {
 
         // CANVAS DATA:
         canvasData = new Canvas();
-
     }
 
     public static void setup() {
-        Utility.log("Game Initialized");
+        Utility.log("tbs.jumpsnew.Game.Game Initialized");
         // MUSIC
         alphaM = 0;
         LOW_FREQUENCY = 0;
@@ -218,6 +243,9 @@ public class Game {
         // DRAW EVERYTHING IN ORDER:
         // paint.setColor(0x000000); // DEFAULT
         // // PARTICLES && TEXTS:
+        paint.setColor(background);
+        canvas.drawRect(0, 0, canvas.getWidth(),
+                canvas.getHeight(), paint);
         paint.setColor(0xff2e2d2e); // FUCK ALPHA
         for (int i = 0; i < level.speedParticles.size(); ++i) {
             canvas.drawRect(level.speedParticles.get(i).xPos,
@@ -385,36 +413,10 @@ public class Game {
                 canvas.drawBitmap(BitmapLoader.modeSingular, modeBtn.xPos,
                         modeBtn.yPos, paint);
 
-            // MODE TEXT:
-            paintText.setColor(0xffe5e4a0);
-            paintText.setAlpha(255);
-            paintText.setTextSize(Screen.width / 24);
-            paintText.setTextAlign(Align.RIGHT);
-            if (mode == GameMode.Arcade)
-                canvas.drawText("Arcade", modeBtn.xPos
-                                - GameValues.BUTTON_PADDING,
-                        (modeBtn.yPos + GameValues.BUTTON_SCALE)
-                                - (GameValues.BUTTON_PADDING / 4), paintText);
-            else if (mode == GameMode.Recruit)
-                canvas.drawText("Recruit", modeBtn.xPos
-                                - GameValues.BUTTON_PADDING,
-                        (modeBtn.yPos + GameValues.BUTTON_SCALE)
-                                - (GameValues.BUTTON_PADDING / 4), paintText);
-            else if (mode == GameMode.Ultra)
-                canvas.drawText("Ultra", modeBtn.xPos
-                                - GameValues.BUTTON_PADDING,
-                        (modeBtn.yPos + GameValues.BUTTON_SCALE)
-                                - (GameValues.BUTTON_PADDING / 4), paintText);
-            else if (mode == GameMode.Singularity)
-                canvas.drawText("Singular", modeBtn.xPos
-                                - GameValues.BUTTON_PADDING,
-                        (modeBtn.yPos + GameValues.BUTTON_SCALE)
-                                - (GameValues.BUTTON_PADDING / 4), paintText);
-
             // TEXT
             paintText.setColor(0xffe5e4a0);
             paintText.setTextAlign(Align.RIGHT);
-            paintText.setTextSize(Screen.width / 4.85f);
+            paintText.setTextSize((Screen.width / 4.85f));
             paintText.getTextBounds("BASS", 0, "JUMP".length(), result);
             canvas.drawText("BASS", leaderBtn.xPos - GameValues.BUTTON_PADDING,
                     (result.height() * 1.25f), paintText);
@@ -479,6 +481,23 @@ public class Game {
                     (achievBtn.xPos + GameValues.BUTTON_SCALE + GameValues.BUTTON_PADDING),
                     (achievBtn.yPos + GameValues.BUTTON_SCALE)
                             - result.height(), paintText);
+
+            // MODE:
+            paintText.setTextAlign(Align.CENTER);
+            paintText.setTextSize(Screen.width / 27);
+            txt = "Arcade";
+            if (mode == GameMode.Recruit) {
+                txt = "Recruit";
+            } else if (mode == GameMode.Singularity) {
+                txt = "Singularity";
+            } else if (mode == GameMode.Ultra) {
+                txt = "Ultra";
+            }
+            canvas.drawText(txt, modeBtn.xPos + (GameValues.BUTTON_SCALE / 2),
+                    (modeBtn.yPos + GameValues.BUTTON_SCALE)
+                            + (GameValues.BUTTON_PADDING * 1.15f), paintText);
+            // RANK:
+
         } else if (state == GameState.Playing) {
             // SCORE
             paintText.setColor(0xffe5e4a0);
@@ -552,6 +571,13 @@ public class Game {
         // ADS
 
         if (MainActivity.showAds) {
+            MainActivity.getView().post(new Runnable() { // LOAD AD
+                @Override
+                public void run() {
+                    if (!Game.adManager.getFullscreenAd().isLoaded())
+                        Game.adManager.loadFullscreenAd();
+                }
+            });
             if ((player.gamesPlayed + 1) % 10 == 0 && player.gamesPlayed > 0) {
                 // AD WARNING:
                 MainActivity.getView().post(new Runnable() {
@@ -570,15 +596,13 @@ public class Game {
                                 .getFullscreenAd();
                         if (ad.isLoaded()) {
                             ad.show();
-                        } else {
-                            Game.adManager.loadFullscreenAd();
                         }
                     }
                 });
 
             }
         }
-        Utility.log("Game Setup Initialized");
+        Utility.log("tbs.jumpsnew.Game.Game Setup Initialized");
         GameValues.SPEED_BONUS = 1;
 
         // COLORS:
@@ -724,7 +748,7 @@ public class Game {
         shareBtn = new Button();
         shareBtn.scale = GameValues.BUTTON_SCALE;
         shareBtn.xPos = GameValues.BUTTON_PADDING;
-        shareBtn.yPos = soundBtn.yPos;
+        shareBtn.yPos = storeBtn.yPos + GameValues.BUTTON_PADDING + (GameValues.BUTTON_SCALE / 2);
 
         // MOVING TEXT:
         animatedTextIndex = 0;
@@ -807,6 +831,7 @@ public class Game {
             mpSong.release();
         }
 
+        currSong = file.getAbsolutePath();
         mpSong = MediaPlayer.create(MainActivity.context, Uri.fromFile(file));
         setUpSong();
     }
@@ -818,7 +843,6 @@ public class Game {
     }
 
     private static void setUpSong() {
-        mpSong.setLooping(true);
         mpSong.setAudioStreamType(AudioManager.STREAM_MUSIC);
         if (!isPlaying) {
             try {
@@ -829,9 +853,7 @@ public class Game {
             return;
         }
 
-        final String equipped = Utility.getEquippedSong(context);
-        final String[] songDetails = Utility.getSongTitle(equipped).split(
-                Utility.SEP);
+        final String[] songDetails = Utility.getSongTitle(currSong).split(Utility.SEP);
         if (songDetails == null
                 || (songDetails[0] + songDetails[1]).length() < 2)
             songName = "Meizong - Colossus"; // DEFAULT
@@ -847,6 +869,19 @@ public class Game {
         }
 
         mpSong.start();
+        timer.cancel();
+        timer.schedule(timerTask, mpSong.getDuration());
         beatDetector.link(mpSong);
+    }
+
+    public static void playNextSong() {
+        if (songs == null) {
+            playDefaultSong();
+            return;
+        }
+        final int songIndex = random.nextInt(songs.length) % songs.length;
+        Log.e("playNextSong", songs[songIndex]);
+        playSong(songs[songIndex]);
+
     }
 }

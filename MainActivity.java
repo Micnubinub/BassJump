@@ -17,6 +17,7 @@ import tbs.jumpsnew.ui.CustomDialog;
 import tbs.jumpsnew.ui.OtherAppsAd;
 import tbs.jumpsnew.utility.AdManager;
 import tbs.jumpsnew.utility.BaseGameActivity;
+import tbs.jumpsnew.utility.GPurchaseManager;
 import tbs.jumpsnew.utility.SecurePreferences;
 import tbs.jumpsnew.utility.Utility;
 
@@ -39,7 +40,7 @@ public class MainActivity extends BaseGameActivity {
     public static int adsWatched;
 
     // PURCHASES:
-    //public static GPurchaseManager purchases;
+    public static GPurchaseManager purchases;
 
     // ADS:
     public static boolean showAds;
@@ -118,6 +119,12 @@ public class MainActivity extends BaseGameActivity {
         } else {
             Game.player.highScoreS = 0;
         }
+        if (preferences.getString("hScoreS2") != null) {
+            Game.player.highScoreS2 = Integer.parseInt(preferences
+                    .getString("hScoreS2"));
+        } else {
+            Game.player.highScoreS2 = 0;
+        }
 
         if (preferences.getString("musicOn") != null) {
             if (preferences.getString("musicOn").equals("off")) {
@@ -138,9 +145,18 @@ public class MainActivity extends BaseGameActivity {
                 Game.mode = GameMode.Ultra;
             } else if (preferences.getString("gMode").equals("singul")) {
                 Game.mode = GameMode.Singularity;
+            } else if (preferences.getString("gMode").equals("speed")) {
+                Game.mode = GameMode.SpeedRunner;
+                GameValues.PLAYER_JUMP_SPEED_MULT = 8;
             }
         } else {
             Game.mode = GameMode.Arcade;
+        }
+        if (MainActivity.preferences.getString("gPlayed") != null) {
+            Game.player.gamesPlayed = Integer.parseInt(MainActivity.preferences
+                    .getString("gPlayed")) + 1;
+        } else {
+            Game.player.gamesPlayed = 0;
         }
 
         // Set up other apps adView and add gameView
@@ -161,9 +177,9 @@ public class MainActivity extends BaseGameActivity {
 
         // Load songs in a thread
         Utility.refreshSongs();
-//Utility.saveCoins(this, 212424124);
+        // Utility.saveCoins(this, 212424124);
         // PURCHASES: (PUT IN LATER)
-        //purchases = new GPurchaseManager();
+        purchases = new GPurchaseManager();
 
     }
 
@@ -187,9 +203,9 @@ public class MainActivity extends BaseGameActivity {
     public void onDestroy() {
         super.onDestroy();
         try {
-//			if (purchases.mService != null) {
-//				unbindService(purchases.mServiceConn);
-//			}
+            if (purchases.mService != null) {
+                unbindService(purchases.mServiceConn);
+            }
         } catch (Exception e) {
 
         }

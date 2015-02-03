@@ -27,6 +27,7 @@ public class BitmapLoader {
     public static Bitmap modeRecruit;
     public static Bitmap modeUltra;
     public static Bitmap modeSingular;
+    public static Bitmap modeSpeed;
 
     // COIN:
     public static Bitmap coin;
@@ -87,6 +88,9 @@ public class BitmapLoader {
                 GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
         modeSingular = Utility.getResizedBitmap(BitmapFactory.decodeResource(
                         MainActivity.context.getResources(), R.drawable.modesingul),
+                GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
+        modeSpeed = Utility.getResizedBitmap(BitmapFactory.decodeResource(
+                        MainActivity.context.getResources(), R.drawable.modespeed),
                 GameValues.BUTTON_SCALE, GameValues.BUTTON_SCALE);
 
         // COIN:

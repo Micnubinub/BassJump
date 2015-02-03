@@ -17,6 +17,7 @@ public class Particle {
     public static final int MAX_DIMENSION = 5; // the maximum width or height
     public static final int MAX_SPEED = 10; // maximum speed (per update)
     private final Paint paint; // internal use to avoid instantiation
+    int a;
     private int state; // particle is alive or dead
     private float width; // width of the particle
     private float height; // height of the particle
@@ -71,7 +72,7 @@ public class Particle {
             this.yv += 2;
 
             // extract alpha
-            int a = this.color >>> 24;
+            a = this.color >>> 24;
             a -= 7; // fade by 2
             if (a <= 0) { // if reached transparency kill the particle
                 this.state = STATE_DEAD;

@@ -63,7 +63,6 @@ public class Adapter extends BaseAdapter {
         view.setName(item.name);
         view.setDescription(item.description);
 
-
         view.setPrice(" " + Utility.formatNumber(item.price)); // GAP
         view.setBought(item.bought);
         view.setPosition(position);
@@ -82,6 +81,26 @@ public class Adapter extends BaseAdapter {
                 view.setName(item.description);
                 view.setDescription(item.name);
                 view.setIcon(imageView);
+
+                if (item.bought) {
+                    button.setText(item.equipped ? "Remove" : "Use");
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (item.equipped)
+                                Utility.removeEquippedSongs(context, item.tag);
+                            else
+                                Utility.addEquippedSongs(context, item.tag);
+
+                            item.equipped = !item.equipped;
+                            try {
+                                notifyDataSetChanged();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
                 break;
             case COLOR:
                 view.setIcon(Utility.getColor(context, item.tag));
@@ -98,7 +117,6 @@ public class Adapter extends BaseAdapter {
                                     Utility.removeEquippedColors(context, item.tag);
                                 else
                                     Utility.addEquippedColors(context, item.tag);
-
                                 item.equipped = !item.equipped;
                                 try {
                                     notifyDataSetChanged();
@@ -110,7 +128,31 @@ public class Adapter extends BaseAdapter {
                         });
                     }
                 }
+                break;
+            case BACKGROUND:
+                view.setIcon(Utility.getColor(context, item.tag));
+                if (item.bought) {
 
+                    button.setText(item.equipped ? "Equipped" : "Equip");
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            for (StoreItem storeItem : storeItems) {
+                                if (storeItem.equipped)
+                                    storeItem.equipped = false;
+                            }
+                            Utility.equipBackground(context, item.tag);
+                            item.equipped = true;
+                            try {
+                                notifyDataSetChanged();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+
+                }
                 break;
         }
 

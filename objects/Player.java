@@ -44,6 +44,7 @@ public class Player extends GameObject {
     public int highScoreR; // RECRUIT
     public int highScoreU; // ULTRA
     public int highScoreS; // SINGUL
+    public int highScoreS2; // SPEED
     public int gamesPlayed; // GAMES PLAYED
     public int tmpCoins; // COINS WHEN PLAYING ONLY
     // SPECIAL ACHIEVEMENTS
@@ -147,7 +148,8 @@ public class Player extends GameObject {
         initRotation = 90;
         rotationStep = 120;
         angleOffSet = 30;
-        l = Math.round((GameValues.PLAYER_SCALE / 2) / 0.55f);
+        l = Math.round((GameValues.PLAYER_SCALE / 2));
+        xOffset = (int) (GameValues.PLAYER_SCALE * 0.1f);
     }
 
     private static void initPentagonStar() {
@@ -357,6 +359,11 @@ public class Player extends GameObject {
                 MainActivity.preferences.put("hScoreS", String.valueOf(score));
                 highScoreS = score;
             }
+        } else if (Game.mode == GameMode.SpeedRunner) {
+            if (highScoreS2 < score) {
+                MainActivity.preferences.put("hScoreS2", String.valueOf(score));
+                highScoreS2 = score;
+            }
         }
 
         // PLAYED AND DEATHS
@@ -481,7 +488,10 @@ public class Player extends GameObject {
             coinPluser += 1;
         }
         if (score >= 100) {
-            coinPluser += 1;
+            coinPluser += 2;
+        }
+        if (score >= 200) {
+            coinPluser += 4;
         }
         tmpCoins += coinPluser;
 
@@ -502,6 +512,15 @@ public class Player extends GameObject {
         // / PARTICLES:
         showParticles();
         Game.showCircle(scale, getXCenter(), getYCenter(), 160, false);
+
+        // TEXT
+        if (right)
+            Game.showAnimatedText("+" + coinPluser, xPos, getYCenter(),
+                    (Screen.height / 100), 12, 255, 0);
+        else
+            Game.showAnimatedText("+" + coinPluser, xPos
+                            + GameValues.PLAYER_SCALE, getYCenter(),
+                    (Screen.height / 100), 12, 255, 0);
     }
 
     public int getXCenter() {

@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdListener;
 
 import tbs.jumpsnew.Game;
+import tbs.jumpsnew.GameValues;
 import tbs.jumpsnew.MainActivity;
 import tbs.jumpsnew.R;
 import tbs.jumpsnew.ui.CustomDialog;
@@ -65,21 +66,21 @@ public class GetCoinsFragment extends Fragment {
                     else
                         adManager.loadFullscreenAd();
                     break;
-//			case R.id.iap1:
-//				MainActivity.purchases.makePurchase(GameValues.IAP_1_ID);
-//				break;
-//			case R.id.iap2:
-//				MainActivity.purchases.makePurchase(GameValues.IAP_2_ID);
-//				break;
-//			case R.id.iap3:
-//				MainActivity.purchases.makePurchase(GameValues.IAP_3_ID);
-//				break;
-//			case R.id.iap4:
-//				MainActivity.purchases.makePurchase(GameValues.IAP_4_ID);
-//				break;
-//			case R.id.iap5:
-//				MainActivity.purchases.makePurchase(GameValues.IAP_5_ID);
-//				break;
+                case R.id.iap1:
+                    MainActivity.purchases.makePurchase(GameValues.IAP_1_ID);
+                    break;
+                case R.id.iap2:
+                    MainActivity.purchases.makePurchase(GameValues.IAP_2_ID);
+                    break;
+                case R.id.iap3:
+                    MainActivity.purchases.makePurchase(GameValues.IAP_3_ID);
+                    break;
+                case R.id.iap4:
+                    MainActivity.purchases.makePurchase(GameValues.IAP_4_ID);
+                    break;
+                case R.id.iap5:
+                    MainActivity.purchases.makePurchase(GameValues.IAP_5_ID);
+                    break;
             }
         }
     };

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import tbs.jumpsnew.Game;
@@ -28,14 +29,14 @@ import tbs.jumpsnew.ui.ColorView;
 import tbs.jumpsnew.ui.ShapeView;
 
 public class Utility {
-    // Todo add more 2d shapes
-
     public static final String EQUIPPED_SONG = "EQUIPPED_SONG";
     public static final String EQUIPPED_SHAPE = "EQUIPPED_SHAPE";
     public static final String EQUIPPED_COLORS = "EQUIPPED_COLORS";
+    public static final String EQUIPPED_BACKGROUND = "EQUIPPED_BACKGROUND";
     public static final String BOUGHT_SONGS = "BOUGHT_SONGS";
     public static final String BOUGHT_COLORS = "BOUGHT_COLORS";
     public static final String BOUGHT_SHAPES = "BOUGHT_SHAPES";
+    public static final String BOUGHT_BACKGROUND = "BOUGHT_BACKGROUNDS";
     public static final String COINS = "COINS";
     public static final int SONG_PRICE = 500;
     public static final int COLOR_PRICE = 100;
@@ -74,6 +75,12 @@ public class Utility {
     public static final String COLOR_TWENTY = "COLOR_TWENTY";
     public static final String COLOR_CHOC = "COLOR_CHOC";
 
+    public static final String BACKGROUND_NORMAL = "BACKGROUND_NORMAL";
+    public static final String BACKGROUND_MIDNIGHT = "BACKGROUND_MIDNGHT";
+    public static final String BACKGROUND_HUNNID = "BACKGROUND_HUNNID";
+    public static final String BACKGROUND_ROAD = "BACKGROUND_ROAD";
+    public static final String BACKGROUND_SKY = "BACKGROUND_SKY";
+
     public static final String SHAPE_RECTANGLE = "SHAPE_RECTANGLE";
     public static final String SHAPE_TRIANGLE = "SHAPE_TRIANGLE";
     public static final String SHAPE_CIRCLE = "SHAPE_CIRCLE";
@@ -82,7 +89,7 @@ public class Utility {
     public static final String SHAPE_SHURIKEN_STAR = "SHAPE_SHURIKEN_STAR";
     public static final String SHAPE_PENTAGON_STAR = "SHAPE_PENTAGON_STAR";
 
-    public static final String SONG = "SONG";
+    // public static final String SONG = "SONG";
     public static final String CHECKOUT_OUR_OTHER_APPS = "CHECKOUT_OUR_OTHER_APPS";
 
     // RANDOM
@@ -97,17 +104,14 @@ public class Utility {
                             + Game.context.getApplicationInfo().packageName
                             + "/raw/song1").toString(), "Colossus", "Meizong",
                     0, true));
-            //Todo sidney
-            songs.add(new StoreItem(StoreItem.Type.SONG, Uri.parse(
-                    "android.resource://"
-                            + Game.context.getApplicationInfo().packageName
-                            + "/raw/song2").toString(), "Song2Name", "s2Artist",
-                    0, true));
+
             final String boughtSongs = getBoughtSongs(Game.context);
+            final String equippedSongs = getEquippedSongs(Game.context);
             final ArrayList<File> songFiles = FileManager.scanForMusic();
             for (int i = 0; i < songFiles.size(); i++) {
-                songs.add(getSongStoreItem(boughtSongs, songFiles.get(i)
-                        .getAbsolutePath()));
+                final StoreItem storeItem = getSongStoreItem(boughtSongs, songFiles.get(i).getAbsolutePath());
+                storeItem.equipped = equippedSongs.contains(storeItem.tag);
+                songs.add(storeItem);
             }
         }
     };
@@ -206,6 +210,21 @@ public class Utility {
         return coins;
     }
 
+
+    public static ArrayList<StoreItem> getBackgroundStoreItems(Context context) {
+        final ArrayList<StoreItem> items = new ArrayList<>();
+        final String boughtColors = getBoughtBackgrounds(context);
+        final String equippedColors = getEquippedColors(context);
+        final String[] colors = {BACKGROUND_NORMAL, BACKGROUND_MIDNIGHT, BACKGROUND_HUNNID, BACKGROUND_ROAD, BACKGROUND_SKY};
+        for (String color : colors) {
+            final StoreItem storeItem = getColorStoreItem(boughtColors, color);
+            storeItem.equipped = equippedColors.contains(storeItem.tag);
+            items.add(storeItem);
+        }
+
+        return items;
+    }
+
     public static ArrayList<StoreItem> getColorStoreItems(Context context) {
         final ArrayList<StoreItem> items = new ArrayList<>();
         final String boughtColors = getBoughtColors(context);
@@ -265,7 +284,7 @@ public class Utility {
     }
 
     private static int getColor(String tag) {
-        int color = 0xffffffff;
+        int color = 0xff292929;
 
         if (tag.equals(COLOR_RED_LIGHT))
             color = 0xffe84e40;
@@ -325,6 +344,16 @@ public class Utility {
             color = 0xff69661d;
         else if (tag.equals(COLOR_CHOC))
             color = 0xff53461a;
+        else if (tag.equals(COLOR_WHITE))
+            color = 0xffffffff;
+        else if (tag.equals(BACKGROUND_HUNNID))
+            color = 0xffdcdcdc;
+        else if (tag.equals(BACKGROUND_MIDNIGHT))
+            color = 0xff0000a0;
+        else if (tag.equals(BACKGROUND_ROAD))
+            color = 0xff525866;
+        else if (tag.equals(BACKGROUND_SKY))
+            color = 0xff3bb9ff;
         return color;
     }
 
@@ -362,7 +391,7 @@ public class Utility {
         return out;
     }
 
-    public static String getEquippedSong(Context context) {
+    public static String getEquippedSongs(Context context) {
         String out = getPrefs(context).getString(EQUIPPED_SONG);
         out = out == null ? "" : out;
         out = out.length() < 2 ? "android.resource://"
@@ -375,13 +404,15 @@ public class Utility {
         Player.setPlayerShape(getShapeType(tag));
     }
 
-    public static void equipSong(Context context, String tag) {
+    public static void equipSongs(Context context, String tag) {
         getPrefs(context).put(EQUIPPED_SONG, tag);
+        MainActivity.songs = tag.split(SEP);
+        Log.e("songs", Arrays.toString(MainActivity.songs));
         if (tag == null || tag.length() < 1)
             Game.playDefaultSong();
         else {
             try {
-                Game.playSong(tag);
+                Game.playNextSong();
             } catch (Exception e) {
                 Game.playDefaultSong();
             }
@@ -422,6 +453,20 @@ public class Utility {
         return builder.toString();
     }
 
+    public static String getBoughtBackgrounds(Context context) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(BACKGROUND_NORMAL);
+
+        String out = getPrefs(context).getString(BOUGHT_BACKGROUND);
+        out = out == null ? "" : out;
+
+        if (out.length() < 2)
+            return builder.toString();
+        builder.append(SEP);
+        builder.append(out);
+        return builder.toString();
+    }
+
     public static String getBoughtColors(Context context) {
         StringBuilder builder = new StringBuilder();
         builder.append(COLOR_BLUE);
@@ -438,10 +483,14 @@ public class Utility {
         return builder.toString();
     }
 
+    public static String getEquippedBackground(Context context) {
+        String out = getPrefs(context).getString(EQUIPPED_BACKGROUND);
+        out = out == null ? BACKGROUND_NORMAL : out;
+        return out;
+    }
+
     public static String getEquippedColors(Context context) {
-        StringBuilder builder = new StringBuilder();
-
-
+        final StringBuilder builder = new StringBuilder();
         String out = getPrefs(context).getString(EQUIPPED_COLORS);
         out = out == null ? "" : out;
 
@@ -475,6 +524,16 @@ public class Utility {
         madePurchase();
     }
 
+    public static void addBoughtBackgrounds(Context context, String tag) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append(getBoughtBackgrounds(context));
+        if (builder.toString().length() > 1)
+            builder.append(SEP);
+        builder.append(tag);
+        getPrefs(context).put(BOUGHT_BACKGROUND, builder.toString());
+        madePurchase();
+    }
+
     public static void addBoughtColors(Context context, String tag) {
         final StringBuilder builder = new StringBuilder();
         builder.append(getBoughtColors(context));
@@ -505,6 +564,29 @@ public class Utility {
         madePurchase();
     }
 
+    public static void equipBackground(Context context, String tag) {
+        if (tag == null || tag.length() < 2)
+            return;
+        getPrefs(context).put(EQUIPPED_BACKGROUND, tag);
+        Game.background = getColor(tag);
+    }
+
+    public static void addEquippedSongs(Context context, String tag) {
+        Log.e("addESongs", tag);
+        final StringBuilder builder = new StringBuilder();
+        builder.append(getEquippedSongs(context));
+
+        if (builder.toString().contains(tag))
+            return;
+
+        if (builder.toString().length() > 1)
+            builder.append(SEP);
+        builder.append(tag);
+        getPrefs(context).put(EQUIPPED_SONG, builder.toString());
+        equipSongs(context, builder.toString());
+    }
+
+
     public static void removeEquippedColors(Context context, String tag) {
         String equippedColors = getEquippedColors(context);
         final String[] split = equippedColors.split(SEP + tag);
@@ -516,6 +598,20 @@ public class Utility {
         }
         getPrefs(context).put(EQUIPPED_COLORS, equippedColors);
         addGameColors();
+        return;
+    }
+
+    public static void removeEquippedSongs(Context context, String tag) {
+        String equippedSongs = getEquippedSongs(context);
+        final String[] split = equippedSongs.split(SEP + tag);
+
+        if (split.length > 1)
+            equippedSongs = split[0] + split[1];
+        else if (split.length == 1) {
+            equippedSongs = split[0];
+        }
+        getPrefs(context).put(EQUIPPED_SONG, equippedSongs);
+        equipSongs(context, equippedSongs);
         return;
     }
 
@@ -649,7 +745,16 @@ public class Utility {
             color = "21";
         else if (tag.equals(COLOR_CHOC))
             color = "Chocolate";
-
+        else if (tag.equals(BACKGROUND_NORMAL))
+            color = "Default";
+        else if (tag.equals(BACKGROUND_SKY))
+            color = "Sky blue";
+        else if (tag.equals(BACKGROUND_HUNNID))
+            color = "100 Jumps";
+        else if (tag.equals(BACKGROUND_ROAD))
+            color = "Switchy Lanes";
+        else if (tag.equals(BACKGROUND_MIDNIGHT))
+            color = "Midnight Blue";
         return color;
     }
 

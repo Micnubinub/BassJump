@@ -14,17 +14,15 @@ public class GameValues {
     public static final int PAINT_OUTER_GLOW_SCALE = PAINT_GLOW_SCALE * 3;
 
     // PLAYER:
-    public static final int PLAYER_SCALE = (int) (Screen.height / 16);
+    public static final int PLAYER_SCALE = (int) (Screen.height / 18);
     public static final int PLAYER_POSITION = (int) (Screen.height - (PLAYER_SCALE * 4.5f));
     public static final int PAINT_HEIGHT = PLAYER_SCALE;
 
     // SPLASH PARTICLES
     public static final int SPLASH_MIN_SCALE = PLAYER_SCALE / 26;
     public static final int SPLASH_MAX_SCALE = (int) (SPLASH_MIN_SCALE * 5.25f);
-    public static final int PLAYER_JUMP_SPEED_MULT = 3;
     public static final int DEATH_GAP = (int) Screen.width;
     public static final int STROKE_WIDTH = Screen.width / 50;
-
     // INTERFACE:
     public static final int BUTTON_SCALE = (int) (Screen.width / 6.0f);
     public static final int BUTTON_PADDING = (int) (BUTTON_SCALE / 4.5f);
@@ -44,6 +42,7 @@ public class GameValues {
     public static final String IAP_3_ID = "buy_coins_3";
     public static final String IAP_4_ID = "buy_removeads";
     public static final String IAP_5_ID = "coin_doubler";
+    public static int PLAYER_JUMP_SPEED_MULT = 3;
     // GENERAL
     public static float SPEED_FACTOR_ORIGINAL = 0;
     public static int SPEED_FACTOR = (int) SPEED_FACTOR_ORIGINAL;

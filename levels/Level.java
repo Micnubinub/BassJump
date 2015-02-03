@@ -55,9 +55,9 @@ public class Level {
             platformsRight.add(platform);
         }
         speedParticles = new ArrayList<>();
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 5; ++i) {
             SpeedParticle sp = new SpeedParticle();
-            sp.xPos = (i * (Screen.width / 5));
+            sp.xPos = (i * (Screen.width / 4));
             sp.xPos += Utility.randInt(-GameValues.SPEED_PARTICLE_WIDTH,
                     GameValues.SPEED_PARTICLE_WIDTH);
             speedParticles.add(sp);

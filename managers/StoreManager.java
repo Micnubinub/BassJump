@@ -1,8 +1,11 @@
 package tbs.jumpsnew.managers;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
+import tbs.jumpsnew.Game;
+import tbs.jumpsnew.MainActivity;
 import tbs.jumpsnew.fragments.GetCoinsFragment;
 import tbs.jumpsnew.ui.CustomDialog;
 import tbs.jumpsnew.utility.AdManager;
@@ -11,7 +14,7 @@ import tbs.jumpsnew.utility.StoreItem;
 import tbs.jumpsnew.utility.Utility;
 
 public class StoreManager {
-    //public static AdManager adManager;
+    // public static AdManager adManager;
     private static Context context;
     private static final ListViewLib.StoreListener storeListener = new ListViewLib.StoreListener() {
         @Override
@@ -49,7 +52,22 @@ public class StoreManager {
                     Utility.equipShape(context, item.tag);
                     break;
                 case SONG:
-                    Utility.equipSong(context, item.tag);
+                    Log.e("equip", item.tag);
+                    if (item.equipped)
+                        Utility.removeEquippedSongs(context, item.tag);
+                    else
+                        Utility.addEquippedSongs(context, item.tag);
+
+                    if (!Game.isPlaying) {
+                        try {
+                            MainActivity.mpSong.start();
+                        } catch (Exception r) {
+                            r.printStackTrace();
+                        }
+                        MainActivity.preferences.put("musicOn", "on");
+                        Game.isPlaying = true;
+                    }
+
                     break;
             }
         }
@@ -89,7 +107,7 @@ public class StoreManager {
     public StoreManager(Context context) {
         listViewLib = new ListViewLib(context);
         listViewLib.setStoreListener(storeListener);
-        this.context = context;
+        StoreManager.context = context;
     }
 
     private static void toast(String text) {

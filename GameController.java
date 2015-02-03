@@ -26,7 +26,7 @@ public class GameController {
                     if (Game.isPlaying) {
                         // TURN OFF
                         try {
-                            Game.mpSong.pause();
+                            MainActivity.mpSong.pause();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -34,7 +34,7 @@ public class GameController {
                     } else {
                         // TURN ON
                         try {
-                            Game.mpSong.start();
+                            MainActivity.mpSong.start();
                         } catch (Exception r) {
                             r.printStackTrace();
                         }
@@ -85,7 +85,7 @@ public class GameController {
                         && y <= Game.shareBtn.yPos + GameValues.BUTTON_SCALE) {
                     // SHARE:
                     share();
-                    // Utility.showToast("Share Coming Soon!", Game.context);
+                    // Utility.showToast("Share Coming Soon!", tbs.jumpsnew.Game.Game.context);
                 } else if (x >= Game.storeBtn.xPos
                         && x <= Game.storeBtn.xPos + GameValues.BUTTON_SCALE
                         && y >= Game.storeBtn.yPos

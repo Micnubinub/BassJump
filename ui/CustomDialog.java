@@ -13,11 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import tbs.jumpsnew.Game;
 import tbs.jumpsnew.MainActivity;
 import tbs.jumpsnew.R;
+import tbs.jumpsnew.fragments.BackgroundFragment;
 import tbs.jumpsnew.fragments.ColorFragment;
 import tbs.jumpsnew.fragments.MusicFragment;
 import tbs.jumpsnew.fragments.ShapeFragment;
@@ -27,7 +27,7 @@ import tbs.jumpsnew.utility.Utility;
  * Created by root on 4/01/15.
  */
 public class CustomDialog extends DialogFragment {
-    private static final Fragment[] fragments = new Fragment[4];
+    private static final Fragment[] fragments = new Fragment[5];
     private static TextView title;
     private static TextView coinText;
     private static PagerSlidingTabStrip tabs;
@@ -95,12 +95,15 @@ public class CustomDialog extends DialogFragment {
 
     private void setUpFragments() {
         fragments[0] = new ColorFragment();
-        fragments[1] = new ShapeFragment();
-        fragments[2] = new MusicFragment();
-        fragments[3] = MainActivity.getCoinsFragment;
+        fragments[1] = new BackgroundFragment();
+        fragments[2] = new ShapeFragment();
+        fragments[3] = new MusicFragment();
+        fragments[4] = MainActivity.getCoinsFragment;
 
         ColorFragment.setListAdapter(new Adapter(Game.context, Utility
                 .getColorStoreItems(Game.context)));
+        BackgroundFragment.setListAdapter(new Adapter(Game.context, Utility
+                .getBackgroundStoreItems(Game.context)));
         ShapeFragment.setListAdapter(new Adapter(Game.context, Utility
                 .getShapeStoreItems(Game.context)));
         MusicFragment.setListAdapter(new Adapter(Game.context, Utility
@@ -121,15 +124,15 @@ public class CustomDialog extends DialogFragment {
 
         tabs.setViewPager(pager);
 
-        Toast.makeText(Game.context,
-                "Listing song in the Music or music folder", Toast.LENGTH_LONG)
-                .show();
+        // Toast.makeText(tbs.jumpsnew.Game.Game.context,
+        // "Listing song in the Music or music folder", Toast.LENGTH_LONG)
+        // .show();
 
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
 
-        private final String[] TITLES = {"Colors", "Shapes", "Music",
+        private final String[] TITLES = {"Colors", "Backgrounds", "Shapes", "Music",
                 "Get Coins"};
 
         public MyPagerAdapter(FragmentManager fm) {

@@ -2,12 +2,10 @@ package tbs.jumpsnew;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.view.SurfaceHolder;
 
 public class GameThread extends Thread {
     public static SurfaceHolder surfaceHolder;
-    final Paint backgroundPaint;
     final long DELAY = 1;
     long sleepTime;
     long lastUpdate = System.currentTimeMillis();
@@ -16,9 +14,7 @@ public class GameThread extends Thread {
     Canvas canvas;
 
     public GameThread(SurfaceHolder surfaceHolder, Context context) {
-        this.surfaceHolder = surfaceHolder;
-        this.backgroundPaint = new Paint();
-        this.backgroundPaint.setColor(0xff292929);
+        GameThread.surfaceHolder = surfaceHolder;
         this.isRunning = true;
     }
 
@@ -36,8 +32,7 @@ public class GameThread extends Thread {
             canvas = surfaceHolder.lockCanvas(null);
             if (canvas != null) {
                 synchronized (surfaceHolder) {
-                    canvas.drawRect(0, 0, canvas.getWidth(),
-                            canvas.getHeight(), backgroundPaint);
+
                     Game.draw(canvas);
                 }
                 surfaceHolder.unlockCanvasAndPost(canvas);

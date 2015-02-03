@@ -22,7 +22,7 @@ public class Platform extends GameObject {
     }
 
     public void reset(int previousIndex) { // MOVED TO BACK
-        // xPos = Game.level.platforms.get(previousIndex).xPos
+        // xPos = tbs.jumpsnew.Game.Game.level.platforms.get(previousIndex).xPos
         // + GameValues.PLATFORM_WIDTH;
     }
 }
