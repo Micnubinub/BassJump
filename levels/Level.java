@@ -12,220 +12,234 @@ import tbs.jumpsnew.utility.Utility;
 
 public class Level {
 
-    public static int powerCountdown;
-    // PLATFORMS:
-    public final ArrayList<Platform> platformsLeft;
-    public final ArrayList<Platform> platformsRight;
-    // PARTICLES
-    public final ArrayList<SpeedParticle> speedParticles;
-    private final int platformAmount = 5;
-    public int platformIndexR;
-    public int platformIndexL;
-    public boolean gapRight;
-    public int platformsPerSide;
-    public boolean hadTwo;
-    // MOVEMENT
-    public boolean moving;
-    public boolean canMove;
-    // OTHER:
-    public int gap;
-    public int speed;
-    private int platformIndexer;
+	public static int powerCountdown;
+	// PLATFORMS:
+	public final ArrayList<Platform> platformsLeft;
+	public final ArrayList<Platform> platformsRight;
+	// PARTICLES
+	public final ArrayList<SpeedParticle> speedParticles;
+	private final int platformAmount = 5;
+	public int platformIndexR;
+	public int platformIndexL;
+	public boolean gapRight;
+	public int platformsPerSide;
+	public boolean hadTwo;
+	// MOVEMENT
+	public boolean moving;
+	public boolean canMove;
+	// OTHER:
+	public int gap;
+	public int speed;
+	// SPEED:
+	public int speedCountdown;
+	private int platformIndexer;
 
-    public Level() {
-        Utility.log("Level Initialized");
-        platformIndexR = 0;
-        platformIndexL = 0;
-        platformsLeft = new ArrayList<>(platformAmount);
-        for (int i = 0; i < platformAmount; ++i) {
-            Platform platform = new Platform();
-            platform.height = GameValues.PLATFORM_HEIGHT;
-            platform.width = GameValues.PLATFORM_WIDTH;
-            platform.xPos = (Screen.width - GameValues.PLATFORM_WIDTH);
-            platform.yPos = (i * GameValues.PLATFORM_HEIGHT);
-            platformsLeft.add(platform);
-        }
-        platformsRight = new ArrayList<>(platformAmount);
-        for (int i = 0; i < platformAmount; ++i) {
-            Platform platform = new Platform();
-            platform.height = GameValues.PLATFORM_HEIGHT;
-            platform.width = GameValues.PLATFORM_WIDTH;
-            platform.xPos = 0;
-            platform.yPos = (i * GameValues.PLATFORM_HEIGHT);
-            platformsRight.add(platform);
-        }
-        speedParticles = new ArrayList<>();
-        for (int i = 0; i < 5; ++i) {
-            SpeedParticle sp = new SpeedParticle();
-            sp.xPos = (i * (Screen.width / 4));
-            sp.xPos += Utility.randInt(-GameValues.SPEED_PARTICLE_WIDTH,
-                    GameValues.SPEED_PARTICLE_WIDTH);
-            speedParticles.add(sp);
-        }
-    }
+	public Level() {
+		Utility.log("Level Initialized");
+		platformIndexR = 0;
+		platformIndexL = 0;
+		platformsLeft = new ArrayList<Platform>(platformAmount);
+		for (int i = 0; i < platformAmount; ++i) {
+			Platform platform = new Platform();
+			platform.height = GameValues.PLATFORM_HEIGHT;
+			platform.width = GameValues.PLATFORM_WIDTH;
+			platform.xPos = (Screen.width - GameValues.PLATFORM_WIDTH);
+			platform.yPos = (i * GameValues.PLATFORM_HEIGHT);
+			platformsLeft.add(platform);
+		}
+		platformsRight = new ArrayList<Platform>(platformAmount);
+		for (int i = 0; i < platformAmount; ++i) {
+			Platform platform = new Platform();
+			platform.height = GameValues.PLATFORM_HEIGHT;
+			platform.width = GameValues.PLATFORM_WIDTH;
+			platform.xPos = 0;
+			platform.yPos = (i * GameValues.PLATFORM_HEIGHT);
+			platformsRight.add(platform);
+		}
+		speedParticles = new ArrayList<SpeedParticle>();
+		for (int i = 0; i < 5; ++i) {
+			SpeedParticle sp = new SpeedParticle();
+			sp.xPos = (i * (Screen.width / 4));
+			sp.xPos += Utility.randInt(-GameValues.SPEED_PARTICLE_WIDTH,
+					GameValues.SPEED_PARTICLE_WIDTH);
+			speedParticles.add(sp);
+		}
+	}
 
-    public void setup() {
-        // MOVEMENT
-        moving = false;
-        canMove = true;
+	public void setup() {
+		// MOVEMENT
+		moving = false;
+		canMove = true;
 
-        // PLATFORMS
-        platformIndexer = 2;
-        hadTwo = false;
-        powerCountdown = 0;
-        gapRight = false;
-        platformsPerSide = 0;
-        platformIndexR = 0;
-        platformIndexL = 0;
-        for (int i = 0; i < platformAmount; ++i) {
-            platformsLeft.get(i).yPos = (i * GameValues.PLATFORM_HEIGHT);
-            platformsLeft.get(i).hasNext = true;
-            platformsLeft.get(i).hasPrevious = true;
-        }
-        for (int i = 0; i < platformAmount; ++i) {
-            platformsRight.get(i).yPos = (i * GameValues.PLATFORM_HEIGHT);
-            platformsRight.get(i).hasNext = true;
-            platformsRight.get(i).hasPrevious = true;
-        }
+		// PLATFORMS
+		platformIndexer = 2;
+		hadTwo = false;
+		powerCountdown = 0;
+		gapRight = false;
+		platformsPerSide = 0;
+		platformIndexR = 0;
+		platformIndexL = 0;
+		for (int i = 0; i < platformAmount; ++i) {
+			platformsLeft.get(i).yPos = (i * GameValues.PLATFORM_HEIGHT);
+			platformsLeft.get(i).hasNext = true;
+			platformsLeft.get(i).hasPrevious = true;
+		}
+		for (int i = 0; i < platformAmount; ++i) {
+			platformsRight.get(i).yPos = (i * GameValues.PLATFORM_HEIGHT);
+			platformsRight.get(i).hasNext = true;
+			platformsRight.get(i).hasPrevious = true;
+		}
 
-        // SPEED PARTICLES
-        for (int i = 0; i < speedParticles.size(); ++i) {
-            speedParticles.get(i).yPos = Utility.randInt(-(Screen.height / 3),
-                    Screen.height);
-        }
-    }
+		// SPEED:
+		speedCountdown = 20;
 
-    public void update() {
-        speed = GameValues.SPEED_FACTOR;
-        if (Game.mode == GameMode.Recruit) { // SLOW
-            speed /= 1.5f;
-            if (speed < 1)
-                speed = 1;
-        } else if (Game.mode == GameMode.Ultra) { // ULTRA FAST
-            speed *= 1.35f;
-        }
-        for (int i = 0; i < platformAmount; ++i) {
-            platformsLeft.get(i).yPos += (speed);
-            if (platformsLeft.get(platformIndexR).yPos >= 0) {
-                int moveIndex;
-                if (platformIndexR == 0) {
-                    moveIndex = platformsLeft.size() - 1;
-                } else {
-                    moveIndex = platformIndexR - 1;
-                }
-                int gap = generateGap(true);
-                if (gap > 0) {
-                    platformsLeft.get(moveIndex).yPos = (platformsLeft
-                            .get(platformIndexR).yPos - GameValues.PLATFORM_HEIGHT)
-                            - gap;
-                    platformsLeft.get(platformIndexR).hasNext = false;
-                    platformsLeft.get(moveIndex).hasPrevious = false;
-                    platformsLeft.get(moveIndex).hasSpikes = false;
-                } else if (gap == 0) {
-                    platformsLeft.get(moveIndex).yPos = (platformsLeft
-                            .get(platformIndexR).yPos - GameValues.PLATFORM_HEIGHT);
-                    platformsLeft.get(platformIndexR).hasNext = true; // NO GAP
-                    platformsLeft.get(moveIndex).hasPrevious = true; // NO GAP
-                    platformsLeft.get(moveIndex).hasSpikes = false;
-                } else {
-                    platformsLeft.get(moveIndex).yPos = (platformsLeft
-                            .get(platformIndexR).yPos - GameValues.PLATFORM_HEIGHT);
-                    platformsLeft.get(moveIndex).hasSpikes = true;
-                }
-                platformsLeft.get(moveIndex).landedOn = false;
+		// SPEED PARTICLES
+		for (int i = 0; i < speedParticles.size(); ++i) {
+			speedParticles.get(i).yPos = Utility.randInt(-(Screen.height / 3),
+					Screen.height);
+		}
+	}
 
-                platformIndexR = moveIndex;
-            }
-        }
-        for (int i = 0; i < platformAmount; ++i) {
-            platformsRight.get(i).yPos += (speed);
-            if (platformsRight.get(platformIndexL).yPos >= 0) {
-                int moveIndex;
-                if (platformIndexL == 0) {
-                    moveIndex = platformsRight.size() - 1;
-                } else {
-                    moveIndex = platformIndexL - 1;
-                }
-                // Generate Gap:
-                int gap = generateGap(false);
-                if (gap > 0) {
-                    platformsRight.get(moveIndex).yPos = (platformsRight
-                            .get(platformIndexL).yPos - GameValues.PLATFORM_HEIGHT)
-                            - gap;
-                    platformsRight.get(platformIndexL).hasNext = false;
-                    platformsRight.get(moveIndex).hasPrevious = false;
-                    platformsRight.get(moveIndex).hasSpikes = false;
-                } else if (gap == 0) {
-                    platformsRight.get(moveIndex).yPos = (platformsRight
-                            .get(platformIndexL).yPos - GameValues.PLATFORM_HEIGHT);
-                    platformsRight.get(platformIndexL).hasNext = true; // NO GAP
-                    platformsRight.get(moveIndex).hasPrevious = true; // NO GAP
-                    platformsRight.get(moveIndex).hasSpikes = false;
-                } else { // SPIKES
-                    platformsRight.get(moveIndex).yPos = (platformsRight
-                            .get(platformIndexL).yPos - GameValues.PLATFORM_HEIGHT);
-                    platformsRight.get(moveIndex).hasSpikes = true;
-                }
+	public void update() {
+		speed = GameValues.SPEED_FACTOR;
+		if (Game.mode == GameMode.Recruit) { // SLOW
+			speed /= 1.5f;
+			if (speed < 1)
+				speed = 1;
+		} else if (Game.mode == GameMode.Ultra) { // ULTRA FAST
+			speed *= 1.35f;
+		}
+		for (int i = 0; i < platformAmount; ++i) {
+			platformsLeft.get(i).yPos += (speed);
+			if (platformsLeft.get(platformIndexR).yPos >= 0) {
+				int moveIndex;
+				if (platformIndexR == 0) {
+					moveIndex = platformsLeft.size() - 1;
+				} else {
+					moveIndex = platformIndexR - 1;
+				}
+				int gap = generateGap(true);
+				if (gap > 0) {
+					platformsLeft.get(moveIndex).yPos = (platformsLeft
+							.get(platformIndexR).yPos - GameValues.PLATFORM_HEIGHT)
+							- gap;
+					platformsLeft.get(platformIndexR).hasNext = false;
+					platformsLeft.get(moveIndex).hasPrevious = false;
+					platformsLeft.get(moveIndex).hasSpikes = false;
+				} else if (gap == 0) {
+					platformsLeft.get(moveIndex).yPos = (platformsLeft
+							.get(platformIndexR).yPos - GameValues.PLATFORM_HEIGHT);
+					platformsLeft.get(platformIndexR).hasNext = true; // NO GAP
+					platformsLeft.get(moveIndex).hasPrevious = true; // NO GAP
+					platformsLeft.get(moveIndex).hasSpikes = false;
+				} else {
+					platformsLeft.get(moveIndex).yPos = (platformsLeft
+							.get(platformIndexR).yPos - GameValues.PLATFORM_HEIGHT);
+					platformsLeft.get(moveIndex).hasSpikes = true;
+				}
+				platformsLeft.get(moveIndex).landedOn = false;
 
-                platformIndexL = moveIndex;
-            }
-        }
+				platformIndexR = moveIndex;
+			}
+		}
+		for (int i = 0; i < platformAmount; ++i) {
+			platformsRight.get(i).yPos += (speed);
+			if (platformsRight.get(platformIndexL).yPos >= 0) {
+				int moveIndex;
+				if (platformIndexL == 0) {
+					moveIndex = platformsRight.size() - 1;
+				} else {
+					moveIndex = platformIndexL - 1;
+				}
+				// Generate Gap:
+				int gap = generateGap(false);
+				if (gap > 0) {
+					platformsRight.get(moveIndex).yPos = (platformsRight
+							.get(platformIndexL).yPos - GameValues.PLATFORM_HEIGHT)
+							- gap;
+					platformsRight.get(platformIndexL).hasNext = false;
+					platformsRight.get(moveIndex).hasPrevious = false;
+					platformsRight.get(moveIndex).hasSpikes = false;
+				} else if (gap == 0) {
+					platformsRight.get(moveIndex).yPos = (platformsRight
+							.get(platformIndexL).yPos - GameValues.PLATFORM_HEIGHT);
+					platformsRight.get(platformIndexL).hasNext = true; // NO GAP
+					platformsRight.get(moveIndex).hasPrevious = true; // NO GAP
+					platformsRight.get(moveIndex).hasSpikes = false;
+				} else { // SPIKES
+					platformsRight.get(moveIndex).yPos = (platformsRight
+							.get(platformIndexL).yPos - GameValues.PLATFORM_HEIGHT);
+					platformsRight.get(moveIndex).hasSpikes = true;
+				}
 
-        // SPEED PART:
-        for (int i = 0; i < speedParticles.size(); ++i) {
-            speedParticles.get(i).update();
-        }
-    }
+				platformIndexL = moveIndex;
+			}
+		}
 
-    public int generateGap(boolean right) {
-        if (Game.state == GameState.Playing) {
-            gap = 0;
-            if (Game.mode != GameMode.Singularity) {
-                if (powerCountdown <= 0) {
-                    if (Game.state == GameState.Playing) {
-                        if (right == gapRight)
-                            platformsPerSide -= 1;
-                        if (right == gapRight && platformsPerSide <= 0) {
-                            if (Utility.randInt(0, 3) == 0) {
-                                platformsPerSide = Utility.randInt(3, 4);
-                            } else {
-                                if (!hadTwo) {
-                                    platformsPerSide = Utility.randInt(2, 3);
-                                    hadTwo = (platformsPerSide == 2);
+		// SPEED PART:
+		for (int i = 0; i < speedParticles.size(); ++i) {
+			speedParticles.get(i).update();
+		}
+	}
 
-                                } else {
-                                    platformsPerSide = 3;
-                                }
-                            }
+	public int generateGap(boolean right) {
+		if (Game.state == GameState.Playing) {
+			gap = 0;
+			if (Game.mode != GameMode.Singularity) {
+				if (powerCountdown <= 0) {
+					if (Game.state == GameState.Playing) {
+						if (right == gapRight)
+							platformsPerSide -= 1;
+						if (right == gapRight && platformsPerSide <= 0) {
+							if (Utility.randInt(0, 3) == 0) {
+								platformsPerSide = Utility.randInt(3, 4);
+							} else {
+								if (!hadTwo) {
+									platformsPerSide = Utility.randInt(2, 3);
+									hadTwo = (platformsPerSide == 2);
 
-                            if (platformsPerSide > 1) {
-                                gap = Utility
-                                        .randInt(
-                                                (GameValues.PLATFORM_HEIGHT),
-                                                ((GameValues.PLATFORM_HEIGHT) * (platformsPerSide - 1)));
-                            } else {
-                                gap = GameValues.PLATFORM_HEIGHT;
-                            }
-                            if (Game.mode == GameMode.Ultra) {
-                                gap /= 1.35f;
-                            }
-                            gapRight = !gapRight;
-                        }
-                    }
-                } else {
-                    powerCountdown -= 1;
-                }
-            } else { // SINGULARITY
-                platformIndexer -= 1;
-                if (platformIndexer == 0) {
-                    gap = GameValues.PLATFORM_HEIGHT;
-                    platformIndexer = 1;
-                }
-            }
+								} else {
+									platformsPerSide = 3;
+								}
+							}
 
-            return gap;
-        } else {
-            return 0;
-        }
-    }
+							if (platformsPerSide > 1) {
+								gap = Utility
+										.randInt(
+												(GameValues.PLATFORM_HEIGHT),
+												((GameValues.PLATFORM_HEIGHT) * (platformsPerSide - 1)));
+							} else {
+								gap = GameValues.PLATFORM_HEIGHT;
+							}
+							if (Game.mode == GameMode.Ultra) {
+								gap /= 1.35f;
+							}
+							gapRight = !gapRight;
+						}
+					}
+				} else {
+					powerCountdown -= 1;
+				}
+
+			} else { // SINGULARITY
+				platformIndexer -= 1;
+				if (platformIndexer == 0) {
+					gap = GameValues.PLATFORM_HEIGHT;
+					platformIndexer = 1;
+				}
+			}
+			if (Game.mode == GameMode.SpeedRunner) {
+				if (speedCountdown > 0) {
+					gap = 0;
+					speedCountdown -= 1;
+				} else {
+					gap = GameValues.PLATFORM_HEIGHT * 10;
+				}
+
+			}
+			return gap;
+		} else {
+			return 0;
+		}
+	}
 }

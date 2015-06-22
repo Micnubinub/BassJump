@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.SurfaceView;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.games.Games;
@@ -26,7 +26,7 @@ public class MainActivity extends BaseGameActivity {
     // TAG & ACTIVITY:
     public static final String TAG = "Mini_RPG";
     public static Context context;
-    public static SurfaceView view;
+//    public static View view;
 
     // SAVE DATA:
     public static SecurePreferences preferences;
@@ -45,6 +45,9 @@ public class MainActivity extends BaseGameActivity {
     // ADS:
     public static boolean showAds;
 
+    //Game container
+    public static RelativeLayout gameContainer;
+
     public static void unlockAchievement(String id) {
         if (getApiClient().isConnected()) {
             Games.Achievements.unlock(getApiClient(), id);
@@ -55,23 +58,27 @@ public class MainActivity extends BaseGameActivity {
         return mainActivity;
     }
 
-    public static SurfaceView getView() {
-        return view;
+    public static View getView() {
+        return gameContainer;
+    }
+
+    private static void log(String step) {
+        Log.e("msg", step);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game);
+        gameContainer = (RelativeLayout) findViewById(R.id.game);
         Utility.log("MainActivity Initialized");
         adManager = new AdManager(this);
-        view = new GameView(this);
-        view.setLayoutParams(new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.FILL_PARENT,
-                RelativeLayout.LayoutParams.FILL_PARENT));
+//        view = new GameView(this);
+//        view.setLayoutParams(new RelativeLayout.LayoutParams(
+//                RelativeLayout.LayoutParams.FILL_PARENT,
+//                RelativeLayout.LayoutParams.FILL_PARENT));
 
         mainActivity = this;
-
         // ACHIEVEMENT:
         unlockAchievement("CgkIvYbi1pMMEAIQDA");
 
@@ -81,14 +88,12 @@ public class MainActivity extends BaseGameActivity {
         Screen.setup(context);
         Game.init(context);
         Game.setup();
-
         // LOAD AD:
         Game.adManager.loadFullscreenAd();
 
         // LOAD DATA:
         preferences = new SecurePreferences(context, "prefs_tbs_n",
                 "X5TBSSDVSHYGF", true);
-
         if (preferences.getString("nerUds") != null) {
             showAds = false;
         } else {
@@ -129,13 +134,14 @@ public class MainActivity extends BaseGameActivity {
         if (preferences.getString("musicOn") != null) {
             if (preferences.getString("musicOn").equals("off")) {
                 Game.isPlaying = false;
-                Game.mpSong.pause();
+                Game.pauseSong();
             } else {
                 Game.isPlaying = true;
             }
         } else {
             Game.isPlaying = true;
         }
+
         if (preferences.getString("gMode") != null) {
             if (preferences.getString("gMode").equals("arcade")) {
                 Game.mode = GameMode.Arcade;
@@ -161,8 +167,8 @@ public class MainActivity extends BaseGameActivity {
 
         // Set up other apps adView and add gameView
         try {
-            final RelativeLayout gameContainer = (RelativeLayout) findViewById(R.id.game);
-            gameContainer.addView(view);
+//            final RelativeLayout gameContainer = ;
+//            gameContainer.addView(view);
             otherAppsAd = new OtherAppsAd(this, gameContainer);
 
             String check = Utility.getPrefs(this).getString(
@@ -174,29 +180,23 @@ public class MainActivity extends BaseGameActivity {
         } catch (Exception e) {
             Log.e("Exception: ", "ERROR! DIALOG");
         }
-
         // Load songs in a thread
         Utility.refreshSongs();
         // Utility.saveCoins(this, 212424124);
         // PURCHASES: (PUT IN LATER)
         purchases = new GPurchaseManager();
-
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (Game.isPlaying) {
-            Game.mpSong.pause();
-        }
+        Game.pauseSong();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (Game.isPlaying) {
-            Game.mpSong.start();
-        }
+        Game.playSong();
     }
 
     @Override

@@ -1,10 +1,10 @@
 package tbs.jumpsnew.utility;
 
 public class StoreItem {
-    public final Type type;
     public final int price;
     public final String name, description;
     public final String tag;
+    public Type type;
     public boolean bought;
     public boolean equipped;
 

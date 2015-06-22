@@ -26,8 +26,7 @@ public class MovingText extends GameObject {
         }
     }
 
-    public void activate(String text, int x, int y, int spd, int am, int a,
-                         int growth) {
+    public void activate(String text, int x, int y, int spd, int am, int a, int growth) {
         alphaMin = am;
         alpha = a;
         xPos = x;

@@ -38,6 +38,9 @@ public class StoreManager {
                     case SHAPE:
                         Utility.addBoughtShapes(context, item.tag);
                         break;
+                    case BACKGROUND:
+                        Utility.addBoughtBackgrounds(context, item.tag);
+                        break;
                 }
                 item.bought = true;
                 CustomDialog.setNumCoins(coins - item.price);
@@ -60,14 +63,13 @@ public class StoreManager {
 
                     if (!Game.isPlaying) {
                         try {
-                            MainActivity.mpSong.start();
+                            Game.playSong();
                         } catch (Exception r) {
                             r.printStackTrace();
                         }
                         MainActivity.preferences.put("musicOn", "on");
                         Game.isPlaying = true;
                     }
-
                     break;
             }
         }

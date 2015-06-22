@@ -3,11 +3,9 @@ package tbs.jumpsnew.ui;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -28,7 +26,7 @@ public class Adapter extends BaseAdapter {
     private final View.OnClickListener storeClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            int pos = (int) v.getTag();
+            int pos = (Integer) v.getTag();
             if (ListViewLib.buyItem(storeItems.get(pos))) {
                 storeItems.get(pos).bought = true;
                 notifyDataSetChanged();
@@ -58,29 +56,59 @@ public class Adapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final ListItem view = new ListItem(context);
-        final StoreItem item = storeItems.get(position);
-        view.setName(item.name);
-        view.setDescription(item.description);
+        if (convertView == null) {
+            convertView = View.inflate(context, R.layout.store_item, null);
+        }
 
-        view.setPrice(" " + Utility.formatNumber(item.price)); // GAP
-        view.setBought(item.bought);
-        view.setPosition(position);
-        final Button button = (Button) (view.getView().findViewById(R.id.buy_equip));
+        final TextView name = (TextView) convertView.findViewById(R.id.name);
+        final TextView description = (TextView) convertView.findViewById(R.id.description);
+        final TextView price = (TextView) convertView.findViewById(R.id.price);
+        final Button buy = (Button) convertView.findViewById(R.id.buy_equip);
+        final FrameLayout icon = (FrameLayout) convertView.findViewById(R.id.icon);
+        final View coinContainer = convertView.findViewById(R.id.coin_icon);
+        final View iconImageView = convertView.findViewById(R.id.icon_image_view);
+        iconImageView.setVisibility(View.GONE);
+
+        price.setTypeface(Game.font);
+        description.setTypeface(Game.font);
+        name.setTypeface(Game.font);
+        buy.setTypeface(Game.font);
+        name.setMaxLines(1);
+
+        final StoreItem item = storeItems.get(position);
+        name.setText(item.name);
+        description.setText(item.description);
+
+        price.setText(" " + Utility.formatNumber(item.price)); // GAP
+        buy.setText(item.bought ? "Use" : "Buy");
+        price.setText(item.bought ? "Sold" : price.getText());
+        coinContainer.setVisibility(item.bought ? View.GONE : View.VISIBLE);
+        convertView.setTag(position);
+        final Button button = (Button) (convertView.findViewById(R.id.buy_equip));
         button.setTag(position);
         button.setOnClickListener(storeClickListener);
 
+        try {
+            for (int i = 1; i < icon.getChildCount(); i++) {
+                try {
+                    icon.removeViewAt(i);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         switch (item.type) {
             case SHAPE:
-                view.setIcon(Utility.getShape(context, item.tag));
+                icon.addView(Utility.getShape(context, item.tag), params);
                 break;
             case SONG:
-                final ImageView imageView = new ImageView(context);
-                imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.song1));
-                view.setName(item.description);
-                view.setDescription(item.name);
-                view.setIcon(imageView);
+                //Todo
+                iconImageView.setVisibility(View.VISIBLE);
+                name.setText(item.description);
+                description.setText(item.name);
 
                 if (item.bought) {
                     button.setText(item.equipped ? "Remove" : "Use");
@@ -103,7 +131,7 @@ public class Adapter extends BaseAdapter {
                 }
                 break;
             case COLOR:
-                view.setIcon(Utility.getColor(context, item.tag));
+                icon.addView(Utility.getColor(context, item.tag));
                 if (item.bought) {
                     if (item.tag.equals(Utility.COLOR_BLUE) || item.tag.equals(Utility.COLOR_RED)) {
                         button.setText("Added");
@@ -130,9 +158,8 @@ public class Adapter extends BaseAdapter {
                 }
                 break;
             case BACKGROUND:
-                view.setIcon(Utility.getColor(context, item.tag));
+                icon.addView(Utility.getColor(context, item.tag));
                 if (item.bought) {
-
                     button.setText(item.equipped ? "Equipped" : "Equip");
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -156,77 +183,7 @@ public class Adapter extends BaseAdapter {
                 break;
         }
 
-        view.getView().setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT, ListViewLib.dpToPixels(96)));
-        return view.getView();
+        return convertView;
     }
 
-
-    private class ListItem {
-        private final View view, coinContainer;
-        private final TextView name;
-        private final TextView price;
-        private final TextView description;
-        private final Button buy;
-        private final FrameLayout icon;
-        private int position;
-
-        public ListItem(Context context) {
-            view = View.inflate(context, R.layout.store_item, null);
-
-            name = (TextView) view.findViewById(R.id.name);
-            description = (TextView) view.findViewById(R.id.description);
-            price = (TextView) view.findViewById(R.id.price);
-            buy = (Button) view.findViewById(R.id.buy_equip);
-            icon = (FrameLayout) view.findViewById(R.id.icon);
-            coinContainer = view.findViewById(R.id.coin_icon);
-
-            price.setTypeface(Game.font);
-            description.setTypeface(Game.font);
-            name.setTypeface(Game.font);
-            buy.setTypeface(Game.font);
-            name.setMaxLines(1);
-
-//            if (buyButtonBackground != null) {
-//                try {
-//                    buy.setBackground(buyButtonBackground);
-//                } catch (Exception e) {
-//                    buy.setBackgroundDrawable(buyButtonBackground);
-//                }
-//            }
-        }
-
-        public View getView() {
-            return view;
-        }
-
-        public void setBought(boolean bought) {
-            buy.setText(bought ? "Use" : "Buy");
-            price.setText(bought ? "Sold" : price.getText());
-            coinContainer.setVisibility(bought ? View.GONE : View.VISIBLE);
-        }
-
-        public void setDescription(String description) {
-            this.description.setText(description);
-        }
-
-        public void setIcon(View icon) {
-            this.icon.addView(icon, params);
-        }
-
-        public void setPrice(String price) {
-            this.price.setText(price);
-        }
-
-        public void setName(String name) {
-            this.name.setText(name);
-        }
-
-        public int getPosition() {
-            return position;
-        }
-
-        public void setPosition(int position) {
-            this.position = position;
-        }
-    }
 }

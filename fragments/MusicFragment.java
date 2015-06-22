@@ -13,8 +13,8 @@ import tbs.jumpsnew.ui.Adapter;
 
 public class MusicFragment extends Fragment {
 
-    private static ListView listView;
-    private static Adapter adapter;
+    public static ListView listView;
+    public static Adapter adapter;
 
     public MusicFragment() {
     }

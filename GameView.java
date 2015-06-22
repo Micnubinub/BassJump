@@ -2,10 +2,12 @@ package tbs.jumpsnew;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.opengl.GLSurfaceView;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.support.v4.app.FragmentActivity;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
+import android.view.View;
 
 import com.google.android.gms.games.Games;
 
@@ -16,16 +18,33 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.opengles.GL10;
 
 import tbs.jumpsnew.utility.BaseGameActivity;
-import tbs.jumpsnew.utility.Utility;
 
-public class GameView extends GLSurfaceView implements SurfaceHolder.Callback {
+public class GameView extends View {
+    public static int background;
+    static int delta, sw, sh;
     private final Context context;
-    private GameThread displayThread;
+    long lastUpdate = System.currentTimeMillis();
 
     public GameView(Context context) {
         super(context);
         this.context = context;
-        InitView();
+//        background = Utility.getColor(Utility.getEquippedBackground(context));
+        background = 0xff222222;
+
+    }
+
+    public GameView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        this.context = context;
+//        background = Utility.getColor(Utility.getEquippedBackground(context));
+        background = 0xff222222;
+    }
+
+    public GameView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        this.context = context;
+//        background = Utility.getColor(Utility.getEquippedBackground(context));
+        background = 0xff222222;
     }
 
     public static Bitmap SavePixels(int x, int y, int w, int h) {
@@ -47,18 +66,6 @@ public class GameView extends GLSurfaceView implements SurfaceHolder.Callback {
         }
 
         return Bitmap.createBitmap(bt, w, h, Bitmap.Config.ARGB_8888);
-    }
-
-    void InitView() {
-        SurfaceHolder holder = getHolder();
-        holder.addCallback(this);
-        displayThread = new GameThread(holder, context);
-        setFocusable(true);
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
-        // DO NOTHING
     }
 
     @Override
@@ -84,6 +91,8 @@ public class GameView extends GLSurfaceView implements SurfaceHolder.Callback {
                             leadID = "CgkIvYbi1pMMEAIQBw";
                         } else if (Game.mode == GameMode.Ultra) {
                             leadID = "CgkIvYbi1pMMEAIQEQ";
+                        } else if (Game.mode == GameMode.SpeedRunner) {
+                            leadID = "CgkIvYbi1pMMEAIQFA";
                         } else { // Singular
                             leadID = "CgkIvYbi1pMMEAIQEg";
                         }
@@ -132,18 +141,32 @@ public class GameView extends GLSurfaceView implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder arg0) {
-        displayThread.SetIsRunning(false);
-        Utility.StopThread(displayThread);
+    protected void onDraw(Canvas canvas) {
+        delta = (int) (System.currentTimeMillis() - lastUpdate);
+        GameValues.SPEED_FACTOR = (int) ((GameValues.SPEED_FACTOR_ORIGINAL * GameValues.SPEED_BONUS) * delta);
+        if (GameValues.SPEED_FACTOR < 1)
+            GameValues.SPEED_FACTOR = 1;
+        GameValues.PLAYER_JUMP_SPEED = (GameValues.SPEED_FACTOR * GameValues.PLAYER_JUMP_SPEED_MULT);
+        lastUpdate = System.currentTimeMillis();
+        Game.update();
+        Game.paint.setStyle(Paint.Style.FILL);
+        Game.paint.setColor(background);
+        canvas.drawRect(0, 0, sw, sh, Game.paint);
+        Game.paint.setStyle(Paint.Style.STROKE);
+        Game.draw(canvas);
+        invalidate();
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder arg0) {
-        if (!displayThread.IsRunning()) {
-            displayThread = new GameThread(getHolder(), context);
-            displayThread.start();
-        } else {
-            displayThread.start();
-        }
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        sw = w;
+        sh = h;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        invalidate();
     }
 }

@@ -45,23 +45,22 @@ import tbs.jumpsnew.Game;
 public class PagerSlidingTabStrip extends HorizontalScrollView {
 
     private final PageListener pageListener = new PageListener();
-    private final LinearLayout.LayoutParams defaultTabLayoutParams;
-    private final LinearLayout.LayoutParams expandedTabLayoutParams;
-    private final LinearLayout tabsContainer;
-    private final Paint rectPaint;
-    private final Paint dividerPaint;
-    private final int indicatorColor = 0xFF666666;
-    private final int underlineColor = 0x1A111111;
-    private final int dividerColor = 0x1A111111;
-    private final boolean shouldExpand = false;
-    private final boolean textAllCaps = true;
-    private final int tabTextColor = 0xFFdddddd;
     // @formatter:on
-    private OnPageChangeListener delegatePageListener;
+    public OnPageChangeListener delegatePageListener;
+    private LinearLayout.LayoutParams defaultTabLayoutParams;
+    private LinearLayout.LayoutParams expandedTabLayoutParams;
+    private LinearLayout tabsContainer;
     private ViewPager pager;
     private int tabCount;
     private int currentPosition = 0;
     private float currentPositionOffset = 0f;
+    private Paint rectPaint;
+    private Paint dividerPaint;
+    private int indicatorColor = 0xFF666666;
+    private int underlineColor = 0x1A111111;
+    private int dividerColor = 0x1A111111;
+    private boolean shouldExpand = false;
+    private boolean textAllCaps = true;
     private int scrollOffset = 52;
     private int indicatorHeight = 8;
     private int underlineHeight = 2;
@@ -70,6 +69,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
     private int dividerWidth = 1;
     private int tabBackgroundResId;
     private int tabTextSize = 16;
+    private int tabTextColor = 0xFFdddddd;
     private int lastScrollX = 0;
     private Locale locale;
 
@@ -138,7 +138,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         this.delegatePageListener = listener;
     }
 
-    void notifyDataSetChanged() {
+    public void notifyDataSetChanged() {
 
         tabsContainer.removeAllViews();
 

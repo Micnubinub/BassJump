@@ -51,8 +51,6 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
     static final String TAG = "GameHelper";
     // Client request flags
     private final static int CLIENT_NONE = 0x00;
-    // What clients were requested? (bit flags)
-    private int mRequestedClients = CLIENT_NONE;
     private final static int CLIENT_PLUS = 0x02;
     public final static int CLIENT_ALL = CLIENT_GAMES | CLIENT_PLUS
             | CLIENT_APPSTATE;
@@ -75,6 +73,8 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
     private final Handler mHandler;
     private final String GAMEHELPER_SHARED_PREFS = "GAMEHELPER_SHARED_PREFS";
     private final String KEY_SIGN_IN_CANCELLATIONS = "KEY_SIGN_IN_CANCELLATIONS";
+    // What clients were requested? (bit flags)
+    private int mRequestedClients = CLIENT_NONE;
     // Are we expecting the result of a resolution flow?
     private boolean mExpectingResolution = false;
     // was the sign-in flow cancelled when we tried it?

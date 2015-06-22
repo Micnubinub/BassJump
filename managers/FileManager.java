@@ -225,12 +225,12 @@ public class FileManager {
         if (directories != null)
             directories.clear();
         else
-            directories = new ArrayList<>();
+            directories = new ArrayList<File>();
 
         if (music != null)
             music.clear();
         else
-            music = new ArrayList<>();
+            music = new ArrayList<File>();
 
         final File file = Environment.getExternalStorageDirectory();
         for (File file1 : file.listFiles()) {
@@ -244,7 +244,7 @@ public class FileManager {
     }
 
     private static void getMusicFromDirectory(File root) {
-        if (!root.isDirectory())
+        if (root == null || !root.isDirectory())
             return;
 
         final File[] files = root.listFiles();

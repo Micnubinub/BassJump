@@ -45,14 +45,14 @@ public abstract class BaseGameActivity extends FragmentActivity implements
     // We expose these constants here because we don't want users of this class
     // to have to know about GameHelper at all.
     public static final int CLIENT_GAMES = GameHelper.CLIENT_GAMES;
-    // Requested clients. By default, that's just the games client.
-    protected int mRequestedClients = CLIENT_GAMES;
     public static final int CLIENT_APPSTATE = GameHelper.CLIENT_APPSTATE;
     // --Commented out by Inspection (27/10/14 11:00 PM):public static final int CLIENT_PLUS = GameHelper.CLIENT_PLUS;
     // --Commented out by Inspection (27/10/14 11:00 PM):public static final int CLIENT_ALL = GameHelper.CLIENT_ALL;
     private final static String TAG = "BaseGameActivity";
     // The game helper object. This class is mainly a wrapper around this object.
     protected static GameHelper mHelper;
+    // Requested clients. By default, that's just the games client.
+    protected int mRequestedClients = CLIENT_GAMES;
     protected boolean mDebugLog = false;
 
     /**

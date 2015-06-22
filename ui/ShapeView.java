@@ -32,7 +32,7 @@ public class ShapeView extends View {
         init(Player.PlayerShape.HEXAGON);
     }
 
-    void drawCircle(Canvas canvas) {
+    public void drawCircle(Canvas canvas) {
         canvas.drawCircle(cx, cy, l - (thickness / 2), paint);
     }
 
@@ -144,7 +144,7 @@ public class ShapeView extends View {
     }
 
 
-    void setShapeRotation(double rotation) {
+    public void setShapeRotation(double rotation) {
         if (points == null || points.length <= 5)
             return;
         rotation += angleOffSet;
@@ -167,7 +167,7 @@ public class ShapeView extends View {
         }
     }
 
-    void drawPolygon(Canvas canvas) {
+    public void drawPolygon(Canvas canvas) {
         for (int i = 0; i < points.length; i += 2) {
             canvas.drawLine(points[i], points[i + 1], points[(i + 2) % points.length], points[(i + 3) % points.length], paint);
         }

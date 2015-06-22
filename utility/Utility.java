@@ -22,7 +22,10 @@ import java.util.Arrays;
 import java.util.Random;
 
 import tbs.jumpsnew.Game;
+import tbs.jumpsnew.GameView;
 import tbs.jumpsnew.MainActivity;
+import tbs.jumpsnew.R;
+import tbs.jumpsnew.fragments.MusicFragment;
 import tbs.jumpsnew.managers.FileManager;
 import tbs.jumpsnew.objects.Player;
 import tbs.jumpsnew.ui.ColorView;
@@ -36,7 +39,7 @@ public class Utility {
     public static final String BOUGHT_SONGS = "BOUGHT_SONGS";
     public static final String BOUGHT_COLORS = "BOUGHT_COLORS";
     public static final String BOUGHT_SHAPES = "BOUGHT_SHAPES";
-    public static final String BOUGHT_BACKGROUND = "BOUGHT_BACKGROUNDS";
+    public static final String BOUGHT_BACKGROUNDS = "BOUGHT_BACKGROUNDS";
     public static final String COINS = "COINS";
     public static final int SONG_PRICE = 500;
     public static final int COLOR_PRICE = 100;
@@ -88,21 +91,20 @@ public class Utility {
     public static final String SHAPE_HEXAGON = "SHAPE_HEXAGON";
     public static final String SHAPE_SHURIKEN_STAR = "SHAPE_SHURIKEN_STAR";
     public static final String SHAPE_PENTAGON_STAR = "SHAPE_PENTAGON_STAR";
-
     // public static final String SONG = "SONG";
     public static final String CHECKOUT_OUR_OTHER_APPS = "CHECKOUT_OUR_OTHER_APPS";
-
     // RANDOM
     public static Random rand;
+    private static FrameLayout.LayoutParams params;
     private static ArrayList<StoreItem> songs;
     private static final Runnable songRefresher = new Runnable() {
         @Override
         public void run() {
-            songs = new ArrayList<>();
+            songs = new ArrayList<StoreItem>();
             songs.add(new StoreItem(StoreItem.Type.SONG, Uri.parse(
                     "android.resource://"
                             + Game.context.getApplicationInfo().packageName
-                            + "/raw/song1").toString(), "Colossus", "Meizong",
+                            + "/" + R.raw.song1).toString(), "Colossus", "Meizong",
                     0, true));
 
             final String boughtSongs = getBoughtSongs(Game.context);
@@ -111,7 +113,19 @@ public class Utility {
             for (int i = 0; i < songFiles.size(); i++) {
                 final StoreItem storeItem = getSongStoreItem(boughtSongs, songFiles.get(i).getAbsolutePath());
                 storeItem.equipped = equippedSongs.contains(storeItem.tag);
-                songs.add(storeItem);
+                if (MusicFragment.listView != null) {
+                    MainActivity.getMainActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (MusicFragment.adapter != null) {
+                                songs.add(storeItem);
+                                MusicFragment.adapter.notifyDataSetChanged();
+                            }
+                        }
+                    });
+                } else {
+                    songs.add(storeItem);
+                }
             }
         }
     };
@@ -212,13 +226,14 @@ public class Utility {
 
 
     public static ArrayList<StoreItem> getBackgroundStoreItems(Context context) {
-        final ArrayList<StoreItem> items = new ArrayList<>();
+        final ArrayList<StoreItem> items = new ArrayList<StoreItem>();
         final String boughtColors = getBoughtBackgrounds(context);
-        final String equippedColors = getEquippedColors(context);
+        final String equippedColors = getEquippedBackground(context);
         final String[] colors = {BACKGROUND_NORMAL, BACKGROUND_MIDNIGHT, BACKGROUND_HUNNID, BACKGROUND_ROAD, BACKGROUND_SKY};
         for (String color : colors) {
             final StoreItem storeItem = getColorStoreItem(boughtColors, color);
             storeItem.equipped = equippedColors.contains(storeItem.tag);
+            storeItem.type = StoreItem.Type.BACKGROUND;
             items.add(storeItem);
         }
 
@@ -226,7 +241,7 @@ public class Utility {
     }
 
     public static ArrayList<StoreItem> getColorStoreItems(Context context) {
-        final ArrayList<StoreItem> items = new ArrayList<>();
+        final ArrayList<StoreItem> items = new ArrayList<StoreItem>();
         final String boughtColors = getBoughtColors(context);
         final String equippedColors = getEquippedColors(context);
         final String[] colors = {COLOR_WHITE, COLOR_RED_LIGHT, COLOR_RED,
@@ -249,7 +264,7 @@ public class Utility {
     }
 
     public static ArrayList<StoreItem> getEquippedColorStoreItems(Context context) {
-        final ArrayList<StoreItem> items = new ArrayList<>();
+        final ArrayList<StoreItem> items = new ArrayList<StoreItem>();
         final String[] colors = Utility.getEquippedColors(context).split(SEP);
         for (String color : colors) {
             items.add(getColorStoreItem("", color));
@@ -258,7 +273,7 @@ public class Utility {
     }
 
     public static ArrayList<StoreItem> getShapeStoreItems(Context context) {
-        final ArrayList<StoreItem> items = new ArrayList<>();
+        final ArrayList<StoreItem> items = new ArrayList<StoreItem>();
 
         final String boughtShapes = getBoughtShapes(context);
         final String[] shapes = {SHAPE_RECTANGLE, SHAPE_TRIANGLE,
@@ -277,13 +292,14 @@ public class Utility {
 
     public static View getColor(Context context, String tag) {
         View view = new ColorView(context, getColor(tag));
-        view.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.FILL_PARENT,
-                ViewGroup.LayoutParams.FILL_PARENT));
+        if (params == null) {
+            params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
+        }
+        view.setLayoutParams(params);
         return view;
     }
 
-    private static int getColor(String tag) {
+    public static int getColor(String tag) {
         int color = 0xff292929;
 
         if (tag.equals(COLOR_RED_LIGHT))
@@ -406,8 +422,8 @@ public class Utility {
 
     public static void equipSongs(Context context, String tag) {
         getPrefs(context).put(EQUIPPED_SONG, tag);
-        MainActivity.songs = tag.split(SEP);
-        Log.e("songs", Arrays.toString(MainActivity.songs));
+        Game.songs = tag.split(SEP);
+        Log.e("songs", Arrays.toString(Game.songs));
         if (tag == null || tag.length() < 1)
             Game.playDefaultSong();
         else {
@@ -457,7 +473,7 @@ public class Utility {
         StringBuilder builder = new StringBuilder();
         builder.append(BACKGROUND_NORMAL);
 
-        String out = getPrefs(context).getString(BOUGHT_BACKGROUND);
+        String out = getPrefs(context).getString(BOUGHT_BACKGROUNDS);
         out = out == null ? "" : out;
 
         if (out.length() < 2)
@@ -530,7 +546,7 @@ public class Utility {
         if (builder.toString().length() > 1)
             builder.append(SEP);
         builder.append(tag);
-        getPrefs(context).put(BOUGHT_BACKGROUND, builder.toString());
+        getPrefs(context).put(BOUGHT_BACKGROUNDS, builder.toString());
         madePurchase();
     }
 
@@ -545,12 +561,18 @@ public class Utility {
         madePurchase();
     }
 
-    public static void addEquippedColors(Context context, String tag) {
+    public static void addEquippedColors(final Context context, String tag) {
         final StringBuilder builder = new StringBuilder();
         builder.append(getEquippedColors(context));
 
         if (tag.equals(COLOR_BLUE) || tag.equals(COLOR_RED)) {
-            Toast.makeText(context, "Cannot toggle default colors", Toast.LENGTH_LONG).show();
+            MainActivity.getMainActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, "Cannot toggle default colors", Toast.LENGTH_LONG).show();
+                }
+            });
+
         }
 
         if (builder.toString().contains(tag))
@@ -568,7 +590,7 @@ public class Utility {
         if (tag == null || tag.length() < 2)
             return;
         getPrefs(context).put(EQUIPPED_BACKGROUND, tag);
-        Game.background = getColor(tag);
+        GameView.background = getColor(tag);
     }
 
     public static void addEquippedSongs(Context context, String tag) {
@@ -586,7 +608,6 @@ public class Utility {
         equipSongs(context, builder.toString());
     }
 
-
     public static void removeEquippedColors(Context context, String tag) {
         String equippedColors = getEquippedColors(context);
         final String[] split = equippedColors.split(SEP + tag);
@@ -598,21 +619,23 @@ public class Utility {
         }
         getPrefs(context).put(EQUIPPED_COLORS, equippedColors);
         addGameColors();
-        return;
     }
 
     public static void removeEquippedSongs(Context context, String tag) {
-        String equippedSongs = getEquippedSongs(context);
-        final String[] split = equippedSongs.split(SEP + tag);
+        try {
+            String equippedSongs = getEquippedSongs(context);
+            final String[] split = equippedSongs.split(SEP + tag);
 
-        if (split.length > 1)
-            equippedSongs = split[0] + split[1];
-        else if (split.length == 1) {
-            equippedSongs = split[0];
+            if (split.length > 1)
+                equippedSongs = split[0] + split[1];
+            else if (split.length == 1) {
+                equippedSongs = split[0];
+            }
+            getPrefs(context).put(EQUIPPED_SONG, equippedSongs);
+            equipSongs(context, equippedSongs);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        getPrefs(context).put(EQUIPPED_SONG, equippedSongs);
-        equipSongs(context, equippedSongs);
-        return;
     }
 
     public static void madePurchase() {
@@ -625,7 +648,7 @@ public class Utility {
     }
 
     private static String getShapeName(String tag) {
-        String shape = null;
+        String shape = "Rectangle";
 
         if (tag.equals(SHAPE_CIRCLE))
             shape = "Circle";
@@ -639,8 +662,6 @@ public class Utility {
             shape = "Shuriken";
         else if (tag.equals(SHAPE_PENTAGON_STAR))
             shape = "Pentagram";
-        else
-            shape = "Rectangle";
 
         return shape;
     }

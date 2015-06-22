@@ -30,7 +30,7 @@ public class ListViewLib {
 
 
     public ListViewLib(Context context) {
-        ListViewLib.context = context;
+        this.context = context;
 
     }
 
@@ -71,7 +71,7 @@ public class ListViewLib {
 
 
     public void setStoreListener(StoreListener storeListener) {
-        ListViewLib.storeListener = storeListener;
+        this.storeListener = storeListener;
     }
 
 //    public void setListItemBackground(Drawable listItemBackground) {
