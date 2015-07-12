@@ -95,7 +95,8 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
     // Whether to automatically try to sign in on onStart(). We only set this
     // to true when the sign-in process fails or the user explicitly signs out.
     // We set it back to false when the user initiates the sign in process.
-    private boolean mConnectOnStart = true;
+    //todo mike
+    private boolean mConnectOnStart = false;
     /*
      * Whether user has specifically requested that the sign-in process begin.
      * If mUserInitiatedSignIn is false, we're in the automatic sign-in attempt
@@ -252,21 +253,15 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
                 .create();
     }
 
+    public static void log(String cause) {
+        Log.e("gameHelper", cause);
+    }
+
     void assertConfigured(String operation) {
         if (!mSetupDone) {
             String error = "GameHelper error: Operation attempted without setup: "
                     + operation
                     + ". The setup() method must be called before attempting any other operation.";
-            logError(error);
-            throw new IllegalStateException(error);
-        }
-    }
-
-    private void doApiOptionsPreCheck() {
-        if (mGoogleApiClientBuilder != null) {
-            String error = "GameHelper: you cannot call set*ApiOptions after the client "
-                    + "builder has been created. Call it before calling createApiClientBuilder() "
-                    + "or setup().";
             logError(error);
             throw new IllegalStateException(error);
         }
@@ -278,6 +273,16 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
 //        return mConnecting;
 //    }
 // --Commented out by Inspection STOP (27/10/14 11:00 PM)
+
+    private void doApiOptionsPreCheck() {
+        if (mGoogleApiClientBuilder != null) {
+            String error = "GameHelper: you cannot call set*ApiOptions after the client "
+                    + "builder has been created. Call it before calling createApiClientBuilder() "
+                    + "or setup().";
+            logError(error);
+            throw new IllegalStateException(error);
+        }
+    }
 
     /**
      * Creates a GoogleApiClient.Builder for use with @link{#setup}. Normally,
@@ -315,6 +320,13 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         return builder;
     }
 
+// --Commented out by Inspection START (27/10/14 11:00 PM):
+//    // Set whether to show error dialogs or not.
+//    public void setShowErrorDialogs(boolean show) {
+//        mShowErrorDialogs = show;
+//    }
+// --Commented out by Inspection STOP (27/10/14 11:00 PM)
+
     /**
      * Performs setup on this GameHelper object. Call this from the onCreate()
      * method of your Activity. This will create the clients and do a few other
@@ -342,13 +354,6 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         mSetupDone = true;
     }
 
-// --Commented out by Inspection START (27/10/14 11:00 PM):
-//    // Set whether to show error dialogs or not.
-//    public void setShowErrorDialogs(boolean show) {
-//        mShowErrorDialogs = show;
-//    }
-// --Commented out by Inspection STOP (27/10/14 11:00 PM)
-
     /**
      * Returns the GoogleApiClient object. In order to call this method, you
      * must have called @link{setup}.
@@ -366,14 +371,6 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
      */
     public boolean isSignedIn() {
         return mGoogleApiClient != null && mGoogleApiClient.isConnected();
-    }
-
-    /**
-     * Returns whether or not there was a (non-recoverable) error during the
-     * sign-in process.
-     */
-    public boolean hasSignInError() {
-        return mSignInFailureReason != null;
     }
 
 // --Commented out by Inspection START (27/10/14 11:00 PM):
@@ -472,11 +469,11 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
 // --Commented out by Inspection STOP (27/10/14 11:00 PM)
 
     /**
-     * Returns the error that happened during the sign-in process, null if no
-     * error occurred.
+     * Returns whether or not there was a (non-recoverable) error during the
+     * sign-in process.
      */
-    public SignInFailureReason getSignInError() {
-        return mSignInFailureReason;
+    public boolean hasSignInError() {
+        return mSignInFailureReason != null;
     }
 
 // --Commented out by Inspection START (27/10/14 11:00 PM):
@@ -489,12 +486,20 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
 // --Commented out by Inspection STOP (27/10/14 11:00 PM)
 
     /**
+     * Returns the error that happened during the sign-in process, null if no
+     * error occurred.
+     */
+    public SignInFailureReason getSignInError() {
+        return mSignInFailureReason;
+    }
+
+    /**
      * Call this method from your Activity's onStart().
      */
     public void onStart(Activity act) {
         mActivity = act;
         mAppContext = act.getApplicationContext();
-
+        log("onStart");
         debugLog("onStart");
         assertConfigured("onStart");
 
@@ -523,6 +528,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
      * Call this method from your Activity's onStop().
      */
     public void onStop() {
+
         debugLog("onStop");
         assertConfigured("onStop");
         if (mGoogleApiClient.isConnected()) {
@@ -680,6 +686,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
      * onSignInSucceeded() or onSignInFailed() methods will be called.
      */
     public void beginUserInitiatedSignIn() {
+        log("begin user initiated sign in");
         debugLog("beginUserInitiatedSignIn: resetting attempt count.");
         resetSignInCancellations();
         mSignInCancelled = false;
@@ -724,6 +731,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
     }
 
     void connect() {
+        log("connect Called");
         if (mGoogleApiClient.isConnected()) {
             debugLog("Already connected.");
             return;
@@ -916,6 +924,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
     }
 
     void disconnect() {
+        log("disconnecting");
         if (mGoogleApiClient.isConnected()) {
             debugLog("Disconnecting client.");
             mGoogleApiClient.disconnect();
@@ -952,6 +961,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
      */
     @Override
     public void onConnectionSuspended(int cause) {
+        log("connectionSuspended : " + cause);
         debugLog("onConnectionSuspended, cause=" + cause);
         disconnect();
         mSignInFailureReason = null;

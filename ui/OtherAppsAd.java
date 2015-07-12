@@ -26,6 +26,9 @@ public class OtherAppsAd {
     private static View view;
     private static ViewGroup layout;
     private static float animatedValue;
+    private static AnimationType animationType;
+    private static boolean showAlreadyCalled;
+    private static int viewHeight;
     private static final ValueAnimator.AnimatorUpdateListener updateListener = new ValueAnimator.AnimatorUpdateListener() {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
@@ -33,7 +36,6 @@ public class OtherAppsAd {
             update();
         }
     };
-    private static AnimationType animationType;
     private static final ValueAnimator.AnimatorListener listener = new AnimatorListenerAdapter() {
         @Override
         public void onAnimationStart(Animator animation) {
@@ -66,8 +68,6 @@ public class OtherAppsAd {
             }
         }
     };
-    private static boolean showAlreadyCalled;
-    private static int viewHeight;
 
     public OtherAppsAd(final Context context, RelativeLayout layout) {
         OtherAppsAd.layout = layout;
@@ -81,7 +81,7 @@ public class OtherAppsAd {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/developer?id=The+Big+Shots")));
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.drksft.cubedash")));
                 Utility.getPrefs(Game.context).put(Utility.CHECKOUT_OUR_OTHER_APPS, Utility.CHECKOUT_OUR_OTHER_APPS);
             }
         });

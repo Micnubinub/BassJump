@@ -110,6 +110,12 @@ public abstract class BaseGameActivity extends FragmentActivity implements
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        try {
+            mHelper.beginUserInitiatedSignIn();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

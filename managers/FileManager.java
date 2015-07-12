@@ -233,12 +233,20 @@ public class FileManager {
             music = new ArrayList<File>();
 
         final File file = Environment.getExternalStorageDirectory();
-        for (File file1 : file.listFiles()) {
-            if (file1.isDirectory())
-                directories.add(file1);
+        try {
+            for (File file1 : file.listFiles()) {
+                if (file1.isDirectory())
+                    directories.add(file1);
+            }
+        } catch (Exception e) {
+
         }
         while (directories.size() > 0) {
-            getMusicFromDirectory(directories.get(0));
+            try {
+                getMusicFromDirectory(directories.get(0));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return music;
     }

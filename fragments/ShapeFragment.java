@@ -22,7 +22,6 @@ public class ShapeFragment extends Fragment {
         ShapeFragment.adapter = adapter;
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

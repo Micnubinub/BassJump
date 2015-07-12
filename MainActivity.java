@@ -42,6 +42,7 @@ public class MainActivity extends BaseGameActivity {
     // PURCHASES:
     public static GPurchaseManager purchases;
 
+
     // ADS:
     public static boolean showAds;
 
@@ -71,12 +72,7 @@ public class MainActivity extends BaseGameActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game);
         gameContainer = (RelativeLayout) findViewById(R.id.game);
-        Utility.log("MainActivity Initialized");
         adManager = new AdManager(this);
-//        view = new GameView(this);
-//        view.setLayoutParams(new RelativeLayout.LayoutParams(
-//                RelativeLayout.LayoutParams.FILL_PARENT,
-//                RelativeLayout.LayoutParams.FILL_PARENT));
 
         mainActivity = this;
         // ACHIEVEMENT:
@@ -131,16 +127,16 @@ public class MainActivity extends BaseGameActivity {
             Game.player.highScoreS2 = 0;
         }
 
-        if (preferences.getString("musicOn") != null) {
-            if (preferences.getString("musicOn").equals("off")) {
-                Game.isPlaying = false;
-                Game.pauseSong();
-            } else {
-                Game.isPlaying = true;
-            }
-        } else {
-            Game.isPlaying = true;
-        }
+//        if (preferences.getString("musicOn") != null) {
+//            if (preferences.getString("musicOn").equals("off")) {
+//                Game.isMusicEnabled = false;
+//                Game.pauseSong();
+//            } else {
+//                Game.isMusicEnabled = true;
+//            }
+//        } else {
+//            Game.isMusicEnabled = true;
+//        }
 
         if (preferences.getString("gMode") != null) {
             if (preferences.getString("gMode").equals("arcade")) {
@@ -170,13 +166,7 @@ public class MainActivity extends BaseGameActivity {
 //            final RelativeLayout gameContainer = ;
 //            gameContainer.addView(view);
             otherAppsAd = new OtherAppsAd(this, gameContainer);
-
-            String check = Utility.getPrefs(this).getString(
-                    Utility.CHECKOUT_OUR_OTHER_APPS);
-            if ((check == null)
-                    || (!(check.equals(Utility.CHECKOUT_OUR_OTHER_APPS)))) {
-                MainActivity.otherAppsAd.show(5000);
-            }
+            otherAppsAd.show(5000);
         } catch (Exception e) {
             Log.e("Exception: ", "ERROR! DIALOG");
         }
@@ -185,6 +175,7 @@ public class MainActivity extends BaseGameActivity {
         // Utility.saveCoins(this, 212424124);
         // PURCHASES: (PUT IN LATER)
         purchases = new GPurchaseManager();
+        mHelper.reconnectClient();
     }
 
     @Override
@@ -196,18 +187,20 @@ public class MainActivity extends BaseGameActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        log("onResume");
         Game.playSong();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        log("onDestroyCalled");
         try {
             if (purchases.mService != null) {
                 unbindService(purchases.mServiceConn);
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

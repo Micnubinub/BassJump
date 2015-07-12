@@ -38,9 +38,6 @@ public class StoreManager {
                     case SHAPE:
                         Utility.addBoughtShapes(context, item.tag);
                         break;
-                    case BACKGROUND:
-                        Utility.addBoughtBackgrounds(context, item.tag);
-                        break;
                 }
                 item.bought = true;
                 CustomDialog.setNumCoins(coins - item.price);
@@ -61,14 +58,16 @@ public class StoreManager {
                     else
                         Utility.addEquippedSongs(context, item.tag);
 
-                    if (!Game.isPlaying) {
-                        try {
+                    try {
+                        if (Game.mediaPlayer == null || !Game.mediaPlayer.isPlaying())
                             Game.playSong();
-                        } catch (Exception r) {
-                            r.printStackTrace();
-                        }
+                    } catch (Exception r) {
+                        r.printStackTrace();
+                    }
+
+                    if (!Game.isMusicEnabled) {
                         MainActivity.preferences.put("musicOn", "on");
-                        Game.isPlaying = true;
+                        Game.isMusicEnabled = true;
                     }
                     break;
             }
@@ -90,6 +89,7 @@ public class StoreManager {
                 } else {
                     if (!adManager.getFullscreenAd().isLoaded())
                         adManager.loadFullscreenAd();
+
                     if (adManager.getVideoAd().isLoaded())
                         adManager.loadVideoAd();
                 }

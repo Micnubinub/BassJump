@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -83,6 +84,7 @@ public class GameView extends View {
                         && y >= Game.leaderBtn.yPos
                         && y <= Game.leaderBtn.yPos + GameValues.BUTTON_SCALE) {
                     // LEADER:
+                    Log.e("learderBoardClick > ", "registered");
                     if (BaseGameActivity.getApiClient().isConnected()) {
                         String leadID = "";
                         if (Game.mode == GameMode.Arcade) {
@@ -96,6 +98,7 @@ public class GameView extends View {
                         } else { // Singular
                             leadID = "CgkIvYbi1pMMEAIQEg";
                         }
+                        Log.e("learderBoardStaring > ", new String(leadID));
                         ((FragmentActivity) context)
                                 .startActivityForResult(
                                         Games.Leaderboards
@@ -104,6 +107,7 @@ public class GameView extends View {
                                                         leadID),
                                         10101);
                     } else {
+                        Log.e("learderBoardStaring > ", "not connected");
                         ((BaseGameActivity) context).getGameHelper()
                                 .beginUserInitiatedSignIn();
                     }

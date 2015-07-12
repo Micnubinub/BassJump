@@ -17,7 +17,6 @@ import android.widget.TextView;
 import tbs.jumpsnew.Game;
 import tbs.jumpsnew.MainActivity;
 import tbs.jumpsnew.R;
-import tbs.jumpsnew.fragments.BackgroundFragment;
 import tbs.jumpsnew.fragments.ColorFragment;
 import tbs.jumpsnew.fragments.MusicFragment;
 import tbs.jumpsnew.fragments.ShapeFragment;
@@ -27,7 +26,7 @@ import tbs.jumpsnew.utility.Utility;
  * Created by root on 4/01/15.
  */
 public class CustomDialog extends DialogFragment {
-    private static final Fragment[] fragments = new Fragment[5];
+    private static final Fragment[] fragments = new Fragment[4];
     private static TextView title;
     private static TextView coinText;
     private static PagerSlidingTabStrip tabs;
@@ -95,23 +94,20 @@ public class CustomDialog extends DialogFragment {
 
     private void setUpFragments() {
         fragments[0] = new ColorFragment();
-        fragments[1] = new BackgroundFragment();
-        fragments[2] = new ShapeFragment();
-        fragments[3] = new MusicFragment();
-        fragments[4] = MainActivity.getCoinsFragment;
+        fragments[1] = new ShapeFragment();
+        fragments[2] = new MusicFragment();
+        fragments[3] = MainActivity.getCoinsFragment;
 
         ColorFragment.setListAdapter(new Adapter(Game.context, Utility
                 .getColorStoreItems(Game.context)));
-        BackgroundFragment.setListAdapter(new Adapter(Game.context, Utility
-                .getBackgroundStoreItems(Game.context)));
         ShapeFragment.setListAdapter(new Adapter(Game.context, Utility
                 .getShapeStoreItems(Game.context)));
         MusicFragment.setListAdapter(new Adapter(Game.context, Utility
-                .getSongStoreItems(Game.context)));
+                .getSongStoreItems()));
 
         tabs = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
         pager = (ViewPager) view.findViewById(R.id.view_pager);
-        pager.setOffscreenPageLimit(5);
+        pager.setOffscreenPageLimit(4);
 
         pagerAdapter = new MyPagerAdapter(getChildFragmentManager());
 
@@ -132,7 +128,7 @@ public class CustomDialog extends DialogFragment {
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
 
-        private final String[] TITLES = {"Colors", "Backgrounds", "Shapes", "Music",
+        private final String[] TITLES = {"Colors", "Shapes", "Music",
                 "Get Coins"};
 
         public MyPagerAdapter(FragmentManager fm) {
