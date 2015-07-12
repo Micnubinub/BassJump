@@ -1,11 +1,44 @@
 package tbs.jumpsnew;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.net.Uri;
+import android.provider.MediaStore;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import tbs.jumpsnew.managers.StoreManager;
 
 public class GameController {
+
+    private static final ShareButtonClicked share = new ShareButtonClicked() {
+        @Override
+        public void onShareButtonClicked() {
+            final Date d = Calendar.getInstance().getTime();
+            Game.update();
+            final Bitmap image = Bitmap.createBitmap(Screen.width, Screen.height, Bitmap.Config.RGB_565);
+            Canvas canvas = new Canvas(image);
+            GameView.drawGame(canvas);
+            final String path = MediaStore.Images.Media.insertImage(
+                    Game.context.getContentResolver(), image, "screenShotBassJump_" + d
+                            + ".png", null);
+            System.out.println(path + " PATH");
+            final Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            Uri screenshotUri = Uri.parse(path);
+            shareIntent.setType("image/*");
+            shareIntent
+                    .putExtra(
+                            Intent.EXTRA_TEXT,
+                            "Check out my High Score on Bass Jump: \nhttps://play.google.com/store/apps/details?id=tbs.jumpsnew");
+            shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
+            Game.context.startActivity(Intent.createChooser(shareIntent,
+                    "Share High Score:"));
+            GameView.shareButtonClicked = null;
+        }
+    };
 
     public static void pressed(int x, int y, int index) {
         if (!Game.introShowing) {
@@ -104,37 +137,6 @@ public class GameController {
     }
 
     public static void share() {
-//		Calendar c = Calendar.getInstance();
-//		Date d = c.getTime();
-//
-//		Game.update();
-//		Config conf = Config.RGB_565;
-//		Bitmap image = Bitmap.createBitmap(Screen.width, Screen.height, conf);
-////		Canvas canvas = GameThread.surfaceHolder.lockCanvas(null);
-////		canvas.setBitmap(image);
-////		Paint backgroundPaint = new Paint();
-////		backgroundPaint.setColor(0xff292929);
-////		canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(),
-////				backgroundPaint);
-////		Game.draw(canvas);
-////		Bitmap screen = Bitmap.createBitmap(image, 0, 0, Screen.width,
-////				Screen.height);
-////		canvas.setBitmap(null);
-////		GameThread.surfaceHolder.unlockCanvasAndPost(canvas);
-//		String path = Images.Media.insertImage(
-//				Game.context.getContentResolver(), screen, "screenShotBJ" + d
-//						+ ".png", null);
-//		System.out.println(path + " PATH");
-//		Intent shareIntent = new Intent(Intent.ACTION_SEND);
-//		Uri screenshotUri = Uri.parse(path);
-//		shareIntent.setType("*/*");
-//		shareIntent
-//				.putExtra(
-//						Intent.EXTRA_TEXT,
-//						"Check out my High Score on Bass Jump: \nhttps://play.google.com/store/apps/details?id=tbs.jumpsnew");
-//		shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//		shareIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
-//		Game.context.startActivity(Intent.createChooser(shareIntent,
-//				"Share High Score:"));
+        GameView.shareButtonClicked = share;
     }
 }

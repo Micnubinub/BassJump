@@ -90,10 +90,12 @@ public class Utility {
     private static final Matrix matrix = new Matrix();
     // RANDOM
     public static Random rand;
+    public static boolean scanningForMusic;
     private static ArrayList<StoreItem> songs;
     private static final Runnable songRefresher = new Runnable() {
         @Override
         public void run() {
+            scanningForMusic = true;
             songs = new ArrayList<StoreItem>();
             songs.add(new StoreItem(StoreItem.Type.SONG, Uri.parse(
                     "android.resource://"
@@ -121,6 +123,7 @@ public class Utility {
                     songs.add(storeItem);
                 }
             }
+            scanningForMusic = false;
         }
     };
     private static Thread songRefreshThread;
@@ -129,19 +132,29 @@ public class Utility {
         rand = new Random();
     }
 
+    public static boolean isScanningForMusic() {
+        return scanningForMusic;
+    }
+
     public static void showToast(String a, Context context) {
         Toast.makeText(context, a, Toast.LENGTH_SHORT).show();
     }
 
     public static void refreshSongs() {
-        if (songRefreshThread == null) {
-            songRefreshThread = new Thread(songRefresher);
+        try {
+            stopThread(songRefreshThread);
+            if (songRefreshThread == null) {
+                songRefreshThread = new Thread(songRefresher);
+            }
+
+            if (songRefreshThread.isAlive())
+                return;
+
+
+            songRefreshThread.start();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        if (songRefreshThread.isAlive())
-            return;
-
-        songRefreshThread.start();
     }
 
     // Log Message
@@ -173,13 +186,18 @@ public class Utility {
     }
 
     // Stop Thread
-    public static void StopThread(Thread thread) {
+    public static void stopThread(Thread thread) {
+        if (thread == null)
+            return;
+
         boolean retry = true;
         while (retry) {
             try {
+                thread.interrupt();
                 thread.join();
                 retry = false;
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

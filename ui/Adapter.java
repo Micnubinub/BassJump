@@ -7,10 +7,12 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import tbs.jumpsnew.Game;
+import tbs.jumpsnew.MainActivity;
 import tbs.jumpsnew.R;
 import tbs.jumpsnew.utility.ListViewLib;
 import tbs.jumpsnew.utility.StoreItem;
@@ -26,7 +28,22 @@ public class Adapter extends BaseAdapter {
     private final View.OnClickListener storeClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            final int pos = (Integer) v.getTag(0);
+            if (Utility.isScanningForMusic()) {
+                try {
+                    if (storeItems.get(0).type == StoreItem.Type.SONG) {
+                        MainActivity.getMainActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, "Still Scanning for music, try again in a minute", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+            final int pos = (Integer) v.getTag(R.id.buy_now);
             if (ListViewLib.buyItem(storeItems.get(pos))) {
                 storeItems.get(pos).bought = true;
                 notifyDataSetChanged();
@@ -67,9 +84,9 @@ public class Adapter extends BaseAdapter {
             holder.icon = (FrameLayout) convertView.findViewById(R.id.icon);
             holder.coinContainer = convertView.findViewById(R.id.coin_icon);
             holder.iconImageView = convertView.findViewById(R.id.icon_image_view);
-            convertView.setTag(1, holder);
+            convertView.setTag(R.id.view_holder, holder);
         } else {
-            holder = (ViewHolder) convertView.getTag(1);
+            holder = (ViewHolder) convertView.getTag(R.id.view_holder);
         }
         holder.iconImageView.setVisibility(View.GONE);
 
@@ -87,9 +104,9 @@ public class Adapter extends BaseAdapter {
         holder.buy.setText(item.bought ? "Use" : "Buy");
         holder.price.setText(item.bought ? "Sold" : holder.price.getText());
         holder.coinContainer.setVisibility(item.bought ? View.GONE : View.VISIBLE);
-        convertView.setTag(0, position);
+        convertView.setTag(R.id.buy_now, position);
         final Button button = (Button) (convertView.findViewById(R.id.buy_equip));
-        button.setTag(position);
+        button.setTag(R.id.buy_now, position);
         button.setOnClickListener(storeClickListener);
 
         try {

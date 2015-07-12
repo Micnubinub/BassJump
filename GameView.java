@@ -22,9 +22,10 @@ import tbs.jumpsnew.utility.BaseGameActivity;
 
 public class GameView extends View {
     public static int background;
+    public static long lastUpdate = System.currentTimeMillis();
+    public static ShareButtonClicked shareButtonClicked;
     static int delta, sw, sh;
     private final Context context;
-    long lastUpdate = System.currentTimeMillis();
 
     public GameView(Context context) {
         super(context);
@@ -67,6 +68,22 @@ public class GameView extends View {
         }
 
         return Bitmap.createBitmap(bt, w, h, Bitmap.Config.ARGB_8888);
+    }
+
+    public static void drawGame(Canvas canvas) {
+        delta = (int) (System.currentTimeMillis() - lastUpdate);
+        GameValues.SPEED_FACTOR = (int) ((GameValues.SPEED_FACTOR_ORIGINAL * GameValues.SPEED_BONUS) * delta);
+        if (GameValues.SPEED_FACTOR < 1)
+            GameValues.SPEED_FACTOR = 1;
+        GameValues.PLAYER_JUMP_SPEED = (GameValues.SPEED_FACTOR * GameValues.PLAYER_JUMP_SPEED_MULT);
+        lastUpdate = System.currentTimeMillis();
+        Game.update();
+        Game.paint.setStyle(Paint.Style.FILL);
+        Game.paint.setColor(background);
+        canvas.drawRect(0, 0, sw, sh, Game.paint);
+        Game.paint.setStyle(Paint.Style.STROKE);
+        Game.draw(canvas);
+
     }
 
     @Override
@@ -146,19 +163,11 @@ public class GameView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        delta = (int) (System.currentTimeMillis() - lastUpdate);
-        GameValues.SPEED_FACTOR = (int) ((GameValues.SPEED_FACTOR_ORIGINAL * GameValues.SPEED_BONUS) * delta);
-        if (GameValues.SPEED_FACTOR < 1)
-            GameValues.SPEED_FACTOR = 1;
-        GameValues.PLAYER_JUMP_SPEED = (GameValues.SPEED_FACTOR * GameValues.PLAYER_JUMP_SPEED_MULT);
-        lastUpdate = System.currentTimeMillis();
-        Game.update();
-        Game.paint.setStyle(Paint.Style.FILL);
-        Game.paint.setColor(background);
-        canvas.drawRect(0, 0, sw, sh, Game.paint);
-        Game.paint.setStyle(Paint.Style.STROKE);
-        Game.draw(canvas);
+        drawGame(canvas);
         invalidate();
+        if (shareButtonClicked != null) {
+            shareButtonClicked.onShareButtonClicked();
+        }
     }
 
     @Override

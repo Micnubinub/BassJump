@@ -125,7 +125,6 @@ public class Game {
         }
 
         // MUSIC:
-        isMusicEnabled = true;
         Utility.equipSongs(context, Utility.getEquippedSongs(context));
 
         Log.e("songs", Arrays.toString(songs));
@@ -399,8 +398,9 @@ public class Game {
             paintText.setAlpha(255);
             paintText.setTextSize(Screen.width / 24);
             paintText.setTextAlign(Align.RIGHT);
+            songName = (songName == null) ? "Music off" : songName;
             paintText.getTextBounds(songName, 0, songName.length(), result);
-            //Todo figure out what could be making it null
+
             if (isMusicEnabled && songName != null) {
                 canvas.drawText(songName, soundBtn.xPos
                         - GameValues.BUTTON_PADDING, Screen.height
@@ -741,8 +741,6 @@ public class Game {
             circleIndex = 0;
         circles.get(circleIndex).activate(scale, x, y, a, special);
     }
-
-
 
 
     // FAKE LOADER:

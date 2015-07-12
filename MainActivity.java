@@ -30,7 +30,6 @@ public class MainActivity extends BaseGameActivity {
 
     // SAVE DATA:
     public static SecurePreferences preferences;
-    public static String LEADERBOARD_ID = "CgkIvYbi1pMMEAIQBg";
     public static AdManager adManager;
     public static MainActivity mainActivity;
     public static GetCoinsFragment getCoinsFragment = new GetCoinsFragment();
@@ -127,16 +126,16 @@ public class MainActivity extends BaseGameActivity {
             Game.player.highScoreS2 = 0;
         }
 
-//        if (preferences.getString("musicOn") != null) {
-//            if (preferences.getString("musicOn").equals("off")) {
-//                Game.isMusicEnabled = false;
-//                Game.pauseSong();
-//            } else {
-//                Game.isMusicEnabled = true;
-//            }
-//        } else {
-//            Game.isMusicEnabled = true;
-//        }
+        if (preferences.getString("musicOn") != null) {
+            if (preferences.getString("musicOn").equals("off")) {
+                Game.isMusicEnabled = false;
+                Game.pauseSong();
+            } else {
+                Game.isMusicEnabled = true;
+            }
+        } else {
+            Game.isMusicEnabled = true;
+        }
 
         if (preferences.getString("gMode") != null) {
             if (preferences.getString("gMode").equals("arcade")) {
